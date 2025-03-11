@@ -16,11 +16,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'strukin.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -56,13 +52,13 @@ class DatabaseHelper {
       )
     ''');
 
-    // Insert Usersplit
-    await db.insert('Usersplit', {'username': 'Paritispan 1', 'avatar': 'avatar1.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 2', 'avatar': 'avatar2.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 3', 'avatar': 'avatar3.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 4', 'avatar': 'avatar4.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 5', 'avatar': 'avatar5.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 6', 'avatar': 'avatar6.png'});
-    await db.insert('Usersplit', {'username': 'Partisipan 7', 'avatar': 'avatar7.png'});
+    // // Insert Usersplit
+    // await db.insert('Usersplit', {'username': 'Paritispan 1', 'avatar': 'avatar1.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 2', 'avatar': 'avatar2.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 3', 'avatar': 'avatar3.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 4', 'avatar': 'avatar4.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 5', 'avatar': 'avatar5.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 6', 'avatar': 'avatar6.png'});
+    // await db.insert('Usersplit', {'username': 'Partisipan 7', 'avatar': 'avatar7.png'});
   }
 }
