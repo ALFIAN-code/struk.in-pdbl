@@ -53,6 +53,7 @@ class DatabaseHelper {
     ''');
 
     // // Insert Usersplit
+    //lkjljk
     // await db.insert('Usersplit', {'username': 'Paritispan 1', 'avatar': 'avatar1.png'});
     // await db.insert('Usersplit', {'username': 'Partisipan 2', 'avatar': 'avatar2.png'});
     // await db.insert('Usersplit', {'username': 'Partisipan 3', 'avatar': 'avatar3.png'});

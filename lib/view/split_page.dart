@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:strukin/controller/struk_controller.dart';
@@ -48,3 +49,6 @@ class SplitPage extends StatelessWidget {
     );
   }
 }
+=======
+
+>>>>>>> e95f1e8 (add namespace)
