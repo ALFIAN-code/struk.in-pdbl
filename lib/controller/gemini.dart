@@ -70,6 +70,7 @@ Future<Order> processReceipt(
         "invoice_number": "Invoice Number",
         "date": "Date",
         "payment_method":"PAYMENT METHOD",
+        "Store name" : "Store Name",
         "items": [
           {
             "name": "Item Name",
@@ -107,19 +108,6 @@ Future<Order> processReceipt(
   }
 }
 
-/// Extracts a valid JSON string from a block of text.
-///
-/// This function looks for a JSON block between ` ```json ` and ` ``` ` markers
-/// and attempts to extract and clean the JSON content.
-///
-/// Parameters:
-/// - [text]: The raw text containing the JSON.
-///
-/// Returns:
-/// A valid JSON string extracted from the input text.
-///
-/// Throws:
-/// - [FormatException] if valid JSON is not found within the text.
 String extractJsonFromText(String text) {
   // Find the position of the first ```json``` block
   final jsonStart = text.indexOf('```json');
