@@ -1,57 +1,56 @@
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:strukin/controller/gemini.dart';
+import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
-import 'package:strukin/model/struk_model.dart';
+import 'package:strukin/model/struk_from_api.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  Rx<XFile>? _receiptImage;
-  Rx<String?> _ocrText = ''.obs;
-  Rx<Order>? __procesedTextText;
-  final Rx<bool> _isProcessing = false.obs;
+  Rx<XFile?> receiptImage = Rx<XFile?>(null);
+  Rx<String?> ocrText = ''.obs;
+  Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
+  final Rx<bool> isProcessing = false.obs;
   final List<String> _categories = [];
 
   Future<void> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
-      _receiptImage!.value = pickedImage;
-      await processReceiptImage();
+      receiptImage.value = pickedImage;
+      // await processReceiptImage();
     }
   }
 
   Future<void> getImageFromGallery() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      _receiptImage!.value = pickedImage;
-      await processReceiptImage();
+      receiptImage.value = pickedImage;
+      // await processReceiptImage();
     }
   }
 
   Future<void> processReceiptImage() async {
-    if (_receiptImage?.value == null) return;
-
-    _isProcessing.value = true;
-    _ocrText.value = null;
-    __procesedTextText = null;
+    if (receiptImage.value == null) return;
+    isProcessing.value = true;
+    // ocrText.value = '';
+    // processedText.value = ;
 
     try {
-      final inputImage = InputImage.fromFilePath(_receiptImage!.value.path);
+      final inputImage = InputImage.fromFilePath(receiptImage.value!.path);
       final recognizedText = await _textRecognizer.processImage(inputImage);
       final order = await processReceipt(
         recognizedText.text,
         geminiApi,
         _categories,
       );
-      _ocrText.value = recognizedText.text;
-      __procesedTextText?.value = order;
+      ocrText.value = recognizedText.text;
+      processedText.value = order;
+      print('Order: $processedText');
     } catch (e) {
-      _ocrText.value = e.toString();
-      __procesedTextText = null;
+      rethrow;
     } finally {
-      _isProcessing.value = false;
+      isProcessing.value = false;
     }
   }
 }
