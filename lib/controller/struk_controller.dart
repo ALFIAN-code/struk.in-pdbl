@@ -44,11 +44,23 @@ class StrukController extends GetxController {
     try {
       final inputImage = InputImage.fromFilePath(receiptImage.value!.path);
       final recognizedText = await _textRecognizer.processImage(inputImage);
+
+      if (recognizedText.text.isEmpty) {
+        // Get.snackbar(
+        //   "Peringatan",
+        //   "Tidak ada teks yang terdeteksi dalam gambar!",
+        //   snackPosition: SnackPosition.BOTTOM,
+        // );
+        isProcessing.value = false;
+        return;
+      }
+
       final order = await processReceipt(
         recognizedText.text,
         geminiApi,
         _categories,
       );
+
       ocrText.value = recognizedText.text;
       processedText.value = order;
       print('Order: $processedText');

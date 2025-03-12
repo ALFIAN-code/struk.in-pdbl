@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:strukin/view/split_page.dart';
+import 'package:strukin/view/style.dart';
+
+import '../controller/struk_controller.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+
+  var controller = Get.put(StrukController());
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -17,14 +24,20 @@ class HomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  controller.getImageFromCamera().then((value) {
+                    if (controller.receiptImage.value != null) {
+                      Get.to(SplitPage());
+                    }
+                  });
+                },
                 icon: const Icon(Icons.camera_alt, color: Colors.black),
                 label: Text(
                   'Buka kamera',
                   style: GoogleFonts.roboto(color: Colors.black),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
+                  backgroundColor: mainColor,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -33,7 +46,13 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  controller.getImageFromGallery().then((value) {
+                    if (controller.receiptImage.value != null) {
+                      Get.to(SplitPage());
+                    }
+                  });
+                },
                 icon: const Icon(Icons.image, color: Colors.black54),
                 label: Text(
                   'Ambil dari galeri',
@@ -74,54 +93,52 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 20),
-                  AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello There',
-                          style: GoogleFonts.roboto(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hello There',
+                            style: GoogleFonts.roboto(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Scan struk sekarang juga',
-                          style: GoogleFonts.roboto(
-                            fontSize: 16,
-                            color: Colors.grey,
+                          const SizedBox(height: 4),
+                          Text(
+                            'Ambil gambarnya & scan sekarang!',
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                        child: CircleAvatar(
-                          radius: 20,
-
-                          backgroundImage: AssetImage(
-                            'assets/images/deliveryboy.png',
-                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      CircleAvatar(
+                        radius: 35,
+                        backgroundColor: Colors.transparent,
+                        child: Image.asset(
+                          'assets/images/deliveryboy.png',
+                          height: 60,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () => _showImagePicker(context),
                     child: Container(
+                      height: 85,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: mainColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
+                        horizontal: 30,
                         vertical: 10,
                       ),
                       child: Row(
@@ -129,6 +146,7 @@ class HomePage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -151,16 +169,21 @@ class HomePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Image.asset(
-                            'assets/images/iconscan.png',
-                            width: 70,
-                            height: 70,
+                          Icon(
+                            Icons.add_rounded,
+                            color: Colors.black,
+                            size: 50,
                           ),
+                          // Image.asset(
+                          //   'assets/images/iconscan.png',
+                          //   width: 70,
+                          //   height: 70,
+                          // ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   // Search Bar - Lebih tipis (40px)
                   Row(
                     children: [
@@ -321,7 +344,7 @@ class StrukItem extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         '12-05-2024',
-                        style: GoogleFonts.roboto(color: Colors.grey),
+                        style: GoogleFonts.roboto(color: Colors.black54),
                       ),
                     ],
                   ),

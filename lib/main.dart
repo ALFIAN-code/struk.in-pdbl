@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:strukin/view/Homepage.dart';
 
 void main(List<String> args) {
@@ -10,6 +11,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(home: Homepage());
+    return GetMaterialApp(home: HomePage());
   }
 }
