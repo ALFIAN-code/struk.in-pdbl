@@ -51,7 +51,6 @@ class DatabaseHelper {
         FOREIGN KEY (fk_transaksiID) REFERENCES transaksi(transaksiID) ON DELETE CASCADE
       )
     ''');
-
     // // Insert Usersplit
     //lkjljk
     // await db.insert('Usersplit', {'username': 'Paritispan 1', 'avatar': 'avatar1.png'});
@@ -62,4 +61,8 @@ class DatabaseHelper {
     // await db.insert('Usersplit', {'username': 'Partisipan 6', 'avatar': 'avatar6.png'});
     // await db.insert('Usersplit', {'username': 'Partisipan 7', 'avatar': 'avatar7.png'});
   }
+
+  //CRUD Operation for each table
+  //UserSplit
+  
 }
