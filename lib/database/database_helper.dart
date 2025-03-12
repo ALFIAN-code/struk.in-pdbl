@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -63,6 +64,126 @@ class DatabaseHelper {
   }
 
   //CRUD Operation for each table
-  //UserSplit
-  
+  //CRUD OPERATION UserSplit
+  Future<int> insertUserSplit(Map<String, dynamic> row) async {
+    Database db = await database;
+    return await db.insert('Usersplit', row);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllUserSplit() async {
+    Database db = await database;
+    return await db.query('Usersplit');
+  }
+
+  Future<Map<String, dynamic>?> getUsersplit(int id) async {
+    Database db = await database;
+    List<Map<String, dynamic>> results = await db.query(
+      'Usersplit',
+      where: 'UserID = ?',
+      whereArgs: [id]);
+    if (results.isNotEmpty){
+      return results.first;
+    }
+    return null;
+  }
+
+  Future<int> updateUserSplit(Map<String, dynamic> row) async {
+    Database db = await database;
+    int id = row['UserID'];
+    return await db.update(
+      'Usersplit',
+      row,
+      where: 'UserID = ?',
+      whereArgs: [id]);
+  }
+
+  Future<int> deleteUserSplit(int id) async {
+    Database db = await database;
+    return await db.delete(
+      'Usersplit',
+      where: 'UserID = ?',
+      whereArgs: [id]);
+  }
+
+  //CRUD OPERATION Transaksi
+  Future<int> insertTransaksi(Map<String, dynamic> row) async {
+    Database db = await database;
+    return await db.insert('transaksi', row);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllTransaksi() async {
+    Database db = await database;
+    return await db.query('transaksi');
+  }
+
+  Future<Map<String, dynamic>?> getTransaksi(int id) async {
+    Database db = await database;
+    List<Map<String, dynamic>> results = await db.query(
+      'transaksi',
+      where: 'transaksiId = ?',
+      whereArgs: [id]);
+    if(results.isNotEmpty){
+      return results.first;
+    }
+    return null;
+  }
+
+  Future<int> updateTransaksi(Map<String, dynamic> row) async {
+    Database db = await database;
+    int id = row['transaksiID'];
+    return await db.update(
+      'transaksi',
+      row,
+      where: 'transaksiID = ?',
+      whereArgs: [id]);
+  }
+
+  Future<int> deleteTransaksi(int id) async {
+    Database db = await database;
+    return await db.delete(
+      'transaksi',
+      where: 'transaksiID = ?',
+      whereArgs: [id]);
+  }
+
+  //CRUD OPERATION Detail Transaksi
+  Future<int> insertDetailTransaksi(Map<String, dynamic> row) async {
+    Database db = await database;
+    return await db.insert('detail_transaksi', row);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllDetailTransaksi() async {
+    Database db = await database;
+    return await db.query('detail_transaksi');
+  }
+
+  Future<Map<String, dynamic>?> getDetailTransaksi(int id) async {
+    Database db = await database;
+    List<Map<String, dynamic>> result = await db.query(
+      'detail_transaksi',
+      where: 'DetailId = ?',
+      whereArgs: [id]);
+    if(result.isNotEmpty){
+      return result.first;
+    }
+    return null;
+  }
+
+  Future<int> updateDetailTransaksi(Map<String, dynamic> row) async {
+    Database db = await database;
+    int id = row['DetailID'];
+    return await db.update(
+      'detail_transaksi',
+      row,
+      where: 'DetailID = ?',
+      whereArgs: [id]);
+  }
+
+  Future<int> deleteDetailTransaksi(int id) async {
+    Database db = await database;
+    return await db.delete(
+      'detail_transaksi',
+      where: 'DetailID = ?',
+      whereArgs: [id]);
+  }
 }
