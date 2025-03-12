@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/model/menu_items.dart';
 
-class SplitPage extends StatefulWidget {
-  const SplitPage({super.key});
+class ResultPage extends StatefulWidget {
+  const ResultPage({super.key});
 
   @override
-  State<SplitPage> createState() => _SplitPageState();
+  State<ResultPage> createState() => _ResultPageState();
 }
 
-class _SplitPageState extends State<SplitPage> {
+class _ResultPageState extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
