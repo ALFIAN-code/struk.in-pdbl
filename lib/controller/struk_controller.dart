@@ -13,6 +13,11 @@ class StrukController extends GetxController {
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
   final Rx<bool> isProcessing = false.obs;
   final List<String> _categories = [];
+  Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
+
+  void getAllStruk() {
+    // buat fungsi get semua struk saat di homepage
+  }
 
   Future<void> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
