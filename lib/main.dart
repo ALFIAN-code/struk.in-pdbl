@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:strukin/split_page.dart';
+import 'package:strukin/view/result_page.dart';
 
 void main() {
   runApp(const MyApp());
