@@ -12,7 +12,18 @@ class StrukController extends GetxController {
   Rx<String?> ocrText = ''.obs;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
   final Rx<bool> isProcessing = false.obs;
-  final List<String> _categories = [];
+  final List<String> _categories = [
+    'Kuliner',
+    'Belanja',
+    'Transportasi',
+    'Hiburan',
+    'Kesehatan',
+    'Pendidikan',
+    'Elektronik',
+    'Pakaian',
+    'Otomotif',
+    'lainnya',
+  ];
   Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
 
   void getAllStruk() {
