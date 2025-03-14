@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/get_core.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:strukin/view/Detailpage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -232,7 +235,12 @@ class HomePage extends StatelessWidget {
                       5,
                       (index) => Padding(
                         padding: const EdgeInsets.only(bottom: 20),
-                        child: StrukItem(),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(DetailPage());
+                          },
+                          child: StrukItem(),
+                        ),
                       ),
                     ),
                   ),
