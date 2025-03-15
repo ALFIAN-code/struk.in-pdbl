@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/model/transaksi.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
@@ -12,22 +14,16 @@ class StrukController extends GetxController {
   Rx<String?> ocrText = ''.obs;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
   final Rx<bool> isProcessing = false.obs;
-  final List<String> _categories = [
-    'Kuliner',
-    'Belanja',
-    'Transportasi',
-    'Hiburan',
-    'Kesehatan',
-    'Pendidikan',
-    'Elektronik',
-    'Pakaian',
-    'Otomotif',
-    'lainnya',
-  ];
-  Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
+  final List<String> _categories = [];
+  Rx<List<Transaksi>> strukList = Rx<List<Transaksi>>([]);
 
-  void getAllStruk() {
-    // buat fungsi get semua struk saat di homepage
+  //database
+  var database = DatabaseHelper();
+
+  Future<void> getAllStruk() async {
+    var transaksi = await database.queryAllDetailTransaksi();
+    var listStruk = transaksi.map((e) => Transaksi.fromMap(e)).toList();
+    strukList.value = listStruk;
   }
 
   Future<void> getImageFromCamera() async {
@@ -55,23 +51,11 @@ class StrukController extends GetxController {
     try {
       final inputImage = InputImage.fromFilePath(receiptImage.value!.path);
       final recognizedText = await _textRecognizer.processImage(inputImage);
-
-      if (recognizedText.text.isEmpty) {
-        // Get.snackbar(
-        //   "Peringatan",
-        //   "Tidak ada teks yang terdeteksi dalam gambar!",
-        //   snackPosition: SnackPosition.BOTTOM,
-        // );
-        isProcessing.value = false;
-        return;
-      }
-
       final order = await processReceipt(
         recognizedText.text,
         geminiApi,
         _categories,
       );
-
       ocrText.value = recognizedText.text;
       processedText.value = order;
       print('Order: $processedText');
