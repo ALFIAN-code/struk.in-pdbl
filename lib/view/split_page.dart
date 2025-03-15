@@ -10,7 +10,13 @@ class SplitPage extends StatefulWidget {
 }
 
 class _SplitPageState extends State<SplitPage> {
+  int? selectedFriend;
   int? selectedIndex; // Lacak index yang dipilih
+
+  List<Map<String, dynamic>> friends = [
+    {'name': 'RAIHAN', 'image': 'assets/raihan.png'},
+    {'name': 'HILMI', 'image': 'assets/hilmi.png'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +52,25 @@ class _SplitPageState extends State<SplitPage> {
                 fontWeight: FontWeight.normal,
               ),
             ),
+             Text(
+              'JOHOR BAHRU RESTORANT',
+              style: GoogleFonts.roboto(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Tagihan dibuat: 27/10/1019 13:00',
+              style: GoogleFonts.roboto(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
             const SizedBox(height: 20),
+            Row(
+              
+            ),
+            
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -144,6 +168,34 @@ class _SplitPageState extends State<SplitPage> {
                   ),
                 ),
               ],
+            ),
+                        const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Aksi ketika tombol Konfirmasi ditekan
+                    print("Tombol Konfirmasi ditekan");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Konfirmasi',
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
