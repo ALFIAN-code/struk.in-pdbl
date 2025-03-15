@@ -21,7 +21,7 @@ Future<StrukFromApi?> processReceipt(
 
     String prompt = """
       Evaluate whether the following text is a valid purchase receipt. 
-      If it is a receipt, extract the invoice number, date, payment method, store name, items, their quantity, price, subtotal, total, and tax.
+      If it is a receipt, extract the invoice number, date, payment method, store name, items, their quantity, price, subtotal, total, tax And give a category strictly from this list of categories $categories..
       If the text is NOT a receipt or if there is no text at all, return the following JSON:
       ```json
       {
@@ -37,12 +37,13 @@ Future<StrukFromApi?> processReceipt(
         "date": "Date",
         "payment_method":"PAYMENT METHOD",
         "store_name" : "Store Name",
+        "category": "category",
         "items": [
           {
             "name": "Item Name",
             "quantity": Quantity,
             "price": Price,
-            "category": "category"
+            
           }
         ],
         "subtotal": Subtotal,
