@@ -24,12 +24,6 @@ class _SplitPageState extends State<SplitPage> {
     setState(() {});
   }
 
-
-  List<Map<String, dynamic>> friends = [
-    {'name': 'RAIHAN', 'image': 'assets/raihan.png'},
-    {'name': 'HILMI', 'image': 'assets/hilmi.png'},
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +58,7 @@ class _SplitPageState extends State<SplitPage> {
                 fontWeight: FontWeight.normal,
               ),
             ),
-             Text(
+            Text(
               'JOHOR BAHRU RESTORANT',
               style: GoogleFonts.roboto(
                 fontSize: 13,
@@ -80,12 +74,12 @@ class _SplitPageState extends State<SplitPage> {
             ),
             const SizedBox(height: 20),
 
-            Flexible(
+            // ListView harus dalam Expanded agar tombol tidak terdorong ke atas
+            Expanded(
               child: ListView.separated(
                 shrinkWrap: true,
                 physics: const BouncingScrollPhysics(),
-                separatorBuilder:
-                    (context, index) => const SizedBox(height: 10),
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemCount: people[0].listMenuItems.length,
                 itemBuilder: (context, index) {
                   final item = people[0].listMenuItems[index];
@@ -98,6 +92,7 @@ class _SplitPageState extends State<SplitPage> {
               ),
             ),
             const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
@@ -109,7 +104,10 @@ class _SplitPageState extends State<SplitPage> {
                 ],
               ),
             ),
-                        const SizedBox(height: 20),
+
+            // Spacer agar tombol tetap di bawah
+            const Spacer(),
+
             Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(
@@ -250,4 +248,4 @@ Widget rowText(String label, String value, {bool bold = false}) {
         ),
       ],
     );
-}
+  }
