@@ -19,6 +19,7 @@ class _SplitPageState extends State<SplitPage> {
   final List<int> usedImages = [];
   List<Map<String, dynamic>> participants = [];
   final Random _random = Random();
+  int selectedIndex = 0;
 
   late String defaultProfileImage;
 
@@ -139,44 +140,40 @@ class _SplitPageState extends State<SplitPage> {
 
                     SizedBox(
                       height: 120, // Perbesar agar nama terlihat dengan baik
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: ListView(
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        scrollDirection: Axis.horizontal,
                         children: [
-                          ListView(
+                          ListView.builder(
                             shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
-                            children:
-                                participants
-                                    .asMap()
-                                    .entries
-                                    .map(
-                                      (entry) => ParticipantItem(
-                                        index: int.parse(
-                                          entry.value["image"]
-                                              .replaceAll(
-                                                "assets/images/profile/image",
-                                                "",
-                                              )
-                                              .replaceAll(".png", ""),
-                                        ),
-                                        isLast: participants.length == 1,
-                                        name:
-                                            entry.value["name"], // Nama default
-                                        onTap:
-                                            () => deleteParticipant(entry.key),
-                                        onNameChanged: (newName) {
-                                          setState(() {
-                                            participants[entry.key]["name"] =
-                                                newName;
-                                          });
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
+                            itemCount: participants.length,
+                            itemBuilder: (context, index) {
+                              return ParticipantItem(
+                                isLast: participants.length == 1,
+                                imgPath: participants[index]['image'],
+                                name: participants[index]['name'],
+                                isSelected: selectedIndex == index,
+                                onSelected: () {
+                                  setState(() {
+                                    selectedIndex = index;
+                                  });
+                                },
+                                onNameChanged: (newName) {
+                                  setState(() {
+                                    participants[index]['name'] = newName;
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    participants.removeAt(index);
+                                  });
+                                },
+                              );
+                            },
                           ),
                           Container(
-                            margin: EdgeInsets.only(bottom: 40),
+                            margin: EdgeInsets.only(bottom: 30),
                             padding: const EdgeInsets.only(left: 10),
                             child: GestureDetector(
                               onTap: addParticipant,
@@ -194,6 +191,7 @@ class _SplitPageState extends State<SplitPage> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 20),
                     Text(
                       'JOHOR BAHRU RESTORANT',
                       style: GoogleFonts.roboto(
@@ -280,18 +278,21 @@ class _SplitPageState extends State<SplitPage> {
 class ParticipantItem extends StatefulWidget {
   const ParticipantItem({
     super.key,
-    required this.index,
+    required this.imgPath,
     required this.name,
     this.onTap,
     this.onNameChanged,
     required this.isLast,
+    required this.isSelected,
+    required this.onSelected,
   });
-
+  final bool isSelected;
   final bool isLast;
-  final int index;
+  final String imgPath;
   final String name;
   final void Function()? onTap;
   final void Function(String)? onNameChanged;
+  final void Function()? onSelected;
 
   @override
   _ParticipantItemState createState() => _ParticipantItemState();
@@ -334,7 +335,8 @@ class _ParticipantItemState extends State<ParticipantItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus(); // Menutup keyboard saat tap di luar
+        FocusScope.of(context).unfocus();
+        widget.onSelected?.call();
       },
       child: Column(
         children: [
@@ -342,14 +344,27 @@ class _ParticipantItemState extends State<ParticipantItem> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  radius: 30,
-                  child: ClipOval(
-                    child: Image.asset(
-                      "assets/images/profile/image${widget.index}.png",
-                      fit: BoxFit.cover,
-                      width: 60,
-                      height: 60,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color:
+                          widget.isSelected
+                              ? Colors.lightGreen
+                              : Colors.transparent,
+                      width: 4,
+                    ),
+                    borderRadius: BorderRadius.circular(1000),
+                  ),
+                  child: CircleAvatar(
+                    radius: 30,
+                    child: ClipOval(
+                      child: Image.asset(
+                        widget.imgPath,
+                        fit: BoxFit.cover,
+                        width: 60,
+                        height: 60,
+                      ),
                     ),
                   ),
                 ),
