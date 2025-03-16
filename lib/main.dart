@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:strukin/view/Detailpage.dart';
 import 'package:strukin/view/result_page.dart';
 import 'package:strukin/view/split_page.dart';
 import 'view/onboarding_screen.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const /*HomePage()*/ SplitPage(),
+      home: const /*HomePage()*/ DetailPage(),
     );
   }
 }

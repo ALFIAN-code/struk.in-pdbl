@@ -6,6 +6,7 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text("Detail Struk"),
@@ -67,7 +68,8 @@ class DetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       child: Image.asset(
                         'assets/images/Struk1.png', // Ubah sesuai path gambar struk
-                        height: 200,
+                        height: 250,
+                        width: width * 0.9,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -136,7 +138,7 @@ class DetailPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text("$name qtyx"), Text("Rp ${price * qty}")],
+        children: [Text("$name      $qty x"), Text("Rp ${price * qty}")],
       ),
     );
   }
@@ -215,7 +217,7 @@ class DetailPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text("$name qtyx"), Text("Rp $price")],
+        children: [Text("$name     $qty x"), Text("Rp $price")],
       ),
     );
   }
