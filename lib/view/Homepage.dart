@@ -6,6 +6,8 @@ import 'package:strukin/view/style.dart';
 
 import '../controller/struk_controller.dart';
 
+import 'Detailpage.dart';
+
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
@@ -255,7 +257,12 @@ class HomePage extends StatelessWidget {
                       5,
                       (index) => Padding(
                         padding: const EdgeInsets.only(bottom: 20),
-                        child: StrukItem(),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(DetailPage());
+                          },
+                          child: StrukItem(),
+                        ),
                       ),
                     ),
                   ),
