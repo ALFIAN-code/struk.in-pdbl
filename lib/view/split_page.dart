@@ -1,22 +1,16 @@
-<<<<<<< HEAD
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:strukin/controller/struk_controller.dart';
-import 'package:strukin/controller/utils.dart';
-
-class SplitPage extends StatelessWidget {
-  SplitPage({super.key});
-
-  final controller = Get.find<StrukController>();
-=======
 import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:strukin/model/menu_items.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:strukin/controller/home_controller.dart';
+import 'package:strukin/controller/splitpage_controller.dart';
+import 'package:strukin/model/struk_from_api.dart';
 
 class SplitPage extends StatefulWidget {
-  const SplitPage({super.key});
+  const SplitPage({super.key, required this.image});
+  final XFile image;
 
   @override
   State<SplitPage> createState() => _SplitPageState();
@@ -24,156 +18,19 @@ class SplitPage extends StatefulWidget {
 
 class _SplitPageState extends State<SplitPage> {
   // Menyimpan item ke multi-selection
-  HashSet<MenuItems> selectedItem = HashSet();
 
-  final List<int> _availableImages = List.generate(39, (index) => index + 1);
-  final List<int> usedImages = [];
-  List<Map<String, dynamic>> participants = [];
-  final Random _random = Random();
-  int selectedIndex = 0;
-
-  late String defaultProfileImage;
+  var splitController = Get.put(SplitpageController());
 
   @override
   void initState() {
-    // TODO: implement initState
-    addFirstParticipant();
+    splitController.processReceiptImage(widget.image);
+    splitController.addFirstParticipant();
     super.initState();
   }
-
-  void addFirstParticipant() {
-    if (participants.isEmpty) {
-      int firstImage =
-          _random.nextInt(39) + 1; // Pilih gambar pertama secara acak
-      usedImages.add(firstImage);
-
-      setState(() {
-        participants.add({
-          "name": "USER 1",
-          "image": "assets/images/profile/image$firstImage.png",
-          "selected": false,
-        });
-      });
-    }
-  }
-
-  void doMultiSelection(MenuItems item) {
-    if (selectedItem.contains(item)) {
-      selectedItem.remove(item);
-    } else {
-      selectedItem.add(item);
-    }
-    setState(() {});
-  }
-
-  void addParticipant() {
-    if (usedImages.length >= 39)
-      return; // Jika semua gambar sudah dipakai, hentikan
-
-    int newImage;
-    do {
-      newImage = _random.nextInt(39) + 1;
-    } while (usedImages.contains(newImage));
-
-    usedImages.add(newImage);
-
-    setState(() {
-      participants.add({
-        "name": "USER ${participants.length + 1}",
-        "image": "assets/images/profile/image$newImage.png",
-        "selected": false,
-      });
-    });
-  }
-
-  void selectProfile(int index) {
-    setState(() {
-      for (var participant in participants) {
-        participant["selected"] = false;
-      }
-      participants[index]["selected"] = true;
-    });
-  }
-
-  void deleteParticipant(int index) {
-    setState(() {
-      int removedImage = int.parse(
-        participants[index]["image"]
-            .replaceAll("assets/images/profile/image", "")
-            .replaceAll(".png", ""),
-      );
-      usedImages.remove(
-        removedImage,
-      ); // Hapus dari daftar usedImages agar bisa dipakai lagi
-      participants.removeAt(index); // Hapus partisipan dari list
-    });
-  }
->>>>>>> 6779e272787405bb437f353655cb43207a676bec
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      body: GetX<StrukController>(
-        init: StrukController(),
-        initState: (state) async {
-          controller.processReceiptImage();
-          // var connection = await Utils.checkInternetConnection();
-          // print('connection = $connection');
-          // if (connection) {
-          //   controller.processReceiptImage();
-          // } else {
-          //   Future.delayed(Duration.zero, () {
-          //     Get.dialog(
-          //       AlertDialog(
-          //         title: Text("tidak dapat terhubung ke internet"),
-          //         content: Text("Periksa kembali koneksi internet anda"),
-          //         actions: [
-          //           TextButton(
-          //             onPressed: () {
-          //               Get.back(); // Tutup dialog
-          //               Get.back(); // Kembali ke halaman sebelumnya
-          //             },
-          //             child: Text("OK"),
-          //           ),
-          //         ],
-          //       ),
-          //     );
-          //   });
-          // }
-        },
-        builder: (_) {
-          print(controller.isProcessing.value);
-          if (controller.isProcessing.value) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (controller.processedText.value == null) {
-            Future.delayed(Duration.zero, () {
-              Get.dialog(
-                AlertDialog(
-                  title: Text("Struk tidak terdeteksi"),
-                  content: Text("Cek kembali gambar yang diunggah"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Get.back(); // Tutup dialog
-                        Get.back(); // Kembali ke halaman sebelumnya
-                      },
-                      child: Text("OK"),
-                    ),
-                  ],
-                ),
-              );
-            });
-            return SizedBox(); // Mengembalikan widget kosong agar tidak error
-          }
-          print(controller.processedText.value!.total);
-          return Center(
-            child: Text(controller.processedText.value!.total.toString()),
-          );
-        },
-=======
       body: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
@@ -220,27 +77,38 @@ class _SplitPageState extends State<SplitPage> {
                           ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
-                            itemCount: participants.length,
+                            itemCount:
+                                splitController.participants.value.length,
                             itemBuilder: (context, index) {
                               return ParticipantItem(
-                                isLast: participants.length == 1,
-                                imgPath: participants[index]['image'],
-                                name: participants[index]['name'],
-                                isSelected: selectedIndex == index,
+                                isLast:
+                                    splitController.participants.value.length ==
+                                    1,
+                                imgPath:
+                                    splitController
+                                        .participants
+                                        .value[index]['image'],
+                                name:
+                                    splitController
+                                        .participants
+                                        .value[index]['name'],
+                                isSelected:
+                                    splitController.selectedIndex == index,
                                 onSelected: () {
-                                  setState(() {
-                                    selectedIndex = index;
-                                  });
+                                  splitController.selectedIndex.value = index;
                                 },
                                 onNameChanged: (newName) {
                                   setState(() {
-                                    participants[index]['name'] = newName;
+                                    splitController
+                                            .participants
+                                            .value[index]['name'] =
+                                        newName;
                                   });
                                 },
                                 onTap: () {
-                                  setState(() {
-                                    participants.removeAt(index);
-                                  });
+                                  splitController.participants.value.removeAt(
+                                    index,
+                                  );
                                 },
                               );
                             },
@@ -249,7 +117,7 @@ class _SplitPageState extends State<SplitPage> {
                             margin: EdgeInsets.only(bottom: 30),
                             padding: const EdgeInsets.only(left: 10),
                             child: GestureDetector(
-                              onTap: addParticipant,
+                              onTap: splitController.addParticipant,
                               child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Colors.grey.withAlpha(120),
@@ -286,13 +154,15 @@ class _SplitPageState extends State<SplitPage> {
                       physics: NeverScrollableScrollPhysics(),
                       separatorBuilder:
                           (context, index) => const SizedBox(height: 5),
-                      itemCount: people[0].listMenuItems.length,
+                      itemCount:
+                          splitController.processedText.value!.items.length,
                       itemBuilder: (context, index) {
-                        final item = people[0].listMenuItems[index];
+                        final item =
+                            splitController.processedText.value!.items[index];
                         return getListMenu(
                           item,
-                          selectedItem.contains(item),
-                          () => doMultiSelection(item),
+                          splitController.selectedItem.contains(item),
+                          () => splitController.doMultiSelection(item),
                         );
                       },
                     ),
@@ -343,13 +213,10 @@ class _SplitPageState extends State<SplitPage> {
             ),
           ],
         ),
->>>>>>> 6779e272787405bb437f353655cb43207a676bec
       ),
     );
   }
 }
-<<<<<<< HEAD
-=======
 
 class ParticipantItem extends StatefulWidget {
   const ParticipantItem({
@@ -512,7 +379,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
 }
 
 // Widget untuk menampilkan Menu Items
-InkWell getListMenu(MenuItems item, bool isSelected, VoidCallback onTap) {
+InkWell getListMenu(Item item, bool isSelected, VoidCallback onTap) {
   return InkWell(
     onTap: onTap,
     child: Stack(
@@ -545,7 +412,7 @@ InkWell getListMenu(MenuItems item, bool isSelected, VoidCallback onTap) {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        item.price,
+                        '${item.price}'.toString(),
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
@@ -556,7 +423,7 @@ InkWell getListMenu(MenuItems item, bool isSelected, VoidCallback onTap) {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        item.quantity,
+                        '${item.quantity}',
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
@@ -568,7 +435,7 @@ InkWell getListMenu(MenuItems item, bool isSelected, VoidCallback onTap) {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        item.price,
+                        '${item.price}',
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
@@ -618,4 +485,3 @@ Widget rowText(String label, String value, {bool bold = false}) {
     ],
   );
 }
->>>>>>> 6779e272787405bb437f353655cb43207a676bec

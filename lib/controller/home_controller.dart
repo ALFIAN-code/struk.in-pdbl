@@ -1,9 +1,13 @@
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
+import 'package:strukin/model/detail_transaksi.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/model/transaksi.dart';
+import 'package:strukin/model/usersplit.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
@@ -12,6 +16,11 @@ class StrukController extends GetxController {
   Rx<String?> ocrText = ''.obs;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
   final Rx<bool> isProcessing = false.obs;
+
+  var database = DatabaseHelper();
+
+  var listStruk = <Transaksi>[];
+
   final List<String> _categories = [
     'Kuliner',
     'Belanja',
@@ -26,8 +35,24 @@ class StrukController extends GetxController {
   ];
   Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
 
-  void getAllStruk() {
-    // buat fungsi get semua struk saat di homepage
+  Future<void> getAllStruk() async {
+    var result = await database.queryAllTransaksi();
+    listStruk = result.map((e) => Transaksi.fromMap(e)).toList();
+  }
+
+  Future<Transaksi> getSingleStruk(int id) async {
+    var result = await database.getDetailTransaksi(id);
+    return Transaksi.fromMap(result!);
+  }
+
+  Future<DetailTransaksi> getDetailStruk(int id) async {
+    var result = await database.getDetailTransaksi(id);
+    return DetailTransaksi.fromMap(result!);
+  }
+
+  Future<Usersplit> getParticipant(int id) async {
+    var result = await database.getUsersplit(id);
+    return Usersplit.fromMap(result!);
   }
 
   Future<void> getImageFromCamera() async {

@@ -52,15 +52,6 @@ class DatabaseHelper {
         FOREIGN KEY (fk_transaksiID) REFERENCES transaksi(transaksiID) ON DELETE CASCADE
       )
     ''');
-    // // Insert Usersplit
-    //lkjljk
-    // await db.insert('Usersplit', {'username': 'Paritispan 1', 'avatar': 'avatar1.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 2', 'avatar': 'avatar2.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 3', 'avatar': 'avatar3.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 4', 'avatar': 'avatar4.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 5', 'avatar': 'avatar5.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 6', 'avatar': 'avatar6.png'});
-    // await db.insert('Usersplit', {'username': 'Partisipan 7', 'avatar': 'avatar7.png'});
   }
 
   //CRUD Operation for each table
@@ -80,8 +71,9 @@ class DatabaseHelper {
     List<Map<String, dynamic>> results = await db.query(
       'Usersplit',
       where: 'UserID = ?',
-      whereArgs: [id]);
-    if (results.isNotEmpty){
+      whereArgs: [id],
+    );
+    if (results.isNotEmpty) {
       return results.first;
     }
     return null;
@@ -94,15 +86,13 @@ class DatabaseHelper {
       'Usersplit',
       row,
       where: 'UserID = ?',
-      whereArgs: [id]);
+      whereArgs: [id],
+    );
   }
 
   Future<int> deleteUserSplit(int id) async {
     Database db = await database;
-    return await db.delete(
-      'Usersplit',
-      where: 'UserID = ?',
-      whereArgs: [id]);
+    return await db.delete('Usersplit', where: 'UserID = ?', whereArgs: [id]);
   }
 
   //CRUD OPERATION Transaksi
@@ -121,8 +111,9 @@ class DatabaseHelper {
     List<Map<String, dynamic>> results = await db.query(
       'transaksi',
       where: 'transaksiId = ?',
-      whereArgs: [id]);
-    if(results.isNotEmpty){
+      whereArgs: [id],
+    );
+    if (results.isNotEmpty) {
       return results.first;
     }
     return null;
@@ -135,7 +126,8 @@ class DatabaseHelper {
       'transaksi',
       row,
       where: 'transaksiID = ?',
-      whereArgs: [id]);
+      whereArgs: [id],
+    );
   }
 
   Future<int> deleteTransaksi(int id) async {
@@ -143,7 +135,8 @@ class DatabaseHelper {
     return await db.delete(
       'transaksi',
       where: 'transaksiID = ?',
-      whereArgs: [id]);
+      whereArgs: [id],
+    );
   }
 
   //CRUD OPERATION Detail Transaksi
@@ -162,8 +155,9 @@ class DatabaseHelper {
     List<Map<String, dynamic>> result = await db.query(
       'detail_transaksi',
       where: 'DetailId = ?',
-      whereArgs: [id]);
-    if(result.isNotEmpty){
+      whereArgs: [id],
+    );
+    if (result.isNotEmpty) {
       return result.first;
     }
     return null;
@@ -176,7 +170,8 @@ class DatabaseHelper {
       'detail_transaksi',
       row,
       where: 'DetailID = ?',
-      whereArgs: [id]);
+      whereArgs: [id],
+    );
   }
 
   Future<int> deleteDetailTransaksi(int id) async {
@@ -184,6 +179,7 @@ class DatabaseHelper {
     return await db.delete(
       'detail_transaksi',
       where: 'DetailID = ?',
-      whereArgs: [id]);
+      whereArgs: [id],
+    );
   }
 }

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/view/split_page.dart';
 import 'package:strukin/view/style.dart';
 
-import '../controller/struk_controller.dart';
+import '../controller/home_controller.dart';
 
 import 'Detailpage.dart';
 
@@ -28,8 +28,10 @@ class HomePage extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   controller.getImageFromCamera().then((value) {
-                    if (controller.receiptImage.value != null) {
-                      Get.to(SplitPage());
+                    if (value != null) {
+                      Get.to(SplitPage(image: value));
+                    } else {
+                      Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
                     }
                   });
                 },
@@ -50,8 +52,10 @@ class HomePage extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   controller.getImageFromGallery().then((value) {
-                    if (controller.receiptImage.value != null) {
-                      Get.to(SplitPage());
+                    if (value != null) {
+                      Get.to(SplitPage(image: value));
+                    } else {
+                      Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
                     }
                   });
                 },
