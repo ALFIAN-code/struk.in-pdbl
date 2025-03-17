@@ -6,11 +6,7 @@ class Usersplit {
   Usersplit({this.userID, this.username, this.avatar});
 
   Map<String, dynamic> toMap() {
-    return {
-      'userID': userID,
-      'username': username,
-      'avatar': avatar,
-    };
+    return {'userID': userID, 'username': username, 'avatar': avatar};
   }
 
   factory Usersplit.fromMap(Map<String, dynamic> map) {

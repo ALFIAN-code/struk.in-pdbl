@@ -1,12 +1,10 @@
-import 'dart:collection';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:strukin/controller/home_controller.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/view/component/particpant_item.dart';
 
 class SplitPage extends StatefulWidget {
   const SplitPage({super.key, required this.image});
@@ -44,339 +42,396 @@ class _SplitPageState extends State<SplitPage> {
             stops: [0.3, 1.0],
           ),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 30),
-                    Text(
-                      'Pilih Item',
-                      style: GoogleFonts.roboto(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Ketuk teman lalu pilih item',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    SizedBox(height: 20),
+        child: Obx(() {
+          if (splitController.isProcessing.value) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (splitController.isProcessing.value == false) {
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 30),
+                        Text(
+                          'Pilih Item',
+                          style: GoogleFonts.roboto(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Ketuk teman lalu pilih item',
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        SizedBox(height: 20),
 
-                    SizedBox(
-                      height: 120, // Perbesar agar nama terlihat dengan baik
-                      child: ListView(
-                        // crossAxisAlignment: CrossAxisAlignment.center,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                splitController.participants.value.length,
-                            itemBuilder: (context, index) {
-                              return ParticipantItem(
-                                isLast:
-                                    splitController.participants.value.length ==
-                                    1,
-                                imgPath:
-                                    splitController
-                                        .participants
-                                        .value[index]['image'],
-                                name:
-                                    splitController
-                                        .participants
-                                        .value[index]['name'],
-                                isSelected:
-                                    splitController.selectedIndex == index,
-                                onSelected: () {
-                                  splitController.selectedIndex.value = index;
-                                },
-                                onNameChanged: (newName) {
-                                  setState(() {
-                                    splitController
+                        SizedBox(
+                          height: 120,
+                          child: GetBuilder<SplitpageController>(
+                            init: SplitpageController(),
+                            builder: (controller) {
+                              return ListView(
+                                // crossAxisAlignment: CrossAxisAlignment.center,
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        splitController
                                             .participants
-                                            .value[index]['name'] =
-                                        newName;
-                                  });
-                                },
-                                onTap: () {
-                                  splitController.participants.value.removeAt(
-                                    index,
-                                  );
-                                },
+                                            .value
+                                            .length,
+                                    itemBuilder: (context, index) {
+                                      return ParticipantItem(
+                                        isLast:
+                                            splitController
+                                                .participants
+                                                .value
+                                                .length ==
+                                            1,
+                                        imgPath:
+                                            splitController
+                                                .participants
+                                                .value[index]['image'],
+                                        name:
+                                            splitController
+                                                .participants
+                                                .value[index]['name'],
+                                        isSelected:
+                                            splitController
+                                                .selectedIndex
+                                                .value ==
+                                            index,
+                                        onSelected: () {
+                                          setState(() {
+                                            splitController
+                                                .selectedIndex
+                                                .value = index;
+                                          });
+                                        },
+                                        onNameChanged: (newName) {
+                                          setState(() {
+                                            splitController
+                                                    .participants
+                                                    .value[index]['name'] =
+                                                newName;
+                                          });
+                                        },
+                                        onClose: () {
+                                          splitController.deleteParticipant(
+                                            index,
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 30),
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          splitController.addParticipant();
+                                        });
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: Colors.grey.withAlpha(
+                                          120,
+                                        ),
+                                        child: Icon(
+                                          Icons.add,
+                                          color: Colors.black,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               );
                             },
                           ),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 30),
-                            padding: const EdgeInsets.only(left: 10),
-                            child: GestureDetector(
-                              onTap: splitController.addParticipant,
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.grey.withAlpha(120),
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.black,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'JOHOR BAHRU RESTORANT',
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'JOHOR BAHRU RESTORANT',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Tagihan dibuat: 27/10/1019 13:00',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
+                        ),
+                        Text(
+                          'Tagihan dibuat: 27/10/1019 13:00',
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
 
-                    // ListView harus dalam Expanded agar tombol tidak terdorong ke atas
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      separatorBuilder:
-                          (context, index) => const SizedBox(height: 5),
-                      itemCount:
-                          splitController.processedText.value!.items.length,
-                      itemBuilder: (context, index) {
-                        final item =
-                            splitController.processedText.value!.items[index];
-                        return getListMenu(
-                          item,
-                          splitController.selectedItem.contains(item),
-                          () => splitController.doMultiSelection(item),
-                        );
+                        // ListView harus dalam Expanded agar tombol tidak terdorong ke atas
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          separatorBuilder:
+                              (context, index) => const SizedBox(height: 5),
+                          itemCount:
+                              splitController
+                                  .processedText
+                                  .value!
+                                  .items!
+                                  .length,
+                          itemBuilder: (context, index) {
+                            final item =
+                                splitController
+                                    .processedText
+                                    .value
+                                    ?.items?[index];
+                            return getListMenu(
+                              item!,
+                              splitController.selectedItem.contains(item),
+                              () {
+                                setState(() {
+                                  splitController.doMultiSelection(
+                                    item,
+                                    splitController.selectedIndex.value,
+                                  );
+                                });
+                              },
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Column(
+                            children: [
+                              rowText(
+                                'Subtotal',
+                                '${splitController.processedText.value?.subtotal ?? 0}',
+                              ),
+                              rowText(
+                                'Pajak',
+                                '${splitController.processedText.value?.tax ?? 0}',
+                              ),
+                              // rowText('Layanan', '${splitController.processedText.value?.}'),
+                              rowText(
+                                'Total Tagihan',
+                                '${splitController.processedText.value?.total ?? 0}',
+                                bold: true,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Aksi ketika tombol Konfirmasi ditekan
+                        print("Tombol Konfirmasi ditekan");
                       },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        children: [
-                          rowText('Subtotal', 'IDR 58.000'),
-                          rowText('Pajak', 'IDR 5.800'),
-                          rowText('Layanan', 'IDR 2.500'),
-                          rowText('Total Tagihan', 'IDR 66.300', bold: true),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Aksi ketika tombol Konfirmasi ditekan
-                    print("Tombol Konfirmasi ditekan");
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'Konfirmasi',
-                    style: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ParticipantItem extends StatefulWidget {
-  const ParticipantItem({
-    super.key,
-    required this.imgPath,
-    required this.name,
-    this.onTap,
-    this.onNameChanged,
-    required this.isLast,
-    required this.isSelected,
-    required this.onSelected,
-  });
-  final bool isSelected;
-  final bool isLast;
-  final String imgPath;
-  final String name;
-  final void Function()? onTap;
-  final void Function(String)? onNameChanged;
-  final void Function()? onSelected;
-
-  @override
-  _ParticipantItemState createState() => _ParticipantItemState();
-}
-
-class _ParticipantItemState extends State<ParticipantItem> {
-  late TextEditingController _controller;
-  late FocusNode _focusNode;
-  bool isEditing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.name);
-    _focusNode = FocusNode();
-
-    // Listener untuk mendeteksi ketika kehilangan fokus
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        _saveAndCloseEditing();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  void _saveAndCloseEditing() {
-    setState(() {
-      isEditing = false;
-    });
-    widget.onNameChanged?.call(_controller.text);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        widget.onSelected?.call();
-      },
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color:
-                          widget.isSelected
-                              ? Colors.lightGreen
-                              : Colors.transparent,
-                      width: 4,
-                    ),
-                    borderRadius: BorderRadius.circular(1000),
-                  ),
-                  child: CircleAvatar(
-                    radius: 30,
-                    child: ClipOval(
-                      child: Image.asset(
-                        widget.imgPath,
-                        fit: BoxFit.cover,
-                        width: 60,
-                        height: 60,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: GestureDetector(
-                  onTap: widget.isLast ? null : widget.onTap,
-                  child: Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withAlpha(190),
-                    ),
-                    child: const Icon(
-                      Icons.close_rounded,
-                      color: Colors.black,
-                      size: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isEditing = true;
-              });
-              _focusNode.requestFocus(); // Fokus ke TextField saat diklik
-            },
-            child:
-                isEditing
-                    ? SizedBox(
-                      width: 80,
-                      height: 15,
-                      child: TextField(
-                        controller: _controller,
-                        focusNode: _focusNode,
-                        autofocus: true,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 0),
-                          border: InputBorder.none,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                      ),
+                      child: Text(
+                        'Konfirmasi',
                         style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        onSubmitted: (value) => _saveAndCloseEditing(),
-                      ),
-                    )
-                    : Text(
-                      _controller.text.isEmpty ? "Nama" : _controller.text,
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
                       ),
                     ),
-          ),
-        ],
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Center(child: Text('error'));
+          }
+        }),
       ),
     );
   }
 }
+
+// class ParticipantItem extends StatefulWidget {
+//   const ParticipantItem({
+//     super.key,
+//     required this.imgPath,
+//     required this.name,
+//     this.onTap,
+//     this.onNameChanged,
+//     required this.isLast,
+//     required this.isSelected,
+//     required this.onSelected,
+//   });
+//   final bool isSelected;
+//   final bool isLast;
+//   final String imgPath;
+//   final String name;
+//   final void Function()? onTap;
+//   final void Function(String)? onNameChanged;
+//   final void Function()? onSelected;
+
+//   @override
+//   _ParticipantItemState createState() => _ParticipantItemState();
+// }
+
+// class _ParticipantItemState extends State<ParticipantItem> {
+//   late TextEditingController _controller;
+//   late FocusNode _focusNode;
+//   bool isEditing = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = TextEditingController(text: widget.name);
+//     _focusNode = FocusNode();
+
+//     // Listener untuk mendeteksi ketika kehilangan fokus
+//     _focusNode.addListener(() {
+//       if (!_focusNode.hasFocus) {
+//         _saveAndCloseEditing();
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     _focusNode.dispose();
+//     super.dispose();
+//   }
+
+//   void _saveAndCloseEditing() {
+//     setState(() {
+//       isEditing = false;
+//     });
+//     widget.onNameChanged?.call(_controller.text);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         FocusScope.of(context).unfocus();
+//         widget.onSelected?.call();
+//       },
+//       child: Column(
+//         children: [
+//           Stack(
+//             children: [
+//               Padding(
+//                 padding: const EdgeInsets.all(8.0),
+//                 child: Container(
+//                   padding: const EdgeInsets.all(2),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color:
+//                           widget.isSelected
+//                               ? Colors.lightGreen
+//                               : Colors.transparent,
+//                       width: 4,
+//                     ),
+//                     borderRadius: BorderRadius.circular(1000),
+//                   ),
+//                   child: CircleAvatar(
+//                     radius: 30,
+//                     child: ClipOval(
+//                       child: Image.asset(
+//                         widget.imgPath,
+//                         fit: BoxFit.cover,
+//                         width: 60,
+//                         height: 60,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               Positioned(
+//                 right: 0,
+//                 top: 0,
+//                 child: GestureDetector(
+//                   onTap: widget.isLast ? null : widget.onTap,
+//                   child: Container(
+//                     height: 20,
+//                     width: 20,
+//                     decoration: BoxDecoration(
+//                       shape: BoxShape.circle,
+//                       color: Colors.white.withAlpha(190),
+//                     ),
+//                     child: const Icon(
+//                       Icons.close_rounded,
+//                       color: Colors.black,
+//                       size: 16,
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           GestureDetector(
+//             onTap: () {
+//               setState(() {
+//                 isEditing = true;
+//               });
+//               _focusNode.requestFocus(); // Fokus ke TextField saat diklik
+//             },
+//             child:
+//                 isEditing
+//                     ? SizedBox(
+//                       width: 80,
+//                       height: 15,
+//                       child: TextField(
+//                         controller: _controller,
+//                         focusNode: _focusNode,
+//                         autofocus: true,
+//                         textAlign: TextAlign.center,
+//                         decoration: InputDecoration(
+//                           isDense: true,
+//                           contentPadding: EdgeInsets.symmetric(vertical: 0),
+//                           border: InputBorder.none,
+//                         ),
+//                         style: GoogleFonts.roboto(
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.w500,
+//                         ),
+//                         onSubmitted: (value) => _saveAndCloseEditing(),
+//                       ),
+//                     )
+//                     : Text(
+//                       _controller.text.isEmpty ? "Nama" : _controller.text,
+//                       style: GoogleFonts.roboto(
+//                         fontSize: 14,
+//                         fontWeight: FontWeight.w500,
+//                         color: Colors.black54,
+//                       ),
+//                     ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 // Widget untuk menampilkan Menu Items
 InkWell getListMenu(Item item, bool isSelected, VoidCallback onTap) {
@@ -412,7 +467,7 @@ InkWell getListMenu(Item item, bool isSelected, VoidCallback onTap) {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.price}'.toString(),
+                        '${item.price}',
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,

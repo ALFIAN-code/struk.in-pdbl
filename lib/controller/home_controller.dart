@@ -2,8 +2,6 @@ import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:strukin/database/database_helper.dart';
-import 'package:strukin/database/remote_from_gemini.dart';
-import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/detail_transaksi.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/model/transaksi.dart';
@@ -11,28 +9,11 @@ import 'package:strukin/model/usersplit.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
-  final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+
   Rx<XFile?> receiptImage = Rx<XFile?>(null);
-  Rx<String?> ocrText = ''.obs;
-  Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
-  final Rx<bool> isProcessing = false.obs;
 
   var database = DatabaseHelper();
-
   var listStruk = <Transaksi>[];
-
-  final List<String> _categories = [
-    'Kuliner',
-    'Belanja',
-    'Transportasi',
-    'Hiburan',
-    'Kesehatan',
-    'Pendidikan',
-    'Elektronik',
-    'Pakaian',
-    'Otomotif',
-    'lainnya',
-  ];
   Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
 
   Future<void> getAllStruk() async {
@@ -55,55 +36,24 @@ class StrukController extends GetxController {
     return Usersplit.fromMap(result!);
   }
 
-  Future<void> getImageFromCamera() async {
+  Future<XFile?> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
-      receiptImage.value = pickedImage;
-      // await processReceiptImage();
+      print('file ditemukan ' + pickedImage.path);
+      return pickedImage;
+    } else {
+      return null;
     }
   }
 
-  Future<void> getImageFromGallery() async {
+  Future<XFile?> getImageFromGallery() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      receiptImage.value = pickedImage;
-      // await processReceiptImage();
-    }
-  }
-
-  Future<void> processReceiptImage() async {
-    if (receiptImage.value == null) return;
-    isProcessing.value = true;
-    // ocrText.value = '';
-    // processedText.value = ;
-
-    try {
-      final inputImage = InputImage.fromFilePath(receiptImage.value!.path);
-      final recognizedText = await _textRecognizer.processImage(inputImage);
-
-      if (recognizedText.text.isEmpty) {
-        // Get.snackbar(
-        //   "Peringatan",
-        //   "Tidak ada teks yang terdeteksi dalam gambar!",
-        //   snackPosition: SnackPosition.BOTTOM,
-        // );
-        isProcessing.value = false;
-        return;
-      }
-
-      final order = await processReceipt(
-        recognizedText.text,
-        geminiApi,
-        _categories,
-      );
-
-      ocrText.value = recognizedText.text;
-      processedText.value = order;
-      print('Order: $processedText');
-    } catch (e) {
-      rethrow;
-    } finally {
-      isProcessing.value = false;
+      // receiptImage.value = pickedImage;
+      print('file ditemukan ' + pickedImage.path);
+      return pickedImage;
+    } else {
+      return null;
     }
   }
 }

@@ -26,14 +26,16 @@ class HomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton.icon(
-                onPressed: () {
-                  controller.getImageFromCamera().then((value) {
-                    if (value != null) {
-                      Get.to(SplitPage(image: value));
-                    } else {
-                      Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
-                    }
-                  });
+                onPressed: () async {
+                  var result = await controller.getImageFromCamera();
+                  // .then((value) {
+
+                  if (result != null) {
+                    Get.to(SplitPage(image: result));
+                  } else {
+                    Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
+                  }
+                  // });
                 },
                 icon: const Icon(Icons.camera_alt, color: Colors.black),
                 label: Text(
@@ -50,14 +52,16 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
-                onPressed: () {
-                  controller.getImageFromGallery().then((value) {
-                    if (value != null) {
-                      Get.to(SplitPage(image: value));
-                    } else {
-                      Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
-                    }
-                  });
+                onPressed: () async {
+                  var result = await controller.getImageFromGallery();
+
+                  // then((_) {
+                  if (result != null) {
+                    Get.to(SplitPage(image: result));
+                  } else {
+                    Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
+                  }
+                  // });
                 },
                 icon: const Icon(Icons.image, color: Colors.black54),
                 label: Text(

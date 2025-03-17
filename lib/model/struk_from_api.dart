@@ -1,16 +1,16 @@
 class StrukFromApi {
-  String paymentMethod;
-  String invoiceNumber;
-  String date;
-  List<Item> items;
-  double subtotal;
-  double tax;
-  double total;
+  // String? paymentMethod;
+  String? invoiceNumber;
+  String? date;
+  List<Item>? items;
+  double? subtotal;
+  double? tax;
+  double? total;
 
   StrukFromApi({
     required this.date,
     required this.invoiceNumber,
-    required this.paymentMethod,
+    // required this.paymentMethod,
     required this.items,
     required this.subtotal,
     required this.tax,
@@ -21,7 +21,7 @@ class StrukFromApi {
     return StrukFromApi(
       date: json['date'],
       invoiceNumber: json['invoice_number'],
-      paymentMethod: json['payment_method'].toString().toUpperCase(),
+      // paymentMethod: json['payment_method'].toString().toUpperCase(),
       items:
           (json['items'] as List<dynamic>)
               .map((itemJson) => Item.fromJson(itemJson))
@@ -34,13 +34,13 @@ class StrukFromApi {
 
   Map<String, dynamic> toJson() {
     return {
-      'items': items.map((item) => item.toJson()).toList(),
+      'items': items?.map((item) => item.toJson()).toList(),
       'subtotal': subtotal,
       'tax': tax,
       'total': total,
       'invoice_number': invoiceNumber,
       'date': date,
-      'payment_method': paymentMethod.toUpperCase(),
+      // 'payment_method': paymentMethod?.toUpperCase(),
     };
   }
 
@@ -56,7 +56,7 @@ class StrukFromApi {
     return StrukFromApi(
       date: date ?? this.date,
       invoiceNumber: invoiceNumber ?? this.invoiceNumber,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
+      // paymentMethod: paymentMethod ?? this.paymentMethod,
       items: items ?? this.items,
       subtotal: subtotal ?? this.subtotal,
       tax: tax ?? this.tax,
@@ -66,7 +66,7 @@ class StrukFromApi {
 
   @override
   String toString() {
-    return 'Order(items: $items, subtotal: $subtotal, tax: $tax, total: $total, invoiceNumber: $invoiceNumber, date: $date, paymentMethod: $paymentMethod)';
+    return 'Order(items: $items, subtotal: $subtotal, tax: $tax, total: $total, invoiceNumber: $invoiceNumber, date: $date,)';
   }
 }
 

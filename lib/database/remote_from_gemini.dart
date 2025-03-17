@@ -7,19 +7,16 @@ Future<StrukFromApi?> processReceipt(
   String api,
   List<String> categories,
 ) async {
-  try {
-    final model = GenerativeModel(
-      model: 'gemini-1.5-flash-latest',
-      apiKey: api,
-    );
+  // try {
+  final model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: api);
 
-    final List<String> formattedList = ['unkown'];
+  final List<String> formattedList = ['unkown'];
 
-    for (String category in categories) {
-      formattedList.add(category.toLowerCase());
-    }
+  for (String category in categories) {
+    formattedList.add(category.toLowerCase());
+  }
 
-    String prompt = """
+  String prompt = """
       Evaluate whether the following text is a valid purchase receipt. 
       If it is a receipt, extract the invoice number, date, payment method, store name, items, their quantity, price, subtotal, total, tax And give a category strictly from this list of categories $categories..
       If the text is NOT a receipt or if there is no text at all, return the following JSON:
@@ -56,52 +53,52 @@ Future<StrukFromApi?> processReceipt(
       $receiptText
     """;
 
-    // String prompt = """
-    //   Extract the invoice number, date, payment method, items, their quantity, price, subtotal, total, and tax from the following receipt:
-    //   $receiptText And give each item a category strictly from this list of categories $categories. If the invoice number, payment method, date, can't be extracted please put the string "UNKNOWN"
+  // String prompt = """
+  //   Extract the invoice number, date, payment method, items, their quantity, price, subtotal, total, and tax from the following receipt:
+  //   $receiptText And give each item a category strictly from this list of categories $categories. If the invoice number, payment method, date, can't be extracted please put the string "UNKNOWN"
 
-    //   Please return the response in the following JSON format:
-    //   ```json
-    //   {
-    //     "invoice_number": "Invoice Number",
-    //     "date": "Date",
-    //     "payment_method":"PAYMENT METHOD",
-    //     "items": [
-    //       {
-    //         "name": "Item Name",
-    //         "quantity": Quantity,
-    //         "price": Price,
-    //         "category": "category"
-    //       },
-    //       ...
-    //     ],
-    //     "subtotal": Subtotal,
-    //     "tax": Tax,
-    //     "total": Total
-    //   }
-    //   ```""";
+  //   Please return the response in the following JSON format:
+  //   ```json
+  //   {
+  //     "invoice_number": "Invoice Number",
+  //     "date": "Date",
+  //     "payment_method":"PAYMENT METHOD",
+  //     "items": [
+  //       {
+  //         "name": "Item Name",
+  //         "quantity": Quantity,
+  //         "price": Price,
+  //         "category": "category"
+  //       },
+  //       ...
+  //     ],
+  //     "subtotal": Subtotal,
+  //     "tax": Tax,
+  //     "total": Total
+  //   }
+  //   ```""";
 
-    final content = [Content.text(prompt)];
-    final response = await model.generateContent(content);
+  final content = [Content.text(prompt)];
+  final response = await model.generateContent(content);
 
-    String generatedText = response.text ?? '';
+  String generatedText = response.text ?? '';
 
-    String jsonString = extractJsonFromText(generatedText);
+  String jsonString = extractJsonFromText(generatedText);
 
-    Map<String, dynamic> extractedData = jsonDecode(jsonString);
+  Map<String, dynamic> extractedData = jsonDecode(jsonString);
 
-    StrukFromApi order = StrukFromApi.fromJson(extractedData);
+  StrukFromApi order = StrukFromApi.fromJson(extractedData);
 
-    // Return the extracted JSON data
+  // Return the extracted JSON data
 
-    if (extractedData.containsKey('is_valid') && !extractedData['is_valid']) {
-      return null;
-    }
-
-    return order;
-  } catch (error) {
-    throw Exception("Error processing receipt: $error");
+  if (extractedData.containsKey('is_valid') && !extractedData['is_valid']) {
+    return null;
   }
+
+  return order;
+  // } catch (error) {
+  //   throw Exception("Error processing receipt: $error");
+  // }
 }
 
 String extractJsonFromText(String text) {
