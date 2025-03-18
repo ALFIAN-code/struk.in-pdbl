@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:strukin/controller/utils.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/struk_from_api.dart';
@@ -65,9 +66,15 @@ class SplitpageController extends GetxController {
     isProcessing.value = false;
   }
 
-  // void removeParticipant(int index) {
-  //   participants.value.removeAt(index);
-  // }
+  List<int> getParticipantsWhoSelectedItem(Item item) {
+    List<int> participantsWhoSelected = [];
+    for (var i = 0; i < participants.value.length; i++) {
+      if (participants.value[i]['selectedItems'].contains(item)) {
+        participantsWhoSelected.add(i);
+      }
+    }
+    return participantsWhoSelected;
+  }
 
   void trigerUpdate() {
     update();
@@ -80,6 +87,7 @@ class SplitpageController extends GetxController {
       usedImages.value.add(firstImage);
 
       participants.value.add({
+        "id": Utils.generateCustomUUID(),
         "name": "USER 1",
         "image": "assets/images/profile/image$firstImage.png",
         "selected": false,
@@ -135,6 +143,7 @@ class SplitpageController extends GetxController {
     usedImages.value.add(newImage);
 
     participants.value.add({
+      "id": Utils.generateCustomUUID(),
       "name": "USER ${participants.value.length + 1}",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
@@ -163,4 +172,6 @@ class SplitpageController extends GetxController {
     participants.value.removeAt(index);
     update();
   }
+
+  sendToDatabase() {}
 }

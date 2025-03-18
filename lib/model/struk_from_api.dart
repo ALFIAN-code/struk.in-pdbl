@@ -33,7 +33,7 @@ class StrukFromApi {
       subtotal: json['subtotal'],
       tax: json['tax'] ?? 0,
       total: json['total'],
-      businessName: json['business_name'],
+      businessName: json['business_name'].toUpperCase(),
       category: json['category'],
     );
   }
@@ -97,7 +97,7 @@ class Item {
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
       unitPrice: json['unit_price'].toInt(),
-      name: json['name'].toLowerCase(),
+      name: json['name'],
       quantity: json['quantity'].toInt(),
       price:
           (json['price_total'].runtimeType != String)
