@@ -3,18 +3,22 @@ class StrukFromApi {
   String? invoiceNumber;
   String? date;
   List<Item>? items;
-  double? subtotal;
-  double? tax;
-  double? total;
+  int? subtotal;
+  int? tax;
+  int? total;
+  String businessName;
+  String category;
 
   StrukFromApi({
     required this.date,
     required this.invoiceNumber,
     // required this.paymentMethod,
+    required this.businessName,
     required this.items,
     required this.subtotal,
     required this.tax,
     required this.total,
+    required this.category,
   });
 
   factory StrukFromApi.fromJson(Map<String, dynamic> json) {
@@ -26,9 +30,11 @@ class StrukFromApi {
           (json['items'] as List<dynamic>)
               .map((itemJson) => Item.fromJson(itemJson))
               .toList(),
-      subtotal: json['subtotal'].toDouble(),
-      tax: json['tax'].toDouble(),
-      total: json['total'].toDouble(),
+      subtotal: json['subtotal'],
+      tax: json['tax'] ?? 0,
+      total: json['total'],
+      businessName: json['business_name'],
+      category: json['category'],
     );
   }
 
@@ -40,15 +46,16 @@ class StrukFromApi {
       'total': total,
       'invoice_number': invoiceNumber,
       'date': date,
+      'business_name': businessName,
       // 'payment_method': paymentMethod?.toUpperCase(),
     };
   }
 
   StrukFromApi copyWith({
     List<Item>? items,
-    double? subtotal,
-    double? tax,
-    double? total,
+    int? subtotal,
+    int? tax,
+    int? total,
     String? invoiceNumber,
     String? date,
     String? paymentMethod,
@@ -61,6 +68,8 @@ class StrukFromApi {
       subtotal: subtotal ?? this.subtotal,
       tax: tax ?? this.tax,
       total: total ?? this.total,
+      businessName: businessName,
+      category: category,
     );
   }
 
@@ -74,24 +83,27 @@ class Item {
   String name;
   int quantity;
   double price;
-  String category;
+  // String category;
+  int unitPrice;
 
   Item({
     required this.name,
     required this.quantity,
     required this.price,
-    required this.category,
+    required this.unitPrice,
+    // required this.category,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      name: json['name'],
+      unitPrice: json['unit_price'].toInt(),
+      name: json['name'].toLowerCase(),
       quantity: json['quantity'].toInt(),
       price:
-          (json['price'].runtimeType != String)
-              ? json['price'].toDouble()
+          (json['price_total'].runtimeType != String)
+              ? json['price_total'].toDouble()
               : 0, // Ensures correct parsing for non-string price fields
-      category: json['category'].toString().toLowerCase(),
+      // category: json['category'].toString().toLowerCase(),
     );
   }
 
@@ -99,8 +111,8 @@ class Item {
     return {
       'name': name,
       'quantity': quantity,
-      'price': price,
-      'category': category.toLowerCase(),
+      'price_total': price,
+      // 'category': category.toLowerCase(),
     };
   }
 
@@ -109,17 +121,19 @@ class Item {
     int? quantity,
     double? price,
     String? category,
+    int? unitPrice,
   }) {
     return Item(
+      unitPrice: unitPrice ?? this.unitPrice,
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
-      category: (category ?? this.category).toLowerCase(),
+      // category: (category ?? this.category).toLowerCase(),
     );
   }
 
   @override
   String toString() {
-    return 'Item(name: $name, quantity: $quantity, price: $price, category: $category)';
+    return 'Item(name: $name, quantity: $quantity, price: $price,)';
   }
 }

@@ -30,6 +30,7 @@ Future<StrukFromApi?> processReceipt(
       ```json
       {
         "is_valid": true,
+        "business_name" : "Business Name",
         "invoice_number": "Invoice Number",
         "date": "Date",
         "payment_method":"PAYMENT METHOD",
@@ -39,7 +40,8 @@ Future<StrukFromApi?> processReceipt(
           {
             "name": "Item Name",
             "quantity": Quantity,
-            "price": Price,
+            "price_total": Price_total,
+            "unit_price": Price,
             
           }
         ],

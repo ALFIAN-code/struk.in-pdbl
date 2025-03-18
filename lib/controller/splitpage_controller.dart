@@ -9,7 +9,7 @@ import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/struk_from_api.dart';
 
 class SplitpageController extends GetxController {
-  HashSet<Item> selectedItem = HashSet();
+  List<Item> selectedItem = [];
 
   final List<int> _availableImages = List.generate(39, (index) => index + 1);
   Rx<List<int>> usedImages = Rx<List<int>>([]);
@@ -88,18 +88,38 @@ class SplitpageController extends GetxController {
     }
   }
 
+  void clearSelectedMenu(int participantIndex) {
+    // selectedItem.clear();
+
+    selectedItem = participants.value[participantIndex]['selectedItems'];
+
+    update();
+  }
+
   void doMultiSelection(Item item, int participantIndex) {
+    // Clear selected items for other participants
+    // for (int i = 0; i < participants.value.length; i++) {
+    //   if (i != participantIndex) {
+    //     participants.value[i]['selectedItems'].clear();
+    //   }
+    // }
+
     // Add or remove item from the selectedItems of the current participant
-    if (participants.value[participantIndex]['selectedItems'].contains(item)) {
-      participants.value[participantIndex]['selectedItems'].remove(item);
-    } else {
-      participants.value[participantIndex]['selectedItems'].add(item);
-    }
+    // Clear previous selections only if the participant is different
+    // if (participants.value[participantIndex]['selectedItems'].contains(item)) {
+    // participants.value[participantIndex]['selectedItems'].remove(item);
+    // } else {
+
+    // }
     if (selectedItem.contains(item)) {
+      participants.value[participantIndex]['selectedItems'].remove(item);
       selectedItem.remove(item);
     } else {
+      participants.value[participantIndex]['selectedItems'].add(item);
       selectedItem.add(item);
     }
+    print(participants.value[participantIndex]['selectedItems']);
+    print(selectedItem.toList());
     update();
   }
 
@@ -118,6 +138,7 @@ class SplitpageController extends GetxController {
       "name": "USER ${participants.value.length + 1}",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
+      "selectedItems": <Item>[], // Initialize selectedItems here
     });
     update();
   }
@@ -127,6 +148,7 @@ class SplitpageController extends GetxController {
       participant["selected"] = false;
     }
     participants.value[index]["selected"] = true;
+    update();
   }
 
   void deleteParticipant(int index) {

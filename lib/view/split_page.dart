@@ -114,6 +114,16 @@ class _SplitPageState extends State<SplitPage> {
                                             splitController
                                                 .selectedIndex
                                                 .value = index;
+                                            // splitController.doMultiSelection(
+                                            //   splitController
+                                            //       .processedText
+                                            //       .value!
+                                            //       .items![index],
+                                            //   index,
+                                            // );
+                                            splitController.clearSelectedMenu(
+                                              index,
+                                            );
                                           });
                                         },
                                         onNameChanged: (newName) {
@@ -161,14 +171,15 @@ class _SplitPageState extends State<SplitPage> {
                         ),
                         SizedBox(height: 20),
                         Text(
-                          'JOHOR BAHRU RESTORANT',
+                          splitController.processedText.value?.businessName ??
+                              '',
                           style: GoogleFonts.roboto(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          'Tagihan dibuat: 27/10/1019 13:00',
+                          'Tagihan dibuat: ${splitController.processedText.value?.date ?? '-'}',
                           style: GoogleFonts.roboto(
                             fontSize: 14,
                             fontWeight: FontWeight.normal,
@@ -467,7 +478,7 @@ InkWell getListMenu(Item item, bool isSelected, VoidCallback onTap) {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.price}',
+                        '${item.unitPrice}',
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
