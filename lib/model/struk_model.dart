@@ -23,8 +23,7 @@ class DetailUserSplitModel {
   final int fkDetailID;
   final int fkUserID;
   final double? portion;
-
-  // Relasi ke user
+  final double? hargaPerParticipant; // Field baru
   final UserSplitModel? user;
 
   DetailUserSplitModel({
@@ -32,6 +31,7 @@ class DetailUserSplitModel {
     required this.fkDetailID,
     required this.fkUserID,
     this.portion,
+    this.hargaPerParticipant,
     this.user,
   });
 
@@ -41,8 +41,11 @@ class DetailUserSplitModel {
       fkDetailID: map['fk_detailID'],
       fkUserID: map['fk_userID'],
       portion: map['portion'] != null ? map['portion'].toDouble() : null,
-      // user akan diisi belakangan
-      user: null,
+      hargaPerParticipant:
+          map['harga_per_participant'] != null
+              ? map['harga_per_participant'].toDouble()
+              : null,
+      user: null, // akan diisi nanti
     );
   }
 
@@ -52,15 +55,21 @@ class DetailUserSplitModel {
       'fk_detailID': fkDetailID,
       'fk_userID': fkUserID,
       'portion': portion,
+      'harga_per_participant': hargaPerParticipant,
     };
   }
 
-  DetailUserSplitModel copyWith({UserSplitModel? user}) {
+  DetailUserSplitModel copyWith({
+    UserSplitModel? user,
+    double? portion,
+    double? hargaPerParticipant,
+  }) {
     return DetailUserSplitModel(
       id: id,
       fkDetailID: fkDetailID,
       fkUserID: fkUserID,
-      portion: portion,
+      portion: portion ?? this.portion,
+      hargaPerParticipant: hargaPerParticipant ?? this.hargaPerParticipant,
       user: user ?? this.user,
     );
   }
@@ -90,7 +99,7 @@ class DetailTransaksiModel {
       detailID: map['DetailID'],
       fkTransaksiID: map['fk_transaksiID'],
       namaBarang: map['nama_barang'],
-      harga: map['harga'] != null ? map['harga'].toDouble() : null,
+      harga: map['harga']?.toDouble(),
       jumlah: map['jumlah'],
     );
   }

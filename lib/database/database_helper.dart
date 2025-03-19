@@ -21,52 +21,53 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // Tabel user
+    // Tabel Usersplit
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS Usersplit (
-        UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        avatar TEXT
-      )
-    ''');
+    CREATE TABLE IF NOT EXISTS Usersplit (
+      UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT,
+      avatar TEXT
+    )
+  ''');
 
     // Tabel transaksi
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS transaksi (
-        transaksiID INTEGER PRIMARY KEY AUTOINCREMENT,
-        image_path TEXT,
-        store_name TEXT,
-        struk_date TEXT,
-        subtotal REAL,
-        pajak REAL,
-        biaya_layanan REAL,
-        total REAL
-      )
-    ''');
+    CREATE TABLE IF NOT EXISTS transaksi (
+      transaksiID INTEGER PRIMARY KEY AUTOINCREMENT,
+      image_path TEXT,
+      store_name TEXT,
+      struk_date TEXT,
+      subtotal REAL,
+      pajak REAL,
+      biaya_layanan REAL,
+      total REAL
+    )
+  ''');
 
     // Tabel detail_transaksi
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS detail_transaksi (
-        DetailID INTEGER PRIMARY KEY AUTOINCREMENT,
-        fk_transaksiID INTEGER NOT NULL,
-        nama_barang TEXT,
-        harga REAL,
-        jumlah INTEGER,
-        FOREIGN KEY (fk_transaksiID) REFERENCES transaksi(transaksiID) ON DELETE CASCADE
-      )
-    ''');
+    CREATE TABLE IF NOT EXISTS detail_transaksi (
+      DetailID INTEGER PRIMARY KEY AUTOINCREMENT,
+      fk_transaksiID INTEGER NOT NULL,
+      nama_barang TEXT,
+      harga REAL,
+      jumlah INTEGER,
+      FOREIGN KEY (fk_transaksiID) REFERENCES transaksi(transaksiID) ON DELETE CASCADE
+    )
+  ''');
 
-    // Tabel bridging: detail_user_split
+    // Tabel bridging detail_user_split
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS detail_user_split (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fk_detailID INTEGER NOT NULL,
-        fk_userID INTEGER NOT NULL,
-        portion REAL,
-        FOREIGN KEY(fk_detailID) REFERENCES detail_transaksi(DetailID) ON DELETE CASCADE,
-        FOREIGN KEY(fk_userID) REFERENCES Usersplit(UserID) ON DELETE CASCADE
-      )
-    ''');
+    CREATE TABLE IF NOT EXISTS detail_user_split (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      fk_detailID INTEGER NOT NULL,
+      fk_userID INTEGER NOT NULL,
+      portion REAL,
+      harga_per_participant REAL,
+      FOREIGN KEY(fk_detailID) REFERENCES detail_transaksi(DetailID) ON DELETE CASCADE,
+      FOREIGN KEY(fk_userID) REFERENCES Usersplit(UserID) ON DELETE CASCADE
+    )
+  ''');
   }
 
   // ---------------------------------------------------------------------------
@@ -75,9 +76,8 @@ class DatabaseHelper {
   Future<int> insertFullTransaksi(TransaksiModel transaksiModel) async {
     final db = await database;
 
-    // Gunakan transaction agar bersifat atomic
     return await db.transaction((txn) async {
-      // 1. Insert ke tabel transaksi
+      // 1. Insert data transaksi utama
       final transaksiID = await txn.insert('transaksi', {
         'image_path': transaksiModel.imagePath,
         'store_name': transaksiModel.storeName,
@@ -88,9 +88,8 @@ class DatabaseHelper {
         'total': transaksiModel.total,
       });
 
-      // 2. Untuk setiap detail di transaksiModel
+      // 2. Untuk setiap detail transaksi
       for (final detail in transaksiModel.detailTransaksis) {
-        // Insert detail_transaksi
         final detailID = await txn.insert('detail_transaksi', {
           'fk_transaksiID': transaksiID,
           'nama_barang': detail.namaBarang,
@@ -98,13 +97,16 @@ class DatabaseHelper {
           'jumlah': detail.jumlah,
         });
 
-        // 3. Untuk setiap bridging user di detail
+        // Hitung harga per participant untuk detail ini
+        double hargaPerParticipant =
+            (detail.harga ?? 0) /
+            (detail.userSplits.isNotEmpty ? detail.userSplits.length : 1);
+
+        // 3. Untuk setiap user split pada detail
         for (final detailUser in detail.userSplits) {
           int userID = 0;
 
-          // (Opsional) Insert user ke tabel Usersplit jika user belum ada
-          //   - Atau jika user memang selalu baru.
-          //   - Jika ingin menghindari duplikasi, kita perlu cek dulu.
+          // Jika ada data user, insert ke tabel Usersplit (atau cek terlebih dahulu jika sudah ada)
           if (detailUser.user != null) {
             userID = await txn.insert('Usersplit', {
               'username': detailUser.user!.username,
@@ -114,17 +116,86 @@ class DatabaseHelper {
             userID = detailUser.fkUserID;
           }
 
-          // Insert ke bridging table detail_user_split
           await txn.insert('detail_user_split', {
             'fk_detailID': detailID,
             'fk_userID': userID,
             'portion': detailUser.portion,
+            'harga_per_participant': hargaPerParticipant,
           });
         }
       }
-
-      return transaksiID; // Kembalikan ID transaksi yang baru dibuat
+      return transaksiID;
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // GET SINGLE FULL TRANSAKSI DENGAN DETAIL + USER (Many-to-Many)
+  // ---------------------------------------------------------------------------
+
+  Future<TransaksiModel?> getFullTransaksi(int transaksiID) async {
+    final db = await database;
+
+    // 1. Ambil data transaksi utama
+    final transaksiMaps = await db.query(
+      'transaksi',
+      where: 'transaksiID = ?',
+      whereArgs: [transaksiID],
+    );
+    if (transaksiMaps.isEmpty) {
+      return null;
+    }
+    TransaksiModel transaksi = TransaksiModel.fromMap(transaksiMaps.first);
+
+    // 2. Ambil semua detail_transaksi yang berhubungan dengan transaksi ini
+    final detailMaps = await db.query(
+      'detail_transaksi',
+      where: 'fk_transaksiID = ?',
+      whereArgs: [transaksi.transaksiID],
+    );
+
+    List<DetailTransaksiModel> detailList = [];
+    for (var dMap in detailMaps) {
+      var harga = dMap['harga'] as int?;
+      // Buat objek DetailTransaksiModel dari Map
+      DetailTransaksiModel detail = DetailTransaksiModel(
+        detailID: dMap['DetailID'] as int,
+        fkTransaksiID: dMap['fk_transaksiID'] as int,
+        namaBarang: dMap['nama_barang'] as String?,
+        harga: harga != null ? harga.toDouble() : null,
+        jumlah: dMap['jumlah'] as int?,
+      );
+
+      // 3. Ambil data bridging dari detail_user_split untuk detail ini
+      final bridgingMaps = await db.query(
+        'detail_user_split',
+        where: 'fk_detailID = ?',
+        whereArgs: [detail.detailID],
+      );
+
+      List<DetailUserSplitModel> bridgingList = [];
+      for (var bMap in bridgingMaps) {
+        DetailUserSplitModel bridging = DetailUserSplitModel.fromMap(bMap);
+
+        // 4. Ambil data Usersplit untuk masing-masing bridging
+        final userMaps = await db.query(
+          'Usersplit',
+          where: 'UserID = ?',
+          whereArgs: [bridging.fkUserID],
+        );
+        if (userMaps.isNotEmpty) {
+          final user = UserSplitModel.fromMap(userMaps.first);
+          bridging = bridging.copyWith(user: user);
+        }
+        bridgingList.add(bridging);
+      }
+      // Masukkan list bridging ke detail transaksi
+      detail = detail.copyWith(userSplits: bridgingList);
+      detailList.add(detail);
+    }
+
+    // Masukkan list detail ke transaksi utama
+    transaksi = transaksi.copyWith(detailTransaksis: detailList);
+    return transaksi;
   }
 
   // ---------------------------------------------------------------------------
@@ -143,57 +214,25 @@ class DatabaseHelper {
       TransaksiModel transaksi = TransaksiModel.fromMap(tMap);
 
       // 2. Ambil semua detail_transaksi yg berelasi dengan transaksi ini
-      final detailMaps =
-          await db.query(
-                'detail_transaksi',
-                where: 'fk_transaksiID = ?',
-                whereArgs: [transaksi.transaksiID],
-              )
-              as List<DetailTransaksiModel>;
+      final detailMaps = await db.query(
+        'detail_transaksi',
+        where: 'fk_transaksiID = ?',
+        whereArgs: [transaksi.transaksiID],
+      );
 
-      List<DetailTransaksiModel> detailList = [];
-
-      for (var dMap in detailMaps) {
-        // Buat object DetailTransaksiModel
-        DetailTransaksiModel detail = DetailTransaksiModel(
-          detailID: dMap.detailID,
-          fkTransaksiID: dMap.fkTransaksiID,
-          namaBarang: dMap.namaBarang,
-          harga: dMap.harga != null ? dMap.harga?.toDouble() : null,
-          jumlah: dMap.jumlah,
-        );
-
-        // 3. Dari detail, ambil bridging detail_user_split
-        final bridgingMaps = await db.query(
-          'detail_user_split',
-          where: 'fk_detailID = ?',
-          whereArgs: [detail.detailID],
-        );
-
-        List<DetailUserSplitModel> bridgingList = [];
-
-        for (var bMap in bridgingMaps) {
-          DetailUserSplitModel bridging = DetailUserSplitModel.fromMap(bMap);
-
-          // 4. Ambil data user (Usersplit) berdasarkan fk_userID
-          final userMaps = await db.query(
-            'Usersplit',
-            where: 'UserID = ?',
-            whereArgs: [bridging.fkUserID],
-          );
-          if (userMaps.isNotEmpty) {
-            final user = UserSplitModel.fromMap(userMaps.first);
-            bridging = bridging.copyWith(user: user);
-          }
-
-          bridgingList.add(bridging);
-        }
-
-        // Update object detailTransaksiModel agar menampung bridgingList
-        detail = detail.copyWith(userSplits: bridgingList);
-
-        detailList.add(detail);
-      }
+      List<DetailTransaksiModel> detailList =
+          detailMaps.map((dMap) {
+            return DetailTransaksiModel(
+              detailID: dMap['DetailID'] as int,
+              fkTransaksiID: dMap['fk_transaksiID'] as int,
+              namaBarang: dMap['nama_barang'] as String?,
+              harga:
+                  dMap['harga'] != null
+                      ? (dMap['harga'] as num).toDouble()
+                      : null,
+              jumlah: dMap['jumlah'] as int?,
+            );
+          }).toList();
 
       // 5. Masukkan list detail ke object TransaksiModel
       transaksi = transaksi.copyWith(detailTransaksis: detailList);

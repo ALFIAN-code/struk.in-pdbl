@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:strukin/database/clear_database.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/view/Homepage.dart';
 
-void main(List<String> args) {
+void main(List<String> args) async {
   runApp(MyApp());
 }
 
@@ -19,6 +20,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    deleteDB();
     super.initState();
   }
 

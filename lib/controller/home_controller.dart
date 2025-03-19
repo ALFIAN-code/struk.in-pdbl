@@ -12,7 +12,7 @@ class StrukController extends GetxController {
   Rx<XFile?> receiptImage = Rx<XFile?>(null);
 
   var database = DatabaseHelper();
-  var listStruk = <Transaksi>[];
+  // var listStruk = <Transaksi>[];
   Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
 
   // Future<void> getAllStruk() async {

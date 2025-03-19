@@ -167,7 +167,7 @@ class SplitpageController extends GetxController {
     // Untuk setiap item, cari peserta yang memilih item tersebut
     for (var item in uniqueItems) {
       List<int> participantIndices = getParticipantsWhoSelectedItem(item);
-      // Misal, bagi secara sama: porsi = 1 dibagi jumlah peserta yang memilih item tersebut
+      // Misalnya, porsi tiap peserta adalah 1 dibagi jumlah peserta yang memilih item tersebut
       double portion =
           participantIndices.isNotEmpty ? 1.0 / participantIndices.length : 1.0;
 
@@ -187,6 +187,7 @@ class SplitpageController extends GetxController {
             fkDetailID: 0, // akan di-set oleh proses insert detail
             fkUserID: 0, // akan di-set oleh proses insert user
             portion: portion,
+            // hargaPerParticipant akan dihitung di dalam fungsi insertFullTransaksi
             user: user,
           ),
         );
@@ -208,8 +209,7 @@ class SplitpageController extends GetxController {
     // Buat objek TransaksiModel dengan data dari processedText dan list detail di atas
     TransaksiModel transaksi = TransaksiModel(
       transaksiID: 0, // auto increment
-      imagePath:
-          "", // misalnya bisa diisi dengan path gambar atau dibiarkan kosong
+      imagePath: "", // bisa diisi dengan path gambar jika diperlukan
       storeName: strukData.businessName,
       strukDate: strukData.date,
       subtotal: strukData.subtotal?.toDouble() ?? 0,
@@ -219,7 +219,7 @@ class SplitpageController extends GetxController {
       detailTransaksis: detailList,
     );
 
-    // Lakukan insert ke database menggunakan DatabaseHelper (pastikan method insertFullTransaksi sudah ada)
+    // Lakukan insert full transaksi ke database
     try {
       int newTransaksiID = await DatabaseHelper().insertFullTransaksi(
         transaksi,
