@@ -3,10 +3,10 @@ class Transaksi {
   final String imagePath;
   final String storeName;
   final String strukDate;
-  final double subtotal;
-  final double pajak;
-  final double biayaLayanan;
-  final double total;
+  final int subtotal;
+  final int pajak;
+  final int biayaLayanan;
+  final int total;
 
   Transaksi({
     this.id,

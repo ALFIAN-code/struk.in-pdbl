@@ -8,6 +8,10 @@ import 'package:strukin/controller/utils.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/database/database_helper.dart';
+import 'package:strukin/model/struk_model.dart';
+import 'package:strukin/model/transaksi.dart';
+import 'package:strukin/model/usersplit.dart';
 
 class SplitpageController extends GetxController {
   List<Item> selectedItem = [];
@@ -17,7 +21,6 @@ class SplitpageController extends GetxController {
   var participants = Rx<List<Map<String, dynamic>>>([]);
   final Random _random = Random();
   var selectedIndex = 0.obs;
-  // late String defaultProfileImage;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
 
   final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
@@ -42,13 +45,11 @@ class SplitpageController extends GetxController {
   Future<void> processReceiptImage(XFile image) async {
     isProcessing.value = true;
 
-    // try {
     final inputImage = InputImage.fromFilePath(image.path);
     final recognizedText = await _textRecognizer.processImage(inputImage);
 
     if (recognizedText.text.isEmpty) {
       isProcessing.value = false;
-      print('kosoongggg ocrnya');
       return;
     }
 
@@ -59,9 +60,7 @@ class SplitpageController extends GetxController {
     );
 
     ocrText.value = recognizedText.text;
-    print('ocr: $ocrText');
     processedText.value = order;
-    print('Order: $processedText');
 
     isProcessing.value = false;
   }
@@ -76,14 +75,9 @@ class SplitpageController extends GetxController {
     return participantsWhoSelected;
   }
 
-  void trigerUpdate() {
-    update();
-  }
-
   void addFirstParticipant() {
     if (participants.value.isEmpty) {
-      int firstImage =
-          _random.nextInt(39) + 1; // Pilih gambar pertama secara acak
+      int firstImage = _random.nextInt(39) + 1;
       usedImages.value.add(firstImage);
 
       participants.value.add({
@@ -97,28 +91,11 @@ class SplitpageController extends GetxController {
   }
 
   void clearSelectedMenu(int participantIndex) {
-    // selectedItem.clear();
-
     selectedItem = participants.value[participantIndex]['selectedItems'];
-
     update();
   }
 
   void doMultiSelection(Item item, int participantIndex) {
-    // Clear selected items for other participants
-    // for (int i = 0; i < participants.value.length; i++) {
-    //   if (i != participantIndex) {
-    //     participants.value[i]['selectedItems'].clear();
-    //   }
-    // }
-
-    // Add or remove item from the selectedItems of the current participant
-    // Clear previous selections only if the participant is different
-    // if (participants.value[participantIndex]['selectedItems'].contains(item)) {
-    // participants.value[participantIndex]['selectedItems'].remove(item);
-    // } else {
-
-    // }
     if (selectedItem.contains(item)) {
       participants.value[participantIndex]['selectedItems'].remove(item);
       selectedItem.remove(item);
@@ -126,14 +103,11 @@ class SplitpageController extends GetxController {
       participants.value[participantIndex]['selectedItems'].add(item);
       selectedItem.add(item);
     }
-    print(participants.value[participantIndex]['selectedItems']);
-    print(selectedItem.toList());
     update();
   }
 
   void addParticipant() {
-    if (usedImages.value.length >= 39)
-      return; // Jika semua gambar sudah dipakai, hentikan
+    if (usedImages.value.length >= 39) return;
 
     int newImage;
     do {
@@ -147,7 +121,7 @@ class SplitpageController extends GetxController {
       "name": "USER ${participants.value.length + 1}",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
-      "selectedItems": <Item>[], // Initialize selectedItems here
+      "selectedItems": <Item>[],
     });
     update();
   }
@@ -167,11 +141,92 @@ class SplitpageController extends GetxController {
           .replaceAll(".png", ""),
     );
     usedImages.value.remove(removedImage);
-
-    print('fungsi terpanggil');
     participants.value.removeAt(index);
     update();
   }
 
-  sendToDatabase() {}
+  Future<void> addDataToDatabase() async {
+    // Pastikan data hasil OCR dan parsing (processedText) sudah tersedia
+    if (processedText.value == null) {
+      print("Data struk belum tersedia.");
+      return;
+    }
+
+    // Ambil data transaksi utama dari hasil OCR (processedText)
+    final strukData = processedText.value!;
+
+    // Kumpulkan semua item unik yang telah dipilih oleh peserta
+    Set<Item> uniqueItems = {};
+    for (var participant in participants.value) {
+      List<Item> selectedItems = participant['selectedItems'];
+      uniqueItems.addAll(selectedItems);
+    }
+
+    List<DetailTransaksiModel> detailList = [];
+
+    // Untuk setiap item, cari peserta yang memilih item tersebut
+    for (var item in uniqueItems) {
+      List<int> participantIndices = getParticipantsWhoSelectedItem(item);
+      // Misal, bagi secara sama: porsi = 1 dibagi jumlah peserta yang memilih item tersebut
+      double portion =
+          participantIndices.isNotEmpty ? 1.0 / participantIndices.length : 1.0;
+
+      List<DetailUserSplitModel> userSplits = [];
+      for (var index in participantIndices) {
+        var participant = participants.value[index];
+        // Buat model Usersplit dari data peserta
+        UserSplitModel user = UserSplitModel(
+          userID:
+              0, // 0 sebagai tanda user baru (akan di-auto increment saat insert)
+          username: participant['name'],
+          avatar: participant['image'],
+        );
+        userSplits.add(
+          DetailUserSplitModel(
+            id: 0, // auto increment
+            fkDetailID: 0, // akan di-set oleh proses insert detail
+            fkUserID: 0, // akan di-set oleh proses insert user
+            portion: portion,
+            user: user,
+          ),
+        );
+      }
+
+      // Buat detail transaksi untuk item ini
+      DetailTransaksiModel detail = DetailTransaksiModel(
+        detailID: 0, // auto increment
+        fkTransaksiID: 0, // akan di-set oleh insert transaksi
+        namaBarang: item.name,
+        harga: item.price,
+        jumlah: item.quantity,
+        userSplits: userSplits,
+      );
+
+      detailList.add(detail);
+    }
+
+    // Buat objek TransaksiModel dengan data dari processedText dan list detail di atas
+    TransaksiModel transaksi = TransaksiModel(
+      transaksiID: 0, // auto increment
+      imagePath:
+          "", // misalnya bisa diisi dengan path gambar atau dibiarkan kosong
+      storeName: strukData.businessName,
+      strukDate: strukData.date,
+      subtotal: strukData.subtotal?.toDouble() ?? 0,
+      pajak: strukData.tax?.toDouble() ?? 0,
+      biayaLayanan: 0,
+      total: strukData.total?.toDouble() ?? 0,
+      detailTransaksis: detailList,
+    );
+
+    // Lakukan insert ke database menggunakan DatabaseHelper (pastikan method insertFullTransaksi sudah ada)
+    try {
+      int newTransaksiID = await DatabaseHelper().insertFullTransaksi(
+        transaksi,
+      );
+      print("Berhasil menambahkan transaksi dengan ID: $newTransaksiID");
+    } catch (e) {
+      print("Terjadi error saat insert data: $e");
+    }
+  }
 }

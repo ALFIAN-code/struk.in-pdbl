@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/view/component/particpant_item.dart';
+import 'package:strukin/view/test_page.dart';
 
 class SplitPage extends StatefulWidget {
   const SplitPage({super.key, required this.image});
@@ -263,8 +264,10 @@ class _SplitPageState extends State<SplitPage> {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         print("Tombol Konfirmasi ditekan");
+                        await splitController.addDataToDatabase();
+                        Get.to(() => FullTransaksiPage());
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),

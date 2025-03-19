@@ -5,7 +5,6 @@ import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/detail_transaksi.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/model/transaksi.dart';
-import 'package:strukin/model/usersplit.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
@@ -16,25 +15,25 @@ class StrukController extends GetxController {
   var listStruk = <Transaksi>[];
   Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
 
-  Future<void> getAllStruk() async {
-    var result = await database.queryAllTransaksi();
-    listStruk = result.map((e) => Transaksi.fromMap(e)).toList();
-  }
+  // Future<void> getAllStruk() async {
+  //   var result = await database.queryAllTransaksi();
+  //   listStruk = result.map((e) => Transaksi.fromMap(e)).toList();
+  // }
 
-  Future<Transaksi> getSingleStruk(int id) async {
-    var result = await database.getDetailTransaksi(id);
-    return Transaksi.fromMap(result!);
-  }
+  // Future<Transaksi> getSingleStruk(int id) async {
+  //   var result = await database.getDetailTransaksi(id);
+  //   return Transaksi.fromMap(result!);
+  // }
 
-  Future<DetailTransaksi> getDetailStruk(int id) async {
-    var result = await database.getDetailTransaksi(id);
-    return DetailTransaksi.fromMap(result!);
-  }
+  // Future<DetailTransaksi> getDetailStruk(int id) async {
+  //   var result = await database.getDetailTransaksi(id);
+  //   return DetailTransaksi.fromMap(result!);
+  // }
 
-  Future<Usersplit> getParticipant(int id) async {
-    var result = await database.getUsersplit(id);
-    return Usersplit.fromMap(result!);
-  }
+  // Future<Usersplit> getParticipant(int id) async {
+  //   var result = await database.getUsersplit(id);
+  //   return Usersplit.fromMap(result!);
+  // }
 
   Future<XFile?> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);

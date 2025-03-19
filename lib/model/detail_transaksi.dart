@@ -3,7 +3,7 @@ class DetailTransaksi {
   final int fkUserID;
   final int fkTransaksiID;
   final String namaBarang;
-  final double harga;
+  final int harga;
   final int jumlah;
 
   DetailTransaksi({
