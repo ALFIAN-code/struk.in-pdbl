@@ -1,9 +1,9 @@
 class UserSplitModel {
-  final int userID;
+  final String? userID;
   final String? username;
   final String? avatar;
 
-  UserSplitModel({required this.userID, this.username, this.avatar});
+  UserSplitModel({this.userID, this.username, this.avatar});
 
   factory UserSplitModel.fromMap(Map<String, dynamic> map) {
     return UserSplitModel(
@@ -19,17 +19,17 @@ class UserSplitModel {
 }
 
 class DetailUserSplitModel {
-  final int id;
-  final int fkDetailID;
-  final int fkUserID;
+  final int? id;
+  final int? fkDetailID;
+  final String? fkUserID;
   final double? portion;
   final double? hargaPerParticipant; // Field baru
   final UserSplitModel? user;
 
   DetailUserSplitModel({
-    required this.id,
-    required this.fkDetailID,
-    required this.fkUserID,
+    this.id,
+    this.fkDetailID,
+    this.fkUserID,
     this.portion,
     this.hargaPerParticipant,
     this.user,
@@ -40,11 +40,8 @@ class DetailUserSplitModel {
       id: map['id'],
       fkDetailID: map['fk_detailID'],
       fkUserID: map['fk_userID'],
-      portion: map['portion'] != null ? map['portion'].toDouble() : null,
-      hargaPerParticipant:
-          map['harga_per_participant'] != null
-              ? map['harga_per_participant'].toDouble()
-              : null,
+      portion: map['portion']?.toDouble(),
+      hargaPerParticipant: map['harga_per_participant']?.toDouble(),
       user: null, // akan diisi nanti
     );
   }
@@ -76,26 +73,29 @@ class DetailUserSplitModel {
 }
 
 class DetailTransaksiModel {
-  final int detailID;
-  final int fkTransaksiID;
+  final int? detailID;
+  final int? fkTransaksiID;
   final String? namaBarang;
   final double? harga;
+  final int? hargaSatuan;
   final int? jumlah;
 
   // Relasi bridging
   final List<DetailUserSplitModel> userSplits;
 
   DetailTransaksiModel({
-    required this.detailID,
-    required this.fkTransaksiID,
+    this.detailID,
+    this.fkTransaksiID,
     this.namaBarang,
     this.harga,
+    this.hargaSatuan,
     this.jumlah,
     this.userSplits = const [],
   });
 
   factory DetailTransaksiModel.fromMap(Map<String, dynamic> map) {
     return DetailTransaksiModel(
+      hargaSatuan: map['harga_satuan'],
       detailID: map['DetailID'],
       fkTransaksiID: map['fk_transaksiID'],
       namaBarang: map['nama_barang'],
@@ -109,6 +109,7 @@ class DetailTransaksiModel {
       'DetailID': detailID,
       'fk_transaksiID': fkTransaksiID,
       'nama_barang': namaBarang,
+      'harga_satuan': hargaSatuan,
       'harga': harga,
       'jumlah': jumlah,
     };
@@ -116,6 +117,7 @@ class DetailTransaksiModel {
 
   DetailTransaksiModel copyWith({List<DetailUserSplitModel>? userSplits}) {
     return DetailTransaksiModel(
+      hargaSatuan: hargaSatuan,
       detailID: detailID,
       fkTransaksiID: fkTransaksiID,
       namaBarang: namaBarang,
@@ -127,7 +129,7 @@ class DetailTransaksiModel {
 }
 
 class TransaksiModel {
-  final int transaksiID;
+  final int? transaksiID;
   final String? imagePath;
   final String? storeName;
   final String? strukDate;
@@ -135,12 +137,13 @@ class TransaksiModel {
   final double? pajak;
   final double? biayaLayanan;
   final double? total;
+  final int? jumlahparticipant;
 
   // Relasi ke model DetailTransaksi
   final List<DetailTransaksiModel> detailTransaksis;
 
   TransaksiModel({
-    required this.transaksiID,
+    this.transaksiID,
     this.imagePath,
     this.storeName,
     this.strukDate,
@@ -148,6 +151,7 @@ class TransaksiModel {
     this.pajak,
     this.biayaLayanan,
     this.total,
+    this.jumlahparticipant,
     this.detailTransaksis = const [],
   });
 
@@ -157,11 +161,11 @@ class TransaksiModel {
       imagePath: map['image_path'],
       storeName: map['store_name'],
       strukDate: map['struk_date'],
-      subtotal: map['subtotal'] != null ? map['subtotal'].toDouble() : null,
-      pajak: map['pajak'] != null ? map['pajak'].toDouble() : null,
-      biayaLayanan:
-          map['biaya_layanan'] != null ? map['biaya_layanan'].toDouble() : null,
-      total: map['total'] != null ? map['total'].toDouble() : null,
+      jumlahparticipant: map['jumlah_participant'],
+      subtotal: map['subtotal']?.toDouble(),
+      pajak: map['pajak']?.toDouble(),
+      biayaLayanan: map['biaya_layanan']?.toDouble(),
+      total: map['total']?.toDouble(),
     );
   }
 
@@ -175,11 +179,13 @@ class TransaksiModel {
       'pajak': pajak,
       'biaya_layanan': biayaLayanan,
       'total': total,
+      'jumlah_participant': jumlahparticipant,
     };
   }
 
   TransaksiModel copyWith({List<DetailTransaksiModel>? detailTransaksis}) {
     return TransaksiModel(
+      jumlahparticipant: jumlahparticipant,
       transaksiID: transaksiID,
       imagePath: imagePath,
       storeName: storeName,

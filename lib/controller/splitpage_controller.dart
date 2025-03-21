@@ -10,8 +10,6 @@ import 'package:strukin/gemini_key.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
-import 'package:strukin/model/transaksi.dart';
-import 'package:strukin/model/usersplit.dart';
 
 class SplitpageController extends GetxController {
   List<Item> selectedItem = [];
@@ -44,25 +42,30 @@ class SplitpageController extends GetxController {
 
   Future<void> processReceiptImage(XFile image) async {
     isProcessing.value = true;
+    try {
+      final inputImage = InputImage.fromFilePath(image.path);
+      final recognizedText = await _textRecognizer.processImage(inputImage);
 
-    final inputImage = InputImage.fromFilePath(image.path);
-    final recognizedText = await _textRecognizer.processImage(inputImage);
+      if (recognizedText.text.isEmpty) {
+        isProcessing.value = false;
+        return;
+      }
 
-    if (recognizedText.text.isEmpty) {
+      final order = await processReceipt(
+        recognizedText.text,
+        geminiApi,
+        _categories,
+      );
+
+      ocrText.value = recognizedText.text;
+      processedText.value = order;
+    } catch (e) {
+      null;
+    } finally {
       isProcessing.value = false;
-      return;
     }
 
-    final order = await processReceipt(
-      recognizedText.text,
-      geminiApi,
-      _categories,
-    );
-
-    ocrText.value = recognizedText.text;
-    processedText.value = order;
-
-    isProcessing.value = false;
+    // isProcessing.value = false;
   }
 
   List<int> getParticipantsWhoSelectedItem(Item item) {
@@ -145,12 +148,14 @@ class SplitpageController extends GetxController {
     update();
   }
 
-  Future<void> addDataToDatabase() async {
+  Future<TransaksiModel?> addDataToDatabase(String imgpath) async {
     // Pastikan data hasil OCR dan parsing (processedText) sudah tersedia
     if (processedText.value == null) {
       print("Data struk belum tersedia.");
-      return;
+      return null;
     }
+
+    var customID = Utils.generateCustomUUID();
 
     // Ambil data transaksi utama dari hasil OCR (processedText)
     final strukData = processedText.value!;
@@ -176,16 +181,14 @@ class SplitpageController extends GetxController {
         var participant = participants.value[index];
         // Buat model Usersplit dari data peserta
         UserSplitModel user = UserSplitModel(
-          userID:
-              0, // 0 sebagai tanda user baru (akan di-auto increment saat insert)
+          // 0 sebagai tanda user baru (akan di-auto increment saat insert)
+          userID: participant['id'],
           username: participant['name'],
           avatar: participant['image'],
         );
         userSplits.add(
           DetailUserSplitModel(
-            id: 0, // auto increment
-            fkDetailID: 0, // akan di-set oleh proses insert detail
-            fkUserID: 0, // akan di-set oleh proses insert user
+            // akan di-set oleh proses insert user
             portion: portion,
             // hargaPerParticipant akan dihitung di dalam fungsi insertFullTransaksi
             user: user,
@@ -195,8 +198,7 @@ class SplitpageController extends GetxController {
 
       // Buat detail transaksi untuk item ini
       DetailTransaksiModel detail = DetailTransaksiModel(
-        detailID: 0, // auto increment
-        fkTransaksiID: 0, // akan di-set oleh insert transaksi
+        hargaSatuan: item.unitPrice,
         namaBarang: item.name,
         harga: item.price,
         jumlah: item.quantity,
@@ -208,8 +210,8 @@ class SplitpageController extends GetxController {
 
     // Buat objek TransaksiModel dengan data dari processedText dan list detail di atas
     TransaksiModel transaksi = TransaksiModel(
-      transaksiID: 0, // auto increment
-      imagePath: "", // bisa diisi dengan path gambar jika diperlukan
+      // transaksiID: customID,
+      imagePath: imgpath, // bisa diisi dengan path gambar jika diperlukan
       storeName: strukData.businessName,
       strukDate: strukData.date,
       subtotal: strukData.subtotal?.toDouble() ?? 0,
@@ -217,16 +219,9 @@ class SplitpageController extends GetxController {
       biayaLayanan: 0,
       total: strukData.total?.toDouble() ?? 0,
       detailTransaksis: detailList,
+      jumlahparticipant: participants.value.length,
     );
-
-    // Lakukan insert full transaksi ke database
-    try {
-      int newTransaksiID = await DatabaseHelper().insertFullTransaksi(
-        transaksi,
-      );
-      print("Berhasil menambahkan transaksi dengan ID: $newTransaksiID");
-    } catch (e) {
-      print("Terjadi error saat insert data: $e");
-    }
+    int newTransaksiID = await DatabaseHelper().insertFullTransaksi(transaksi);
+    return transaksi;
   }
 }

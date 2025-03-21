@@ -1,18 +1,43 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'dart:io';
 
-class DetailPage extends StatelessWidget {
-  const DetailPage({super.key});
+import 'package:flutter/material.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:get/route_manager.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:strukin/controller/detailpage_controller.dart';
+import 'package:strukin/controller/utils.dart';
+import 'package:strukin/model/struk_model.dart';
+import 'package:strukin/view/component/menu_item.dart';
+import 'package:strukin/view/fullscreen.dart';
+
+class DetailPage extends StatefulWidget {
+  DetailPage({super.key, required this.transaksi});
+
+  final TransaksiModel transaksi;
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  final DetailpageController controller = DetailpageController();
+
+  // late Future<File?> convertedImage;
+
+  @override
+  void initState() {
+    // convertedImage = Utils.imagehandler(widget.transaksi.imagePath!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    // print(
+    //   widget.transaksi.detailTransaksis.first.userSplits.first.user?.userID,
+    // );
+    var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Detail Struk"),
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0,
-      // ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -23,24 +48,17 @@ class DetailPage extends StatelessWidget {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Gambar Struk
-                // Row(
-                //   children: [
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: Icon(Icons.arrow_back_ios_new_rounded),
-                //     ),
-                //     Text('Detail Page'),
-                //   ],
-                // ),
                 AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  leading: Icon(Icons.arrow_back_ios_new_rounded),
+                  leading: IconButton(
+                    onPressed: () => Get.back(),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded),
+                  ),
                   centerTitle: true,
                   title: Text(
                     'Detail Struk',
@@ -51,6 +69,7 @@ class DetailPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
 
                 Center(
                   child: Container(
@@ -64,14 +83,49 @@ class DetailPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/images/Struk1.png', // Ubah sesuai path gambar struk
-                        height: 250,
-                        width: width * 0.9,
-                        fit: BoxFit.cover,
-                      ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            File(
+                              widget.transaksi.imagePath!,
+                            ), // Ubah sesuai path gambar struk
+                            height: 250,
+                            width: width * 0.9,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          right: 10,
+                          top: 10,
+                          child: IconButton(
+                            onPressed: () {
+                              Get.to(
+                                () => Fullscreen(
+                                  file: File(widget.transaksi.imagePath!),
+                                ),
+                              );
+                            },
+                            icon: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 2,
+                                vertical: 2,
+                              ),
+
+                              decoration: BoxDecoration(
+                                color: Colors.black38,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Icon(
+                                Icons.fullscreen,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -80,41 +134,65 @@ class DetailPage extends StatelessWidget {
 
                 // Informasi Restoran & Tanggal
                 Text(
-                  "JOHOR BAHRU RESTORANT",
+                  widget.transaksi.storeName ?? '-----null-----',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "27/10/2019",
+                  widget.transaksi.strukDate ?? '-----null-----',
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                 ),
 
-                SizedBox(height: 16),
+                SizedBox(height: 30),
 
                 // Daftar Pesanan
-                _buildSectionTitle("Pesanan"),
-                _buildOrderItem("NASI GORENG PEDAS", 2, 26900),
-                _buildOrderItem("ICE LEMON TEA", 2, 9300),
-                _buildOrderItem("NASI GORENG", 2, 22900),
+                // _buildSectionTitle("Pesanan"),
+                Column(
+                  children:
+                      widget.transaksi.detailTransaksis.map((item) {
+                        return getListMenu2(
+                          item,
+                          false,
+                          null,
+                          isSelectable: false,
+                        );
+                      }).toList(),
+                ),
 
-                Divider(thickness: 1),
+                SizedBox(height: 30),
 
                 // Total Pembayaran
-                _buildTotalSection(),
+                _buildTotalSection(widget.transaksi),
 
-                SizedBox(height: 16),
+                SizedBox(height: 70),
 
                 // Split Bill
-                _buildSectionTitle("Split Bill"),
-                _buildSplitBillItem("Raihan", 29000, [
-                  _buildSplitOrder("NASI GORENG PEDAS", 1, 13400),
-                  _buildSplitOrder("ICE LEMON TEA", 1, 9300),
-                  _buildSplitOrder("NASI GORENG", 1, 11000),
-                ]),
-                _buildSplitBillItem("Hilmi", 29000, [
-                  _buildSplitOrder("NASI GORENG PEDAS", 1, 13400),
-                  _buildSplitOrder("ICE LEMON TEA", 1, 9300),
-                  _buildSplitOrder("NASI GORENG", 1, 11000),
-                ]),
+                Text(
+                  'Split Bill',
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Column(
+                  children:
+                      groupItemsByUser.map((user) {
+                        return _buildSplitBillItem(
+                          user["username"] ?? "Unknown",
+                          user["total_harga"].toInt(),
+                          user["items"].map<Widget>((item) {
+                            // Pastikan hasilnya List<Widget>
+                            return _buildSplitOrder(
+                              item["nama_barang"],
+                              item["jumlah"],
+                              item["harga_per_participant"].toInt(),
+                            );
+                          }).toList(),
+                          user["avatar"],
+                        );
+                      }).toList(),
+                ),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -123,34 +201,14 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _buildOrderItem(String name, int qty, int price) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text("$name      $qty x"), Text("Rp ${price * qty}")],
-      ),
-    );
-  }
-
-  Widget _buildTotalSection() {
+  Widget _buildTotalSection(TransaksiModel transaksi) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTotalRow("Subtotal", 47100),
-        _buildTotalRow("Pajak", 4700),
+        _buildTotalRow("Subtotal", transaksi.subtotal?.toInt() ?? 0),
+        _buildTotalRow("Pajak", transaksi.pajak?.toInt() ?? 0),
         Divider(),
-        _buildTotalRow("Total", 51700, isBold: true),
+        _buildTotalRow("Total", transaksi.total!.toInt(), isBold: true),
       ],
     );
   }
@@ -169,7 +227,7 @@ class DetailPage extends StatelessWidget {
             ),
           ),
           Text(
-            "Rp $amount",
+            Utils.formatCurrency(amount),
             style: TextStyle(
               fontSize: 16,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
@@ -180,26 +238,29 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSplitBillItem(String name, int total, List<Widget> orders) {
+  Widget _buildSplitBillItem(
+    String name,
+    int total,
+    List<Widget> orders,
+    String imgpath,
+  ) {
     return Card(
-      color: Colors.yellow[100],
-      elevation: 2,
+      color: Colors.white,
+      // elevation: 2,
       margin: EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: Colors.orange,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
+                Image.asset(imgpath, width: 40, height: 40, fit: BoxFit.cover),
+
                 SizedBox(width: 10),
                 Text(
-                  "$name - IDR $total",
+                  "$name - ${Utils.formatCurrency(total)}",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -217,7 +278,7 @@ class DetailPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text("$name     $qty x"), Text("Rp $price")],
+        children: [Text("$name     $qty x"), Text(Utils.formatCurrency(price))],
       ),
     );
   }

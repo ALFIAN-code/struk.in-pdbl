@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:strukin/database/clear_database.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/view/Homepage.dart';
 
@@ -20,12 +19,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    deleteDB();
+    // deleteDB();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(home: HomePage());
+    return GetMaterialApp(debugShowCheckedModeBanner: false, home: HomePage());
   }
 }

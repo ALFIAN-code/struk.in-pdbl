@@ -1,45 +1,58 @@
 import 'package:get/get.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:strukin/database/database_helper.dart';
-import 'package:strukin/model/detail_transaksi.dart';
-import 'package:strukin/model/struk_from_api.dart';
-import 'package:strukin/model/transaksi.dart';
+import 'package:strukin/model/struk_model.dart';
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class StrukController extends GetxController {
   final ImagePicker _picker = ImagePicker();
+  var fullStrukList = <TransaksiModel>[].obs;
 
   Rx<XFile?> receiptImage = Rx<XFile?>(null);
 
   var database = DatabaseHelper();
   // var listStruk = <Transaksi>[];
-  Rx<List<StrukFromApi>> strukList = Rx<List<StrukFromApi>>([]);
+  Rx<List<TransaksiModel>> strukList = Rx<List<TransaksiModel>>([]);
 
-  // Future<void> getAllStruk() async {
-  //   var result = await database.queryAllTransaksi();
-  //   listStruk = result.map((e) => Transaksi.fromMap(e)).toList();
-  // }
+  Future<void> deleteStruk(int id) async {
+    await database.deleteFullTransaksi(id);
+    await getAllStruk(); // Refresh the list after deletion
+  }
 
-  // Future<Transaksi> getSingleStruk(int id) async {
-  //   var result = await database.getDetailTransaksi(id);
-  //   return Transaksi.fromMap(result!);
-  // }
+  // Fungsi search untuk filter list transaksi
+  void searchStruk(String query) {
+    if (query.isEmpty) {
+      strukList.value = fullStrukList;
+    } else {
+      strukList.value =
+          fullStrukList.where((transaksi) {
+            return transaksi.storeName?.toLowerCase().contains(
+                  query.toLowerCase(),
+                ) ??
+                false;
+          }).toList();
+    }
+  }
 
-  // Future<DetailTransaksi> getDetailStruk(int id) async {
-  //   var result = await database.getDetailTransaksi(id);
-  //   return DetailTransaksi.fromMap(result!);
-  // }
-
-  // Future<Usersplit> getParticipant(int id) async {
-  //   var result = await database.getUsersplit(id);
-  //   return Usersplit.fromMap(result!);
-  // }
+  Future<void> getAllStruk() async {
+    fullStrukList.value = await database.getAllTransaksi();
+    strukList.value = fullStrukList;
+  }
 
   Future<XFile?> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       print('file ditemukan ' + pickedImage.path);
-      return pickedImage;
+      // return pickedImage;
+
+      // Konversi RAW ke JPG jika perlu
+      final compressedFile = await FlutterImageCompress.compressAndGetFile(
+        pickedImage.path,
+        "${pickedImage.path}.jpg",
+        quality: 90,
+      );
+      return compressedFile;
     } else {
       return null;
     }
@@ -50,7 +63,13 @@ class StrukController extends GetxController {
     if (pickedImage != null) {
       // receiptImage.value = pickedImage;
       print('file ditemukan ' + pickedImage.path);
-      return pickedImage;
+      // Konversi RAW ke JPG jika perlu
+      final compressedFile = await FlutterImageCompress.compressAndGetFile(
+        pickedImage.path,
+        "${pickedImage.path}.jpg",
+        quality: 90,
+      );
+      return compressedFile;
     } else {
       return null;
     }

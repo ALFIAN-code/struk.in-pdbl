@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
+import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/view/component/menu_item.dart';
 import 'package:strukin/view/component/particpant_item.dart';
-import 'package:strukin/view/test_page.dart';
+import 'package:strukin/view/result_page.dart';
 
 class SplitPage extends StatefulWidget {
   const SplitPage({super.key, required this.image});
@@ -47,6 +50,34 @@ class _SplitPageState extends State<SplitPage> {
           if (splitController.isProcessing.value) {
             return Center(child: CircularProgressIndicator());
           }
+          if (splitController.processedText.value == null) {
+            // Menggunakan Future.microtask agar dialog tampil satu kali setelah build selesai
+            Future.microtask(() {
+              // Get.defaultDialog(
+              //   title: 'Error',
+              //   middleText: 'Tidak dapat memproses gambar',
+              //   textConfirm: 'OK',
+              //   onConfirm: () {
+              //     Get.back(); // Menutup dialog
+              //     Get.back(); // Kembali ke halaman sebelumnya
+              //   },
+              // );
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.error,
+                title: 'Error',
+                text: 'Tidak dapat memproses gambar',
+                confirmBtnText: 'OK',
+                onConfirmBtnTap: () {
+                  Get.back();
+                  Get.back(); // Kembali ke halaman sebelumnya
+                },
+              );
+            });
+            // Return widget kosong agar tidak terjadi error build
+            return const SizedBox.shrink();
+          }
+
           if (splitController.isProcessing.value == false) {
             return Column(
               children: [
@@ -80,7 +111,6 @@ class _SplitPageState extends State<SplitPage> {
                           ),
                         ),
                         SizedBox(height: 20),
-
                         SizedBox(
                           height: 120,
                           child: GetBuilder<SplitpageController>(
@@ -199,7 +229,6 @@ class _SplitPageState extends State<SplitPage> {
                             ],
                           ),
                         ),
-
                         ListView.separated(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
@@ -231,7 +260,6 @@ class _SplitPageState extends State<SplitPage> {
                             );
                           },
                         ),
-
                         // const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -239,16 +267,27 @@ class _SplitPageState extends State<SplitPage> {
                             children: [
                               rowText(
                                 'Subtotal',
-                                '${splitController.processedText.value?.subtotal ?? 0}',
+                                Utils.formatCurrency(
+                                  splitController
+                                          .processedText
+                                          .value
+                                          ?.subtotal ??
+                                      0,
+                                ),
                               ),
                               rowText(
                                 'Pajak',
-                                '${splitController.processedText.value?.tax ?? 0}',
+                                Utils.formatCurrency(
+                                  splitController.processedText.value?.tax ?? 0,
+                                ),
                               ),
                               // rowText('Layanan', '${splitController.processedText.value?.}'),
                               rowText(
                                 'Total Tagihan',
-                                '${splitController.processedText.value?.total ?? 0}',
+                                Utils.formatCurrency(
+                                  splitController.processedText.value?.total ??
+                                      0,
+                                ),
                                 bold: true,
                               ),
                             ],
@@ -266,8 +305,24 @@ class _SplitPageState extends State<SplitPage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         print("Tombol Konfirmasi ditekan");
-                        await splitController.addDataToDatabase();
-                        Get.to(() => FullTransaksiPage());
+
+                        bool isEmpty = splitController.participants.value.any(
+                          (element) => element['selectedItems'].isEmpty,
+                        );
+
+                        if (isEmpty) {
+                          Get.snackbar(
+                            'Error',
+                            'Pilih item terlebih dahulu',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        } else {
+                          var result = await splitController.addDataToDatabase(
+                            widget.image.path,
+                          );
+                          Get.off(() => ResultPage(transaksiModel: result!));
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
@@ -296,117 +351,6 @@ class _SplitPageState extends State<SplitPage> {
       ),
     );
   }
-}
-
-// Widget untuk menampilkan Menu Items
-InkWell getListMenu(Item item, bool isSelected, VoidCallback onTap) {
-  var splitController = Get.find<SplitpageController>();
-
-  var participantWhoSelected = splitController.getParticipantsWhoSelectedItem(
-    item,
-  );
-
-  return InkWell(
-    onTap: onTap,
-    child: Stack(
-      alignment: Alignment.centerRight,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color:
-                isSelected
-                    ? Color.fromRGBO(252, 207, 92, 1.0)
-                    : Colors.transparent,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                item.name,
-                style: GoogleFonts.roboto(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromRGBO(0, 0, 0, 1.0),
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '${item.unitPrice}',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: const Color.fromRGBO(40, 40, 40, 1.0),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      '${item.quantity}',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: const Color.fromRGBO(90, 90, 90, 1.0),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '${item.price.toInt()}',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: const Color.fromRGBO(40, 40, 40, 1.0),
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Visibility(
-                    child: Icon(
-                      isSelected ? Icons.close : Icons.circle_outlined,
-                      size: 20,
-                      color: isSelected ? Colors.black : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              (participantWhoSelected.isNotEmpty)
-                  ? SizedBox(
-                    height: 30,
-                    child: Row(
-                      children:
-                          participantWhoSelected.map((e) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 5),
-                              child: CircleAvatar(
-                                radius: 10,
-                                backgroundColor: Colors.orange,
-                                child: Image.asset(
-                                  splitController
-                                      .participants
-                                      .value[e]['image'],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                    ),
-                  )
-                  : SizedBox(),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 // Widget untuk menampilkan teks Subtotal, Pajak, Layanan, dan Total Tagihan

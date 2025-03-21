@@ -15,7 +15,7 @@ class _FullTransaksiPageState extends State<FullTransaksiPage> {
   @override
   void initState() {
     super.initState();
-    _futureTransaksi = DatabaseHelper().getAllTransaksiWithDetails();
+    _futureTransaksi = DatabaseHelper().getAllTransaksi();
   }
 
   @override
@@ -65,7 +65,7 @@ class _FullTransaksiPageState extends State<FullTransaksiPage> {
                                             "User: ${split.user?.username ?? 'Unknown'}",
                                           ),
                                           subtitle: Text(
-                                            "Portion: ${split.portion}",
+                                            "Portion: ${split.portion} | Harga per participant: ${split.hargaPerParticipant}",
                                           ),
                                         );
                                       }).toList(),
