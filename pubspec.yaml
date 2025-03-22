@@ -75,6 +75,7 @@ flutter:
     - assets/images/
     - assets/
     - assets/images/profile/
+    - shorebird.yaml
   # fonts:
   #   - assets/font/
   # For details regarding fonts from package dependencies,
