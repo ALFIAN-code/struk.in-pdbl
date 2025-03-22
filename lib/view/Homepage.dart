@@ -18,7 +18,7 @@ import '../controller/home_controller.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  var controller = Get.put(StrukController());
+  final controller = Get.put(StrukController());
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(

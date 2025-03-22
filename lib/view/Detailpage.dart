@@ -278,7 +278,7 @@ class _DetailPageState extends State<DetailPage> {
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text("$name     $qty x"), Text(Utils.formatCurrency(price))],
+        children: [Text(name), Text(Utils.formatCurrency(price))],
       ),
     );
   }

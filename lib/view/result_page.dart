@@ -126,54 +126,62 @@ class _ResultPageState extends State<ResultPage> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 2.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    item["nama_barang"],
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color.fromRGBO(0, 0, 0, 1.0),
+                                  child: Container(
+                                    constraints: BoxConstraints(maxWidth: 250),
+                                    child: Text(
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      item["nama_barang"],
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color.fromRGBO(
+                                          0,
+                                          0,
+                                          0,
+                                          1.0,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    "${item["jumlah"]}x",
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                      color: const Color.fromRGBO(
-                                        90,
-                                        90,
-                                        90,
-                                        1.0,
-                                      ),
-                                    ),
-                                    textAlign: TextAlign.center,
+                                // Text('  -  '),
+                                // Expanded(
+                                //   flex: 1,
+                                //   child: Text(
+                                //     "",
+                                //     style: GoogleFonts.roboto(
+                                //       fontSize: 14,
+                                //       fontWeight: FontWeight.normal,
+                                //       color: const Color.fromRGBO(
+                                //         90,
+                                //         90,
+                                //         90,
+                                //         1.0,
+                                //       ),
+                                //     ),
+                                //     textAlign: TextAlign.center,
+                                //   ),
+                                // ),
+                                Text(
+                                  Utils.formatCurrency(
+                                    item["harga_per_participant"].toInt(),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    Utils.formatCurrency(
-                                      item["harga_per_participant"].toInt(),
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                    color: const Color.fromRGBO(
+                                      40,
+                                      40,
+                                      40,
+                                      1.0,
                                     ),
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                      color: const Color.fromRGBO(
-                                        40,
-                                        40,
-                                        40,
-                                        1.0,
-                                      ),
-                                    ),
-                                    textAlign: TextAlign.right,
                                   ),
+                                  textAlign: TextAlign.right,
                                 ),
                               ],
                             ),
