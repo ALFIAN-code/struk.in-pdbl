@@ -236,20 +236,25 @@ class _ResultPageState extends State<ResultPage> {
         ),
       ),
       bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Get.off(HomePage());
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromRGBO(252, 207, 92, 1.0),
+              backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
+              padding: EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text(
               'Selesai',
               style: GoogleFonts.roboto(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
