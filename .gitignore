@@ -44,4 +44,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-lib/gemini_key.dart
+# lib/gemini_key.dart
