@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
+
+import 'package:path/path.dart' as p;
 
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
@@ -40,19 +45,38 @@ class StrukController extends GetxController {
     strukList.value = fullStrukList;
   }
 
+  Future<String?> normalizeImage(String inputPath, {int quality = 80}) async {
+    try {
+      // Baca ekstensi lama, ganti jadi .jpg
+      final fileNameJpg = p.setExtension(p.basename(inputPath), '.jpg');
+      // Dapatkan direktori aplikasi
+      final appDir = await getApplicationDocumentsDirectory();
+      final outputPath = p.join(appDir.path, fileNameJpg);
+
+      // Lakukan kompresi & konversi ke JPEG
+      final result = await FlutterImageCompress.compressAndGetFile(
+        inputPath,
+        outputPath,
+        quality: quality,
+        format: CompressFormat.jpeg,
+      );
+
+      return result?.path;
+    } catch (e) {
+      // Tangani error (misal file corrupt)
+      print('Error normalizing image: $e');
+      return null;
+    }
+  }
+
   Future<XFile?> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
-      print('file ditemukan ' + pickedImage.path);
-      // return pickedImage;
-
-      // Konversi RAW ke JPG jika perlu
-      final compressedFile = await FlutterImageCompress.compressAndGetFile(
-        pickedImage.path,
-        "${pickedImage.path}.jpg",
-        quality: 90,
-      );
-      return compressedFile;
+      // Normalisasi (convert + copy) ke JPEG di app dir
+      final normalizedPath = await normalizeImage(pickedImage.path);
+      return normalizedPath != null
+          ? XFile(normalizedPath)
+          : null; // Kembalikan file yang sudah dinormalisasi
     } else {
       return null;
     }
@@ -61,15 +85,11 @@ class StrukController extends GetxController {
   Future<XFile?> getImageFromGallery() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      // receiptImage.value = pickedImage;
-      print('file ditemukan ' + pickedImage.path);
-      // Konversi RAW ke JPG jika perlu
-      final compressedFile = await FlutterImageCompress.compressAndGetFile(
-        pickedImage.path,
-        "${pickedImage.path}.jpg",
-        quality: 90,
-      );
-      return compressedFile;
+      // Normalisasi (convert + copy) ke JPEG di app dir
+      final normalizedPath = await normalizeImage(pickedImage.path);
+      return normalizedPath != null
+          ? XFile(normalizedPath)
+          : null; // Kembalikan file yang sudah dinormalisasi
     } else {
       return null;
     }
