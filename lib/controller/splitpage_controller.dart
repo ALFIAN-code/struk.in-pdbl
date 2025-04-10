@@ -25,20 +25,18 @@ class SplitpageController extends GetxController {
 
   Future<void> processReceiptImage(XFile image) async {
     isProcessing.value = true;
-    try {
-      print('internetConnection: ${internetConnection!.value}');
-      if (internetConnection!.value == true) {
-        final order = await processReceipt(geminiApi, image);
-        processedText.value = order;
-      }
-      // ocrText.value = recognizedText.text;
-    } catch (e) {
-      throw Exception("Error processing receipt: $e");
-    } finally {
-      isProcessing.value = false;
+    // try {
+    print('internetConnection: ${internetConnection!.value}');
+    if (internetConnection!.value == true) {
+      final order = await processReceipt(geminiApi, image);
+      processedText.value = order;
     }
-
-    // isProcessing.value = false;
+    // ocrText.value = recognizedText.text;
+    // } catch (e) {
+    //   throw Exception("Error processing receipt: $e");
+    // } finally {
+    isProcessing.value = false;
+    // }
   }
 
   List<int> getParticipantsWhoSelectedItem(Item item) {
@@ -53,7 +51,7 @@ class SplitpageController extends GetxController {
 
   void addFirstParticipant() {
     if (participants.value.isEmpty) {
-      int firstImage = _random.nextInt(38) + 1;
+      int firstImage = _random.nextInt(58) + 1;
       usedImages.value.add(firstImage);
 
       participants.value.add({
@@ -83,11 +81,11 @@ class SplitpageController extends GetxController {
   }
 
   void addParticipant() {
-    if (usedImages.value.length >= 38) return;
+    if (usedImages.value.length >= 58) return;
 
     int newImage;
     do {
-      newImage = _random.nextInt(39) + 1;
+      newImage = _random.nextInt(58) + 1;
     } while (usedImages.value.contains(newImage));
 
     usedImages.value.add(newImage);

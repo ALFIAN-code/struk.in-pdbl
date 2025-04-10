@@ -14,6 +14,7 @@ class ConnectionController extends GetxController {
     // Pantau status koneksi secara realtime
     internetConnection.onStatusChange.listen((status) {
       hasConnection.value = status == InternetConnectionStatus.connected;
+      print('Koneksi internet: ${hasConnection.value}');
     });
   }
 }

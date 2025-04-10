@@ -98,25 +98,32 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: GetBuilder<ConnectionController>(
-        init: ConnectionController(),
-        builder:
-            (controller) =>
-                controller.hasConnection.value
-                    ? const SizedBox()
-                    : Container(
-                      height: 50,
-                      color: Colors.red,
-                      child: Center(
-                        child: Text(
-                          'Tidak ada koneksi internet',
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
+      bottomSheet: Obx(
+        () =>
+            internetConnectionController.hasConnection.value
+                ? const SizedBox()
+                : Container(
+                  height: 50,
+
+                  padding: EdgeInsets.fromLTRB(0, 6, 0, 15),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    // borderRadius: BorderRadius.vertical(
+                    //   top: Radius.circular(12),
+                    //   bottom: Radius.circular(0),
+                    // ),
+                  ),
+
+                  child: Center(
+                    child: Text(
+                      'Tidak ada koneksi internet',
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 14,
                       ),
                     ),
+                  ),
+                ),
       ),
       body: Stack(
         children: [
