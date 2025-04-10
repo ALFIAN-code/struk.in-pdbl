@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:strukin/model/struk_from_api.dart';
@@ -14,43 +15,50 @@ Future<StrukFromApi?> processReceipt(String api, XFile image) async {
 Diberi gambar struk, kembalikan **ONLY JSON**:
 ```json
 {
-  "is_struk": true,
-  "business_name": "String",
-  "currency_code" :"String",
-  "invoice_number":"String",
-  "date":"String",
-  "payment_method":"String",
+  "is_struk":true,
+  "store_name":"…",
+  "invoice_number":"…",
+  "date":"…",
+  "payment_method":"…",
   "items":[
-    {"name":"String","quantity":Int,"unit_price":Int,"price_total": Int}
+    {"name":"…","quantity":n,"unit_price":x,"price_total":y}
   ],
-  "subtotal":Int,
-  "tax":Int,
-  "total":Int
+  "subtotal":s,
+  "tax":t,
+  "total":T
 }
 ```
 
 Aturan:
-- jika gambar bukan merupakan struk, kembalikan {"is_struk": false}, dan sisakan data yang lain kosong
 - Jika unit_price hilang: unit_price=price_total/quantity
 - Jika price_total hilang: price_total=unit_price*quantity
 - Jika tax hilang: tax=total−subtotal
 - Jika data tak ada, derivasi dari nilai lain
-- currency code menggunakan format iso 4217
-- jika ada data string yang null, berikan "-"
-- unit_price adalah harga satuan per item/menu
-- price_total adalah harga total per item berdasarkan quantity dan unit_price
-- price price selalu sama atau lebih dari unit_price
-
 """;
 
-    // Read image bytes directly
-    final imageBytes = await image.readAsBytes();
-    if (imageBytes.isEmpty) {
-      throw Exception("Failed to read image bytes");
+    // Handle file paths and URIs consistently
+    String imagePath = image.path;
+    if (imagePath.startsWith('file:///data')) {
+      // Handle Android content URIs
+      imagePath = imagePath.replaceFirst('file://', '');
+    } else if (imagePath.startsWith('/data')) {
+      // Already in correct format
+    } else {
+      // Handle other cases
+      imagePath =
+          image.path.startsWith('file://')
+              ? image.path.substring(7)
+              : image.path;
     }
 
+    // Verify file exists and is accessible
+    if (!await File(imagePath).exists()) {
+      throw Exception("Image file not found at path: $imagePath");
+    }
+
+    final imageUri = Uri.file(imagePath);
     final content = [
-      Content.multi([TextPart(prompt), DataPart('image/jpeg', imageBytes)]),
+      Content.multi([TextPart(prompt), FilePart(imageUri)]),
     ];
     final response = await model.generateContent(content);
 
@@ -75,9 +83,9 @@ Aturan:
       throw Exception("Invalid JSON format: ${e.toString()}");
     }
 
-    // if (extractedData.containsKey('is_struk') && !extractedData['is_struk']) {
-    //   return null;
-    // }
+    if (extractedData.containsKey('is_struk') && !extractedData['is_struk']) {
+      return null;
+    }
 
     try {
       StrukFromApi order = StrukFromApi.fromJson(extractedData);

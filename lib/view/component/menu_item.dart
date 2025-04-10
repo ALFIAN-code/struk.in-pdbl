@@ -39,7 +39,7 @@ InkWell getListMenu(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                item.name,
+                item.name ?? ' ',
                 style: GoogleFonts.roboto(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ InkWell getListMenu(
                   Expanded(
                     flex: 2,
                     child: Text(
-                      Utils.formatCurrency(item.unitPrice),
+                      Utils.formatCurrency(item.unitPrice ?? 0),
                       style: GoogleFonts.roboto(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
@@ -75,7 +75,7 @@ InkWell getListMenu(
                   Expanded(
                     flex: 2,
                     child: Text(
-                      Utils.formatCurrency(item.price.toInt()),
+                      Utils.formatCurrency(item.price!.toInt()),
                       style: GoogleFonts.roboto(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,

@@ -1,15 +1,17 @@
 class StrukFromApi {
   // String? paymentMethod;
+  bool? isStruk;
   String? invoiceNumber;
   String? date;
   List<Item>? items;
   int? subtotal;
   int? tax;
   int? total;
-  String businessName;
-  String category;
+  String? businessName;
+  // String category;
 
   StrukFromApi({
+    required this.isStruk,
     required this.date,
     required this.invoiceNumber,
     // required this.paymentMethod,
@@ -18,11 +20,12 @@ class StrukFromApi {
     required this.subtotal,
     required this.tax,
     required this.total,
-    required this.category,
+    // required this.category,
   });
 
   factory StrukFromApi.fromJson(Map<String, dynamic> json) {
     return StrukFromApi(
+      isStruk: json['is_struk'],
       date: json['date'],
       invoiceNumber: json['invoice_number'],
       // paymentMethod: json['payment_method'].toString().toUpperCase(),
@@ -34,7 +37,7 @@ class StrukFromApi {
       tax: json['tax'] ?? 0,
       total: json['total'],
       businessName: json['business_name'].toUpperCase(),
-      category: json['category'],
+      // category: json['category'],
     );
   }
 
@@ -56,11 +59,13 @@ class StrukFromApi {
     int? subtotal,
     int? tax,
     int? total,
+    bool? isStruk,
     String? invoiceNumber,
     String? date,
     String? paymentMethod,
   }) {
     return StrukFromApi(
+      isStruk: isStruk ?? this.isStruk,
       date: date ?? this.date,
       invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       // paymentMethod: paymentMethod ?? this.paymentMethod,
@@ -69,7 +74,7 @@ class StrukFromApi {
       tax: tax ?? this.tax,
       total: total ?? this.total,
       businessName: businessName,
-      category: category,
+      // category: category,
     );
   }
 
@@ -80,11 +85,11 @@ class StrukFromApi {
 }
 
 class Item {
-  String name;
-  int quantity;
-  double price;
+  String? name;
+  int? quantity;
+  int? price;
   // String category;
-  int unitPrice;
+  int? unitPrice;
 
   Item({
     required this.name,
@@ -100,9 +105,9 @@ class Item {
       name: json['name'],
       quantity: json['quantity'].toInt(),
       price:
-          (json['price_total'].runtimeType != String)
-              ? json['price_total'].toDouble()
-              : 0, // Ensures correct parsing for non-string price fields
+          json['price_total'] is double
+              ? json['price_total'].toInt()
+              : json['price_total'],
       // category: json['category'].toString().toLowerCase(),
     );
   }
@@ -119,7 +124,7 @@ class Item {
   Item copyWith({
     String? name,
     int? quantity,
-    double? price,
+    int? price,
     String? category,
     int? unitPrice,
   }) {

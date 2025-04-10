@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:strukin/controller/internet_connection_controller.dart';
 // import 'package:rive/rive.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_model.dart';
@@ -19,6 +20,7 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(StrukController());
+  var internetConnectionController = Get.put(ConnectionController());
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -96,6 +98,26 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: GetBuilder<ConnectionController>(
+        init: ConnectionController(),
+        builder:
+            (controller) =>
+                controller.hasConnection.value
+                    ? const SizedBox()
+                    : Container(
+                      height: 50,
+                      color: Colors.red,
+                      child: Center(
+                        child: Text(
+                          'Tidak ada koneksi internet',
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+      ),
       body: Stack(
         children: [
           Container(

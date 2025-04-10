@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/controller/result_controller.dart';
 import 'package:strukin/controller/utils.dart';
-import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/Homepage.dart';
 

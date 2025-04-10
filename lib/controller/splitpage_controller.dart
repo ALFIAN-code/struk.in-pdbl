@@ -1,8 +1,6 @@
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:get/get.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
@@ -13,54 +11,29 @@ import 'package:strukin/model/struk_model.dart';
 
 class SplitpageController extends GetxController {
   List<Item> selectedItem = [];
-
-  final List<int> _availableImages = List.generate(39, (index) => index + 1);
   Rx<List<int>> usedImages = Rx<List<int>>([]);
   var participants = Rx<List<Map<String, dynamic>>>([]);
   final Random _random = Random();
   var selectedIndex = 0.obs;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
 
-  final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-
   Rx<String?> ocrText = ''.obs;
 
   var isProcessing = false.obs;
 
-  final List<String> _categories = [
-    'Kuliner',
-    'Belanja',
-    'Transportasi',
-    'Hiburan',
-    'Kesehatan',
-    'Pendidikan',
-    'Elektronik',
-    'Pakaian',
-    'Otomotif',
-    'lainnya',
-  ];
+  Rx<bool>? internetConnection;
 
   Future<void> processReceiptImage(XFile image) async {
     isProcessing.value = true;
     try {
-      final inputImage = InputImage.fromFilePath(image.path);
-      final recognizedText = await _textRecognizer.processImage(inputImage);
-
-      if (recognizedText.text.isEmpty) {
-        isProcessing.value = false;
-        return;
+      print('internetConnection: ${internetConnection!.value}');
+      if (internetConnection!.value == true) {
+        final order = await processReceipt(geminiApi, image);
+        processedText.value = order;
       }
-
-      final order = await processReceipt(
-        recognizedText.text,
-        geminiApi,
-        _categories,
-      );
-
-      ocrText.value = recognizedText.text;
-      processedText.value = order;
+      // ocrText.value = recognizedText.text;
     } catch (e) {
-      null;
+      throw Exception("Error processing receipt: $e");
     } finally {
       isProcessing.value = false;
     }
@@ -80,7 +53,7 @@ class SplitpageController extends GetxController {
 
   void addFirstParticipant() {
     if (participants.value.isEmpty) {
-      int firstImage = _random.nextInt(39) + 1;
+      int firstImage = _random.nextInt(38) + 1;
       usedImages.value.add(firstImage);
 
       participants.value.add({
@@ -110,7 +83,7 @@ class SplitpageController extends GetxController {
   }
 
   void addParticipant() {
-    if (usedImages.value.length >= 39) return;
+    if (usedImages.value.length >= 38) return;
 
     int newImage;
     do {
@@ -200,7 +173,7 @@ class SplitpageController extends GetxController {
       DetailTransaksiModel detail = DetailTransaksiModel(
         hargaSatuan: item.unitPrice,
         namaBarang: item.name,
-        harga: item.price,
+        harga: item.price!.toDouble(),
         jumlah: item.quantity,
         userSplits: userSplits,
       );
@@ -221,7 +194,7 @@ class SplitpageController extends GetxController {
       detailTransaksis: detailList,
       jumlahparticipant: participants.value.length,
     );
-    int newTransaksiID = await DatabaseHelper().insertFullTransaksi(transaksi);
+    await DatabaseHelper().insertFullTransaksi(transaksi);
     return transaksi;
   }
 }
