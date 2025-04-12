@@ -31,9 +31,6 @@ class _ResultPageState extends State<ResultPage> {
     print(groupedData);
     print(widget.transaksiModel.toMap());
     print(widget.transaksiModel.detailTransaksis.first.toMap);
-    // return Center(child: Text('Result Page'));
-
-    // final totalKeseluruhan = widget.transaksiModel.total ?? 0.0;
 
     return Scaffold(
       appBar: AppBar(

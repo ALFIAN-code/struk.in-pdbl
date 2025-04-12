@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:strukin/controller/internet_connection_controller.dart';
 
 import 'package:strukin/view/Homepage.dart';
 import 'package:strukin/view/onboarding_screen.dart';
@@ -21,7 +23,9 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final bool hasCompletedOnboarding;
-  const MyApp({super.key, required this.hasCompletedOnboarding});
+  MyApp({super.key, required this.hasCompletedOnboarding});
+
+  var internetConnectionController = Get.put(ConnectionController());
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,43 @@ class MyApp extends StatelessWidget {
               ), // Maksimum 500px
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: hasCompletedOnboarding ? HomePage() : OnboardingScreen(),
+                child:
+                    hasCompletedOnboarding
+                        ? Column(
+                          children: [
+                            Expanded(child: HomePage()),
+                            Obx(
+                              () =>
+                                  internetConnectionController
+                                          .hasConnection
+                                          .value
+                                      ? const SizedBox()
+                                      : Container(
+                                        height: 50,
+                                        padding: EdgeInsets.fromLTRB(
+                                          0,
+                                          6,
+                                          0,
+                                          15,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade400,
+                                        ),
+
+                                        child: Center(
+                                          child: Text(
+                                            'Tidak ada koneksi internet',
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                            ),
+                          ],
+                        )
+                        : OnboardingScreen(),
               ),
             ),
           );

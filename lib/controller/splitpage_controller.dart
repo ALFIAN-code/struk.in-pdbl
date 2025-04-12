@@ -21,22 +21,19 @@ class SplitpageController extends GetxController {
 
   var isProcessing = false.obs;
 
-  Rx<bool>? internetConnection;
-
-  Future<void> processReceiptImage(XFile image) async {
+  /*
+  fungsi ini untuk memproses gambar struk yang diambil dari kamera
+  dan mengirimkannya ke API untuk mendapatkan hasil OCR
+  */
+  Future<void> processReceiptImage(XFile image, bool isConnected) async {
     isProcessing.value = true;
     // try {
-    print('internetConnection: ${internetConnection!.value}');
-    if (internetConnection!.value == true) {
+    if (isConnected == true) {
       final order = await processReceipt(geminiApi, image);
       processedText.value = order;
     }
-    // ocrText.value = recognizedText.text;
-    // } catch (e) {
-    //   throw Exception("Error processing receipt: $e");
-    // } finally {
+
     isProcessing.value = false;
-    // }
   }
 
   List<int> getParticipantsWhoSelectedItem(Item item) {

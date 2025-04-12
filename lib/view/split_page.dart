@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:strukin/controller/internet_connection_controller.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/view/Homepage.dart';
@@ -22,12 +23,16 @@ class _SplitPageState extends State<SplitPage> {
   // Menyimpan item ke multi-selection
 
   var splitController = Get.put(SplitpageController());
+  var connection = Get.find<ConnectionController>();
 
   late bool internetConnection;
 
   @override
   void initState() {
-    splitController.processReceiptImage(widget.image);
+    splitController.processReceiptImage(
+      widget.image,
+      connection.hasConnection.value,
+    );
     splitController.addFirstParticipant();
     super.initState();
   }
@@ -83,7 +88,7 @@ class _SplitPageState extends State<SplitPage> {
             // );
           }
 
-          if (splitController.internetConnection!.value == false) {
+          if (connection.hasConnection == false) {
             Future.microtask(() {
               QuickAlert.show(
                 context: context,
@@ -131,207 +136,188 @@ class _SplitPageState extends State<SplitPage> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        splitController.processedText.value!.isStruk!
-                            ? Center(child: Text("gambar invalid"))
-                            : SizedBox(
-                              height: 120,
-                              child: GetBuilder<SplitpageController>(
-                                init: SplitpageController(),
-                                builder: (controller) {
-                                  return ListView(
-                                    // crossAxisAlignment: CrossAxisAlignment.center,
+                        SizedBox(
+                          height: 120,
+                          child: GetBuilder<SplitpageController>(
+                            init: SplitpageController(),
+                            builder: (controller) {
+                              return ListView(
+                                // crossAxisAlignment: CrossAxisAlignment.center,
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  ListView.builder(
+                                    shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
-                                    children: [
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount:
+                                    itemCount:
+                                        splitController
+                                            .participants
+                                            .value
+                                            .length,
+                                    itemBuilder: (context, index) {
+                                      return ParticipantItem(
+                                        isLast:
                                             splitController
                                                 .participants
                                                 .value
-                                                .length,
-                                        itemBuilder: (context, index) {
-                                          return ParticipantItem(
-                                            isLast:
-                                                splitController
+                                                .length ==
+                                            1,
+                                        imgPath:
+                                            splitController
+                                                .participants
+                                                .value[index]['image'],
+                                        name:
+                                            splitController
+                                                .participants
+                                                .value[index]['name'],
+                                        isSelected:
+                                            splitController
+                                                .selectedIndex
+                                                .value ==
+                                            index,
+                                        onSelected: () {
+                                          setState(() {
+                                            splitController
+                                                .selectedIndex
+                                                .value = index;
+                                            splitController.clearSelectedMenu(
+                                              index,
+                                            );
+                                          });
+                                        },
+                                        onNameChanged: (newName) {
+                                          setState(() {
+                                            splitController
                                                     .participants
-                                                    .value
-                                                    .length ==
-                                                1,
-                                            imgPath:
-                                                splitController
-                                                    .participants
-                                                    .value[index]['image'],
-                                            name:
-                                                splitController
-                                                    .participants
-                                                    .value[index]['name'],
-                                            isSelected:
-                                                splitController
-                                                    .selectedIndex
-                                                    .value ==
-                                                index,
-                                            onSelected: () {
-                                              setState(() {
-                                                splitController
-                                                    .selectedIndex
-                                                    .value = index;
-                                                splitController
-                                                    .clearSelectedMenu(index);
-                                              });
-                                            },
-                                            onNameChanged: (newName) {
-                                              setState(() {
-                                                splitController
-                                                        .participants
-                                                        .value[index]['name'] =
-                                                    newName;
-                                              });
-                                            },
-                                            onClose: () {
-                                              splitController.deleteParticipant(
-                                                index,
-                                              );
-                                            },
+                                                    .value[index]['name'] =
+                                                newName;
+                                          });
+                                        },
+                                        onClose: () {
+                                          splitController.deleteParticipant(
+                                            index,
                                           );
                                         },
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(bottom: 30),
-                                        padding: const EdgeInsets.only(
-                                          left: 10,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              splitController.addParticipant();
-                                            });
-                                          },
-                                          child: CircleAvatar(
-                                            radius: 20,
-                                            backgroundColor: Colors.grey
-                                                .withAlpha(120),
-                                            child: Icon(
-                                              Icons.add,
-                                              color: Colors.black,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                        SizedBox(height: 20),
-                        splitController.processedText.value!.isStruk!
-                            ? SizedBox()
-                            : Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    splitController
-                                            .processedText
-                                            .value
-                                            ?.businessName ??
-                                        '',
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                      );
+                                    },
                                   ),
-                                  Text(
-                                    'Tagihan dibuat: ${splitController.processedText.value?.date ?? '-'}',
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 30),
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          splitController.addParticipant();
+                                        });
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: Colors.grey.withAlpha(
+                                          120,
+                                        ),
+                                        child: Icon(
+                                          Icons.add,
+                                          color: Colors.black,
+                                          size: 20,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
-                              ),
-                            ),
-                        splitController.processedText.value!.isStruk!
-                            ? SizedBox()
-                            : ListView.separated(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              separatorBuilder:
-                                  (context, index) => const SizedBox(height: 5),
-                              itemCount:
-                                  splitController
-                                      .processedText
-                                      .value!
-                                      .items!
-                                      .length,
-                              itemBuilder: (context, index) {
-                                final item =
-                                    splitController
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                splitController
                                         .processedText
                                         .value
-                                        ?.items?[index];
-                                return getListMenu(
-                                  item!,
-                                  splitController.selectedItem.contains(item),
-                                  () {
-                                    setState(() {
-                                      splitController.doMultiSelection(
-                                        item,
-                                        splitController.selectedIndex.value,
-                                      );
-                                    });
-                                  },
-                                );
+                                        ?.businessName ??
+                                    '',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Tagihan dibuat: ${splitController.processedText.value?.date ?? '-'}',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          separatorBuilder:
+                              (context, index) => const SizedBox(height: 5),
+                          itemCount:
+                              splitController
+                                  .processedText
+                                  .value!
+                                  .items!
+                                  .length,
+                          itemBuilder: (context, index) {
+                            final item =
+                                splitController
+                                    .processedText
+                                    .value
+                                    ?.items?[index];
+                            return getListMenu(
+                              item!,
+                              splitController.selectedItem.contains(item),
+                              () {
+                                setState(() {
+                                  splitController.doMultiSelection(
+                                    item,
+                                    splitController.selectedIndex.value,
+                                  );
+                                });
                               },
-                            ),
+                            );
+                          },
+                        ),
                         // const SizedBox(height: 20),
-                        splitController.processedText.value!.isStruk!
-                            ? SizedBox()
-                            : Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(
+                            children: [
+                              rowText(
+                                'Subtotal',
+                                Utils.formatCurrency(
+                                  splitController
+                                          .processedText
+                                          .value
+                                          ?.subtotal ??
+                                      0,
+                                ),
                               ),
-                              child: Column(
-                                children: [
-                                  rowText(
-                                    'Subtotal',
-                                    Utils.formatCurrency(
-                                      splitController
-                                              .processedText
-                                              .value
-                                              ?.subtotal ??
-                                          0,
-                                    ),
-                                  ),
-                                  rowText(
-                                    'Pajak',
-                                    Utils.formatCurrency(
-                                      splitController
-                                              .processedText
-                                              .value
-                                              ?.tax ??
-                                          0,
-                                    ),
-                                  ),
-                                  // rowText('Layanan', '${splitController.processedText.value?.}'),
-                                  rowText(
-                                    'Total Tagihan',
-                                    Utils.formatCurrency(
-                                      splitController
-                                              .processedText
-                                              .value
-                                              ?.total ??
-                                          0,
-                                    ),
-                                    bold: true,
-                                  ),
-                                ],
+                              rowText(
+                                'Pajak',
+                                Utils.formatCurrency(
+                                  splitController.processedText.value?.tax ?? 0,
+                                ),
                               ),
-                            ),
+                              // rowText('Layanan', '${splitController.processedText.value?.}'),
+                              rowText(
+                                'Total Tagihan',
+                                Utils.formatCurrency(
+                                  splitController.processedText.value?.total ??
+                                      0,
+                                ),
+                                bold: true,
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 30),
                       ],
                     ),

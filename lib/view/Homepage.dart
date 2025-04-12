@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:strukin/controller/internet_connection_controller.dart';
 // import 'package:rive/rive.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_model.dart';
@@ -20,7 +19,6 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(StrukController());
-  var internetConnectionController = Get.put(ConnectionController());
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -66,11 +64,11 @@ class HomePage extends StatelessWidget {
                   var result = await controller.getImageFromGallery();
                   CircularProgressIndicator();
 
-                  // then((_) {
                   if (result != null) {
                     Get.to(SplitPage(image: result));
                   } else {
                     Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
+                    Get.back();
                   }
                   // });
                 },
@@ -98,33 +96,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomSheet: Obx(
-        () =>
-            internetConnectionController.hasConnection.value
-                ? const SizedBox()
-                : Container(
-                  height: 50,
-
-                  padding: EdgeInsets.fromLTRB(0, 6, 0, 15),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade400,
-                    // borderRadius: BorderRadius.vertical(
-                    //   top: Radius.circular(12),
-                    //   bottom: Radius.circular(0),
-                    // ),
-                  ),
-
-                  child: Center(
-                    child: Text(
-                      'Tidak ada koneksi internet',
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-      ),
       body: Stack(
         children: [
           Container(

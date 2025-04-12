@@ -106,7 +106,6 @@ class _ParticipantItemState extends State<ParticipantItem> {
               top: 0,
               child: GestureDetector(
                 onTap: () {
-                  print('clooooseeee');
                   setState(() {
                     print(widget.isLast);
                     widget.isLast ? null : widget.onClose!.call();
@@ -129,43 +128,52 @@ class _ParticipantItemState extends State<ParticipantItem> {
             ),
           ],
         ),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              isEditing = true;
-            });
-            _focusNode.requestFocus(); // Fokus ke TextField saat diklik
-          },
-          child:
-              isEditing
-                  ? SizedBox(
-                    width: 80,
-                    height: 15,
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      autofocus: true,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 0),
-                        border: InputBorder.none,
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isEditing = true;
+                });
+                _focusNode.requestFocus(); // Fokus ke TextField saat diklik
+              },
+              child:
+                  isEditing
+                      ? SizedBox(
+                        width: 80,
+                        height: 15,
+                        child: TextField(
+                          controller: _controller,
+                          focusNode: _focusNode,
+                          autofocus: true,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 0),
+                            border: InputBorder.none,
+                          ),
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          onTapOutside: (event) {
+                            isEditing = false;
+                          },
+                          onSubmitted: (value) => _saveAndCloseEditing(),
+                        ),
+                      )
+                      : Text(
+                        _controller.text.isEmpty ? "Nama" : _controller.text,
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
                       ),
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      onSubmitted: (value) => _saveAndCloseEditing(),
-                    ),
-                  )
-                  : Text(
-                    _controller.text.isEmpty ? "Nama" : _controller.text,
-                    style: GoogleFonts.roboto(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black54,
-                    ),
-                  ),
+            ),
+            SizedBox(width: 5),
+            Icon(Icons.border_color, size: 15, color: Colors.black45),
+          ],
         ),
       ],
     );
