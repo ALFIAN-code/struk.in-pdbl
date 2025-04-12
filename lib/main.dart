@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
   final bool hasCompletedOnboarding;
   MyApp({super.key, required this.hasCompletedOnboarding});
 
-  var internetConnectionController = Get.put(ConnectionController());
+  final internetConnectionController = Get.put(ConnectionController());
 
   /// Membangun tampilan utama aplikasi
   ///
