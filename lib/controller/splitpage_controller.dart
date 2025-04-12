@@ -9,6 +9,12 @@ import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
 
+/// Controller untuk mengelola logika pembagian struk
+///
+/// Bertanggung jawab untuk:
+/// - Memproses gambar struk menjadi teks (OCR)
+/// - Mengelola peserta pembagian struk
+/// - Menyimpan data pembagian ke database
 class SplitpageController extends GetxController {
   List<Item> selectedItem = [];
   Rx<List<int>> usedImages = Rx<List<int>>([]);
@@ -25,9 +31,18 @@ class SplitpageController extends GetxController {
   fungsi ini untuk memproses gambar struk yang diambil dari kamera
   dan mengirimkannya ke API untuk mendapatkan hasil OCR
   */
+  /// Memproses gambar struk menggunakan API OCR
+  ///
+  /// [image] - File gambar struk
+  /// [isConnected] - Status koneksi internet
+  ///
+  /// Mengembalikan:
+  /// - StrukFromApi hasil pemrosesan
+  /// - Null jika terjadi error
   Future<void> processReceiptImage(XFile image, bool isConnected) async {
     isProcessing.value = true;
     // try {
+
     if (isConnected == true) {
       final order = await processReceipt(geminiApi, image);
       processedText.value = order;
@@ -36,6 +51,12 @@ class SplitpageController extends GetxController {
     isProcessing.value = false;
   }
 
+  /// Mendapatkan daftar peserta yang memilih item tertentu
+  ///
+  /// [item] - Item yang akan dicek
+  ///
+  /// Mengembalikan:
+  /// - List<int> berisi index peserta yang memilih item
   List<int> getParticipantsWhoSelectedItem(Item item) {
     List<int> participantsWhoSelected = [];
     for (var i = 0; i < participants.value.length; i++) {
@@ -46,6 +67,9 @@ class SplitpageController extends GetxController {
     return participantsWhoSelected;
   }
 
+  /// Menambahkan peserta pertama secara otomatis
+  ///
+  /// Menambahkan peserta dengan gambar profil acak
   void addFirstParticipant() {
     if (participants.value.isEmpty) {
       int firstImage = _random.nextInt(58) + 1;
@@ -61,11 +85,18 @@ class SplitpageController extends GetxController {
     }
   }
 
+  /// Membersihkan pilihan menu untuk peserta tertentu
+  ///
+  /// [participantIndex] - Index peserta
   void clearSelectedMenu(int participantIndex) {
     selectedItem = participants.value[participantIndex]['selectedItems'];
     update();
   }
 
+  /// Menangani pemilihan multiple item oleh peserta
+  ///
+  /// [item] - Item yang dipilih
+  /// [participantIndex] - Index peserta
   void doMultiSelection(Item item, int participantIndex) {
     if (selectedItem.contains(item)) {
       participants.value[participantIndex]['selectedItems'].remove(item);
@@ -77,6 +108,9 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Menambahkan peserta baru dengan gambar profil acak
+  ///
+  /// Gambar profil dipilih secara unik dari daftar yang tersedia
   void addParticipant() {
     if (usedImages.value.length >= 58) return;
 
@@ -97,6 +131,9 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Memilih profil peserta tertentu
+  ///
+  /// [index] - Index peserta yang dipilih
   void selectProfile(int index) {
     for (var participant in participants.value) {
       participant["selected"] = false;
@@ -105,6 +142,9 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Menghapus peserta dari daftar
+  ///
+  /// [index] - Index peserta yang akan dihapus
   void deleteParticipant(int index) {
     int removedImage = int.parse(
       participants.value[index]["image"]
@@ -116,6 +156,13 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Menyimpan data pembagian struk ke database
+  ///
+  /// [imgpath] - Path gambar struk
+  ///
+  /// Mengembalikan:
+  /// - TransaksiModel yang berhasil disimpan
+  /// - Null jika terjadi error
   Future<TransaksiModel?> addDataToDatabase(String imgpath) async {
     // Pastikan data hasil OCR dan parsing (processedText) sudah tersedia
     if (processedText.value == null) {

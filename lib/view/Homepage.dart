@@ -15,11 +15,18 @@ import '../controller/home_controller.dart';
 
 // import 'package:awesome_dialog/awesome_dialog.dart';
 
+/// Halaman utama aplikasi yang menampilkan:
+/// - Tombol untuk memindai struk baru
+/// - Daftar struk yang tersimpan
+/// - Fungsi pencarian struk
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(StrukController());
 
+  /// Menampilkan bottom sheet untuk memilih sumber gambar (kamera atau galeri)
+  ///
+  /// [context] - BuildContext untuk menampilkan modal bottom sheet
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -386,11 +393,25 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// Widget untuk menampilkan item struk dalam daftar
+///
+/// Berisi:
+/// - Gambar struk
+/// - Nama toko
+/// - Total
 class StrukItem extends StatelessWidget {
   const StrukItem({super.key, required this.transaksiItem});
+
+  /// Model transaksi yang akan ditampilkan
   final TransaksiModel transaksiItem;
 
   @override
+  /// Membangun tampilan item struk
+  ///
+  /// [context] - BuildContext untuk membangun widget
+  ///
+  /// Returns:
+  /// - Container yang berisi informasi struk (gambar, nama toko, total, dll)
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),

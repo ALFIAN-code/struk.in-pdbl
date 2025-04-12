@@ -8,6 +8,13 @@ import 'package:strukin/controller/internet_connection_controller.dart';
 import 'package:strukin/view/Homepage.dart';
 import 'package:strukin/view/onboarding_screen.dart';
 
+/// Entry point utama aplikasi Struk.in
+///
+/// Melakukan:
+/// - Inisialisasi Flutter
+/// - Mengunci orientasi ke portrait
+/// - Mengecek status onboarding
+/// - Menjalankan aplikasi
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -21,12 +28,22 @@ void main() async {
   runApp(MyApp(hasCompletedOnboarding: hasCompletedOnboarding));
 }
 
+/// Widget utama aplikasi yang mengatur:
+/// - Tema global
+/// - Halaman awal (onboarding/home)
+/// - Pengecekan koneksi internet
 class MyApp extends StatelessWidget {
   final bool hasCompletedOnboarding;
   MyApp({super.key, required this.hasCompletedOnboarding});
 
   var internetConnectionController = Get.put(ConnectionController());
 
+  /// Membangun tampilan utama aplikasi
+  ///
+  /// [context] - BuildContext untuk membangun widget
+  ///
+  /// Mengembalikan:
+  /// - GetMaterialApp yang berisi seluruh struktur aplikasi
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

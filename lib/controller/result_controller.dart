@@ -2,11 +2,26 @@ import 'package:get/get.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
 
+/// Controller untuk mengelola tampilan hasil pembagian struk
+///
+/// Bertanggung jawab untuk:
+/// - Mengelompokkan item berdasarkan peserta
+/// - Menghitung total pembayaran per peserta
 class ResultController extends GetxController {
   Rx<TransaksiModel?> transaksi = TransaksiModel().obs;
 
   var database = DatabaseHelper();
 
+  /// Mengelompokkan item struk berdasarkan peserta
+  ///
+  /// [transaksi] - Data transaksi yang akan diproses
+  ///
+  /// Mengembalikan:
+  /// - List<Map> berisi data pengelompokan per peserta
+  ///   - username: Nama peserta
+  ///   - avatar: Gambar profil peserta
+  ///   - total_harga: Total yang harus dibayar peserta
+  ///   - items: Daftar item yang dipilih peserta
   List<Map<String, dynamic>> groupItemsByUser(TransaksiModel transaksi) {
     Map<String, Map<String, dynamic>> userMap = {};
 

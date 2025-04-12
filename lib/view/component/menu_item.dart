@@ -1,4 +1,8 @@
-// Widget untuk menampilkan Menu Items
+/// Komponen untuk menampilkan item menu dalam daftar
+///
+/// Berisi:
+/// - getListMenu: Widget untuk menampilkan item menu dengan opsi seleksi
+/// - getListMenu2: Widget alternatif untuk menampilkan item menu
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +11,15 @@ import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/model/struk_model.dart';
 
+/// Widget untuk menampilkan item menu dengan opsi seleksi
+///
+/// [item] - Data item yang akan ditampilkan
+/// [isSelected] - Status seleksi item
+/// [onTap] - Callback ketika item di-tap
+/// [isSelectable] - Flag apakah item bisa dipilih
+///
+/// Mengembalikan:
+/// - Widget InkWell yang berisi tampilan item menu
 InkWell getListMenu(
   Item item,
   bool? isSelected,
@@ -126,6 +139,15 @@ InkWell getListMenu(
   );
 }
 
+/// Widget alternatif untuk menampilkan item menu
+///
+/// [item] - Data item yang akan ditampilkan (model DetailTransaksiModel)
+/// [isSelected] - Status seleksi item
+/// [onTap] - Callback ketika item di-tap
+/// [isSelectable] - Flag apakah item bisa dipilih
+///
+/// Mengembalikan:
+/// - Widget InkWell yang berisi tampilan item menu
 InkWell getListMenu2(
   DetailTransaksiModel item,
   bool? isSelected,

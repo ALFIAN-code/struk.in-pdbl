@@ -3,6 +3,14 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:strukin/model/struk_from_api.dart';
 
+/// Memproses gambar struk dan mengembalikan data struk dalam format JSON
+///
+/// [api] - API key untuk mengakses layanan Gemini
+/// [image] - File gambar struk yang akan diproses
+///
+/// Mengembalikan:
+/// - StrukFromApi yang berisi data struk yang telah diproses
+/// - Null jika gambar bukan struk atau terjadi error
 Future<StrukFromApi?> processReceipt(String api, XFile image) async {
   try {
     if (api.isEmpty) throw Exception("API key is required");
@@ -90,6 +98,13 @@ Aturan:
   }
 }
 
+/// Mengekstrak string JSON dari teks respons Gemini
+///
+/// [text] - Teks respons dari Gemini yang mengandung data JSON
+///
+/// Mengembalikan:
+/// - String JSON yang telah dibersihkan
+/// - Melempar FormatException jika format JSON tidak valid
 String extractJsonFromText(String text) {
   final jsonStart = text.indexOf('```json');
   final jsonEnd = text.indexOf('```', jsonStart + 6);
