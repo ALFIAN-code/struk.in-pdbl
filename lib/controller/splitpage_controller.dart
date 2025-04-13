@@ -170,7 +170,7 @@ class SplitpageController extends GetxController {
       return null;
     }
 
-    var customID = Utils.generateCustomUUID();
+    // var customID = Utils.generateCustomUUID();
 
     // Ambil data transaksi utama dari hasil OCR (processedText)
     final strukData = processedText.value!;
