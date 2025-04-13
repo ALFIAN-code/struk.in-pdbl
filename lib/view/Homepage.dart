@@ -22,7 +22,7 @@ import '../controller/home_controller.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final controller = Get.put(StrukController());
+  final controller = Get.put(HomepageController());
 
   /// Menampilkan bottom sheet untuk memilih sumber gambar (kamera atau galeri)
   ///
@@ -282,8 +282,8 @@ class HomePage extends StatelessWidget {
                       init: controller,
                       initState: (state) => controller.getAllStruk(),
                       builder: (controller) {
-                        print(controller.strukList.value.toList());
-                        if (controller.strukList.value.isEmpty) {
+                        print(controller.strukList.toList());
+                        if (controller.strukList.isEmpty) {
                           return Center(
                             child: Column(
                               children: [

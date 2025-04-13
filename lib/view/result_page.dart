@@ -144,24 +144,6 @@ class _ResultPageState extends State<ResultPage> {
                                     ),
                                   ),
                                 ),
-                                // Text('  -  '),
-                                // Expanded(
-                                //   flex: 1,
-                                //   child: Text(
-                                //     "",
-                                //     style: GoogleFonts.roboto(
-                                //       fontSize: 14,
-                                //       fontWeight: FontWeight.normal,
-                                //       color: const Color.fromRGBO(
-                                //         90,
-                                //         90,
-                                //         90,
-                                //         1.0,
-                                //       ),
-                                //     ),
-                                //     textAlign: TextAlign.center,
-                                //   ),
-                                // ),
                                 Text(
                                   Utils.formatCurrency(
                                     item["harga_per_participant"].toInt(),
