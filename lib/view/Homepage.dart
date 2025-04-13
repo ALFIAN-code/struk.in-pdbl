@@ -282,8 +282,10 @@ class HomePage extends StatelessWidget {
                       init: controller,
                       initState: (state) => controller.getAllStruk(),
                       builder: (controller) {
-                        print(controller.strukList.toList());
-                        if (controller.strukList.isEmpty) {
+                        // print(controller.strukList.value.toList());
+                        var sortedList =
+                            controller.strukList.value.reversed.toList();
+                        if (sortedList.isEmpty) {
                           return Center(
                             child: Column(
                               children: [
@@ -305,79 +307,71 @@ class HomePage extends StatelessWidget {
                           );
                         } else {
                           return Column(
-                            children: List.generate(
-                              controller.fullStrukList.length,
-                              (index) {
-                                final transaksi =
-                                    controller.fullStrukList[index];
+                            children: List.generate(sortedList.length, (index) {
+                              final transaksi = sortedList[index];
 
-                                return Dismissible(
-                                  key: Key(
-                                    transaksi.transaksiID.toString(),
-                                  ), // Unique key
-                                  direction:
-                                      DismissDirection
-                                          .endToStart, // Swipe ke kiri
-                                  background: Container(
-                                    margin: EdgeInsets.fromLTRB(10, 15, 10, 30),
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.horizontal(
-                                        right: Radius.circular(10),
-                                      ),
-                                    ), // Warna background saat swipe
-                                    child: const Icon(
-                                      Icons.delete,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
+                              return Dismissible(
+                                key: Key(
+                                  transaksi.transaksiID.toString(),
+                                ), // Unique key
+                                direction:
+                                    DismissDirection
+                                        .endToStart, // Swipe ke kiri
+                                background: Container(
+                                  margin: EdgeInsets.fromLTRB(10, 15, 10, 30),
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
                                   ),
-                                  confirmDismiss: (direction) async {
-                                    return await QuickAlert.show(
-                                      context: context,
-                                      type: QuickAlertType.error,
-                                      title: 'Konfirmasi',
-
-                                      text:
-                                          'Apakah Anda yakin ingin menghapus struk ini?',
-                                      confirmBtnText: 'Hapus',
-                                      cancelBtnText: 'batal',
-                                      showCancelBtn: true,
-                                      onConfirmBtnTap: () async {
-                                        await controller.deleteStruk(
-                                          transaksi.transaksiID!,
-                                        );
-                                        Get.back();
-                                      },
-
-                                      confirmBtnColor: Colors.red,
-                                    );
-                                  },
-                                  onDismissed: (direction) async {
-                                    await controller.deleteStruk(
-                                      transaksi.transaksiID!,
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 20),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Get.to(
-                                          DetailPage(transaksi: transaksi),
-                                        );
-                                      },
-                                      child: StrukItem(
-                                        transaksiItem: transaksi,
-                                      ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.horizontal(
+                                      right: Radius.circular(10),
                                     ),
+                                  ), // Warna background saat swipe
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                    size: 30,
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                                confirmDismiss: (direction) async {
+                                  return await QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.error,
+                                    title: 'Konfirmasi',
+
+                                    text:
+                                        'Apakah Anda yakin ingin menghapus struk ini?',
+                                    confirmBtnText: 'Hapus',
+                                    cancelBtnText: 'batal',
+                                    showCancelBtn: true,
+                                    onConfirmBtnTap: () async {
+                                      await controller.deleteStruk(
+                                        transaksi.transaksiID!,
+                                      );
+                                      Get.back();
+                                    },
+
+                                    confirmBtnColor: Colors.red,
+                                  );
+                                },
+                                onDismissed: (direction) async {
+                                  await controller.deleteStruk(
+                                    transaksi.transaksiID!,
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(DetailPage(transaksi: transaksi));
+                                    },
+                                    child: StrukItem(transaksiItem: transaksi),
+                                  ),
+                                ),
+                              );
+                            }),
                           );
                         }
                       },
