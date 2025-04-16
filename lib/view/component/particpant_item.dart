@@ -143,9 +143,11 @@ class _ParticipantItemState extends State<ParticipantItem> {
               },
               child:
                   isEditing
-                      ? SizedBox(
-                        width: 50,
-                        height: 15,
+                      ? ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 70,
+                          maxHeight: 50,
+                        ),
                         child: TextField(
                           controller: _controller,
                           focusNode: _focusNode,
@@ -176,8 +178,9 @@ class _ParticipantItemState extends State<ParticipantItem> {
                           maxHeight: 50,
                         ),
                         child: Text(
-                          _controller.text.isEmpty ? widget.name : widget.name,
+                          widget.name,
                           maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.roboto(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
