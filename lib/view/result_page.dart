@@ -28,9 +28,9 @@ class _ResultPageState extends State<ResultPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(groupedData);
-    print(widget.transaksiModel.toMap());
-    print(widget.transaksiModel.detailTransaksis.first.toMap);
+    // print(groupedData);
+    // print(widget.transaksiModel.toMap());
+    // print(widget.transaksiModel.detailTransaksis.first.toMap);
 
     return Scaffold(
       appBar: AppBar(

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 
+
+//halaman untuk menampilkan gambar secara fullscreen di halaman detailpage
 class Fullscreen extends StatelessWidget {
   const Fullscreen({super.key, required this.file});
   final File file;
