@@ -127,16 +127,12 @@ class _GetListMenuState extends State<GetListMenu> {
                     ),
                     const SizedBox(width: 10),
                     widget.isSelectable
-                        ? GestureDetector(
-                          onTap: () {},
-                          child: Icon(
-                            widget.isSelected
-                                ? Icons.close
-                                : Icons.circle_outlined,
-                            size: 20,
-                            color:
-                                widget.isSelected ? Colors.black : Colors.grey,
-                          ),
+                        ? Icon(
+                          widget.isSelected
+                              ? Icons.close
+                              : Icons.circle_outlined,
+                          size: 20,
+                          color: widget.isSelected ? Colors.black : Colors.grey,
                         )
                         : SizedBox(),
                   ],

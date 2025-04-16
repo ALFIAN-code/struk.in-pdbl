@@ -61,24 +61,10 @@ class _SplitPageState extends State<SplitPage> {
                 },
               );
             });
-            // Return widget kosong agar tidak terjadi error build
-            // return Container(
-            //   decoration: BoxDecoration(
-            //     gradient: LinearGradient(
-            //       colors: [
-            //         Color.fromRGBO(255, 232, 173, 1.0),
-            //         Color.fromRGBO(255, 255, 255, 0),
-            //       ],
-            //       begin: Alignment.topCenter,
-            //       end: Alignment.bottomCenter,
-            //       stops: [0.3, 1.0],
-            //     ),
-            //   ),
-            //   child: const SizedBox.shrink(),
-            // );
           }
 
-          if (connection.hasConnection == false) {
+          if (connection.hasConnection.value == false ||
+              splitController.processedText.value!.businessName!.isEmpty) {
             Future.microtask(() {
               QuickAlert.show(
                 context: context,
@@ -127,7 +113,7 @@ class _SplitPageState extends State<SplitPage> {
                         ),
                         SizedBox(height: 20),
                         SizedBox(
-                          height: 120,
+                          height: 140,
                           child: GetBuilder<SplitpageController>(
                             init: SplitpageController(),
                             builder: (controller) {

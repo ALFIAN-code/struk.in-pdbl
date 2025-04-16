@@ -150,8 +150,11 @@ class _ParticipantItemState extends State<ParticipantItem> {
                           controller: _controller,
                           focusNode: _focusNode,
                           autofocus: true,
+                          maxLines: 2,
+                          maxLength: 20,
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
+                            counterText: '',
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 0),
                             border: InputBorder.none,
@@ -161,18 +164,19 @@ class _ParticipantItemState extends State<ParticipantItem> {
                             fontWeight: FontWeight.w500,
                           ),
                           onTapOutside: (event) {
+                            _saveAndCloseEditing();
                             isEditing = false;
                           },
                           onSubmitted: (value) => _saveAndCloseEditing(),
                         ),
                       )
-                      : SizedBox(
-                        width: 50,
-                        height: 30,
+                      : ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 60,
+                          maxHeight: 50,
+                        ),
                         child: Text(
-                          _controller.text.isEmpty
-                              ? widget.name
-                              : _controller.text,
+                          _controller.text.isEmpty ? widget.name : widget.name,
                           maxLines: 2,
                           style: GoogleFonts.roboto(
                             fontSize: 14,
