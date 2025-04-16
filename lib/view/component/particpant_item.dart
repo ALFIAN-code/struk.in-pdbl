@@ -58,7 +58,11 @@ class _ParticipantItemState extends State<ParticipantItem> {
     setState(() {
       isEditing = false;
     });
-    widget.onNameChanged?.call(_controller.text);
+    if (_controller.text.isNotEmpty) {
+      widget.onNameChanged?.call(_controller.text);
+    } else {
+      widget.onNameChanged?.call(widget.name);
+    }
   }
 
   @override
@@ -140,7 +144,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
               child:
                   isEditing
                       ? SizedBox(
-                        width: 80,
+                        width: 50,
                         height: 15,
                         child: TextField(
                           controller: _controller,
@@ -162,12 +166,19 @@ class _ParticipantItemState extends State<ParticipantItem> {
                           onSubmitted: (value) => _saveAndCloseEditing(),
                         ),
                       )
-                      : Text(
-                        _controller.text.isEmpty ? "Nama" : _controller.text,
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
+                      : SizedBox(
+                        width: 50,
+                        height: 30,
+                        child: Text(
+                          _controller.text.isEmpty
+                              ? widget.name
+                              : _controller.text,
+                          maxLines: 2,
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                          ),
                         ),
                       ),
             ),

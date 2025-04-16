@@ -42,17 +42,7 @@ class _SplitPageState extends State<SplitPage> {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromRGBO(255, 232, 173, 1.0),
-              Color.fromRGBO(255, 255, 255, 0),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.3, 1.0],
-          ),
-        ),
+        decoration: BoxDecoration(color: Color(0xffFFF3E0)),
         child: Obx(() {
           if (splitController.isProcessing.value) {
             return Center(child: CircularProgressIndicator());
@@ -271,10 +261,13 @@ class _SplitPageState extends State<SplitPage> {
                                     .processedText
                                     .value
                                     ?.items?[index];
-                            return getListMenu(
-                              item!,
-                              splitController.selectedItem.contains(item),
-                              () {
+                            return GetListMenu(
+                              item: item!,
+                              isSelected: splitController.selectedItem.contains(
+                                item,
+                              ),
+                              isSelectable: true,
+                              onTap: () {
                                 setState(() {
                                   splitController.doMultiSelection(
                                     item,
@@ -282,6 +275,16 @@ class _SplitPageState extends State<SplitPage> {
                                   );
                                 });
                               },
+                              // item!,
+                              // splitController.selectedItem.contains(item),
+                              // () {
+                              //   setState(() {
+                              //     splitController.doMultiSelection(
+                              //       item,
+                              //       splitController.selectedIndex.value,
+                              //     );
+                              //   });
+                              // },
                             );
                           },
                         ),
