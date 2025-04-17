@@ -344,19 +344,5 @@ class DatabaseHelper {
       );
     });
   }
-
-
-  // ---------------------------------------------------------------------------
-  // Quantity Control
-  // ---------------------------------------------------------------------------
-  Future<void> updateQuantity(int detailID, int newQuantity) async {
-    final db = await database;
-
-    await db.update(
-      'detail_transaksi',
-      {'jumlah': newQuantity},
-      where: 'DetailID = ?',
-      whereArgs: [detailID],
-    );
-  }
+  
 }

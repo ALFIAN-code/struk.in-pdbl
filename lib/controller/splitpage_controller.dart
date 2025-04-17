@@ -108,6 +108,33 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Mengatur Kuantitas
+  /// 
+  /// [item] - Item yang akan diatur kuantitasnya
+  void controlQuantity(Item item, bool isIncrement) {
+    int currentQuantity = item.quantity ?? 1;
+    int newQuantity = isIncrement ? currentQuantity + 1 : currentQuantity - 1;
+
+    // Prevention to Quantity goes less than 1
+    if (newQuantity < 1) return;
+
+    for (var participant in participants.value) {
+      List<Item> items = participant['selectedItems'];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].name == item.name && items[i].unitPrice == item.unitPrice) {
+          items[i].quantity = newQuantity;
+        }
+      }
+    }
+
+    for (var i = 0; i < selectedItem.length; i++) {
+      if (selectedItem[i].name == item.name && selectedItem[i].unitPrice == item.unitPrice) {
+        selectedItem[i].quantity = newQuantity;
+      }
+    }
+    update();
+  }
+
   /// Menambahkan peserta baru dengan gambar profil acak
   ///
   /// Gambar profil dipilih secara unik dari daftar yang tersedia
