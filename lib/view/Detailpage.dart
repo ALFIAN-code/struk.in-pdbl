@@ -25,7 +25,6 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   void initState() {
-    // convertedImage = Utils.imagehandler(widget.transaksi.imagePath!);
     super.initState();
   }
 
@@ -188,6 +187,7 @@ class _DetailPageState extends State<DetailPage> {
                             );
                           }).toList(),
                           user["avatar"],
+                          context,
                         );
                       }).toList(),
                 ),
@@ -242,7 +242,9 @@ class _DetailPageState extends State<DetailPage> {
     int total,
     List<Widget> orders,
     String imgpath,
+    BuildContext contex,
   ) {
+    var deviceWidth = MediaQuery.of(contex).size.width;
     return Card(
       color: Colors.white,
       // elevation: 2,
@@ -256,11 +258,15 @@ class _DetailPageState extends State<DetailPage> {
             Row(
               children: [
                 Image.asset(imgpath, width: 40, height: 40, fit: BoxFit.cover),
-
                 SizedBox(width: 10),
-                Text(
-                  "$name - ${Utils.formatCurrency(total)}",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                SizedBox(
+                  width: deviceWidth * 0.65,
+                  child: Text(
+                    "$name - ${Utils.formatCurrency(total)}",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 2, // boleh kamu atur ke 1 jika mau
+                  ),
                 ),
               ],
             ),
@@ -276,8 +282,17 @@ class _DetailPageState extends State<DetailPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(name), Text(Utils.formatCurrency(price))],
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text("$name ", maxLines: 2, overflow: TextOverflow.ellipsis),
+          ),
+          Text(
+            Utils.formatCurrency(price),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

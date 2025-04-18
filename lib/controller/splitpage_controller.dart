@@ -125,6 +125,38 @@ class SplitpageController extends GetxController {
     update();
   }
 
+  /// Mengatur Kuantitas
+  /// 
+  /// [item] - Item yang akan diatur kuantitasnya
+  void controlQuantity(Item item, bool isIncrement, int participantIndex) {
+    List<Item> items = participants.value[participantIndex]['selectedItems'];
+
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].name == item.name && items[i].unitPrice == item.unitPrice) {
+        int currentQuantity = items[i].quantity ?? 1;
+        int newQuantity = isIncrement ? currentQuantity + 1 : currentQuantity - 1;
+
+        //Prevention when quantity goes less than 1
+        if (newQuantity < 1) return;
+
+        items[i].quantity = newQuantity;
+      }
+    }
+
+    if (selectedIndex.value == participantIndex) {
+      for (var i = 0; i < selectedItem.length; i++) {
+        if (selectedItem[i].name == item.name && selectedItem[i].unitPrice == item.unitPrice) {
+          int currentQuantity = selectedItem[i].quantity ?? 1;
+          int newQuantity = isIncrement ? currentQuantity + 1 : currentQuantity - 1;
+          if (newQuantity >= 1) {
+            selectedItem[i].quantity = newQuantity;
+          }
+        }
+      }
+    }
+    update();
+  }
+
   /// Menambahkan peserta baru dengan gambar profil acak
   ///
   /// Gambar profil dipilih secara unik dari daftar yang tersedia
@@ -188,7 +220,7 @@ class SplitpageController extends GetxController {
       return null;
     }
 
-    var customID = Utils.generateCustomUUID();
+    // var customID = Utils.generateCustomUUID();
 
     // Ambil data transaksi utama dari hasil OCR (processedText)
     final strukData = processedText.value!;

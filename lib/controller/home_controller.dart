@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,14 +16,13 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 /// - Mengambil dan menyimpan gambar struk (dari kamera/galeri)
 /// - Mengelola data struk di database
 /// - Melakukan pencarian dan filter struk
-class StrukController extends GetxController {
+class HomepageController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   var fullStrukList = <TransaksiModel>[].obs;
 
   Rx<XFile?> receiptImage = Rx<XFile?>(null);
 
   var database = DatabaseHelper();
-  // var listStruk = <Transaksi>[];
   Rx<List<TransaksiModel>> strukList = Rx<List<TransaksiModel>>([]);
 
   /// Menghapus struk dari database berdasarkan ID
@@ -104,11 +105,17 @@ class StrukController extends GetxController {
   Future<XFile?> getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
-      // Normalisasi (convert + copy) ke JPEG di app dir
-      final normalizedPath = await normalizeImage(pickedImage.path);
-      return normalizedPath != null
-          ? XFile(normalizedPath)
-          : null; // Kembalikan file yang sudah dinormalisasi
+      // Salin ke direktori sementara dulu
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+        '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      final copiedFile = await File(pickedImage.path).copy(tempFile.path);
+
+      // Normalisasi (convert/copy jpeg)
+      final normalizedPath = await normalizeImage(copiedFile.path);
+
+      return normalizedPath != null ? XFile(normalizedPath) : null;
     } else {
       return null;
     }
@@ -122,11 +129,17 @@ class StrukController extends GetxController {
   Future<XFile?> getImageFromGallery() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      // Normalisasi (convert + copy) ke JPEG di app dir
-      final normalizedPath = await normalizeImage(pickedImage.path);
-      return normalizedPath != null
-          ? XFile(normalizedPath)
-          : null; // Kembalikan file yang sudah dinormalisasi
+      // Salin ke direktori sementara dulu
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+        '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      final copiedFile = await File(pickedImage.path).copy(tempFile.path);
+
+      // Normalisasi (convert/copy jpeg)
+      final normalizedPath = await normalizeImage(copiedFile.path);
+
+      return normalizedPath != null ? XFile(normalizedPath) : null;
     } else {
       return null;
     }

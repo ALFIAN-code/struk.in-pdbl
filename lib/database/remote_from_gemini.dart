@@ -19,37 +19,63 @@ Future<StrukFromApi?> processReceipt(String api, XFile image) async {
     final model = GenerativeModel(model: 'gemini-2.0-flash-lite', apiKey: api);
 
     String prompt = """ 
-Diberi gambar struk, kembalikan **ONLY JSON**:
-```json
+    Dari gambar, keluarkan hanya JSON dengan format:
+    ```json
 {
-  "is_struk": true,
-  "business_name": "String",
-  "currency_code" :"String",
-  "invoice_number":"String",
-  "date":"String",
-  "payment_method":"String",
-  "items":[
-    {"name":"String","quantity":Int,"unit_price":Int,"price_total": Int}
+  "is_struk": Boolean,
+  "business_name": String,
+  "currency_code": String (ISO 4217),
+  "invoice_number": String,
+  "date": String,
+  "payment_method": String,
+  "items": [
+    {"name": String, "quantity": Int, "unit_price": Int, "price_total": Int}
   ],
-  "subtotal":Int,
-  "tax":Int,
-  "total":Int
+  "subtotal": Int,
+  "tax": Int,
+  "total": Int
+  ```
 }
-```
 
 Aturan:
-- jika gambar bukan merupakan struk, kembalikan {"is_struk": false}, dan sisakan data yang lain kosong
-- Jika unit_price hilang: unit_price=price_total/quantity
-- Jika price_total hilang: price_total=unit_price*quantity
-- Jika tax hilang: tax=total−subtotal
-- Jika data tak ada, derivasi dari nilai lain
-- currency code menggunakan format iso 4217
-- jika ada data string yang null, berikan "-"
-- unit_price adalah harga satuan per item/menu
-- price_total adalah harga total per item berdasarkan quantity dan unit_price
-- price price selalu sama atau lebih dari unit_price
-
+- Jika gambar bukan struk, hasilkan: {"is_struk": false} dan sisakan lainnya kosong.
+- Jika unit_price hilang, set unit_price = price_total / quantity.
+- Jika price_total hilang, set price_total = unit_price * quantity.
+- Jika tax hilang, set tax = total − subtotal.
+- Data yang tidak ada harus di-derive dari nilai lain.
+- Jika string null, ganti dengan "-".
+- Harga (price_total) selalu sama atau lebih dari unit_price.
 """;
+
+    // Diberi gambar struk, kembalikan **ONLY JSON**:
+    // ```json
+    // {
+    //   "is_struk": true,
+    //   "business_name": "String",
+    //   "currency_code" :"String",
+    //   "invoice_number":"String",
+    //   "date":"String",
+    //   "payment_method":"String",
+    //   "items":[
+    //     {"name":"String","quantity":Int,"unit_price":Int,"price_total": Int}
+    //   ],
+    //   "subtotal":Int,
+    //   "tax":Int,
+    //   "total":Int
+    // }
+    // ```
+
+    // Aturan:
+    // - jika gambar bukan merupakan struk, kembalikan {"is_struk": false}, dan sisakan data yang lain kosong
+    // - Jika unit_price hilang: unit_price=price_total/quantity
+    // - Jika price_total hilang: price_total=unit_price*quantity
+    // - Jika tax hilang: tax=total−subtotal
+    // - Jika data tak ada, derivasi dari nilai lain
+    // - currency code menggunakan format iso 4217
+    // - jika ada data string yang null, berikan "-"
+    // - unit_price adalah harga satuan per item/menu
+    // - price_total adalah harga total per item berdasarkan quantity dan unit_price
+    // - price price selalu sama atau lebih dari unit_price
 
     // Read image bytes directly
     final imageBytes = await image.readAsBytes();
