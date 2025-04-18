@@ -58,7 +58,11 @@ class _ParticipantItemState extends State<ParticipantItem> {
     setState(() {
       isEditing = false;
     });
-    widget.onNameChanged?.call(_controller.text);
+    if (_controller.text.isNotEmpty) {
+      widget.onNameChanged?.call(_controller.text);
+    } else {
+      widget.onNameChanged?.call(widget.name);
+    }
   }
 
   @override
@@ -139,15 +143,20 @@ class _ParticipantItemState extends State<ParticipantItem> {
               },
               child:
                   isEditing
-                      ? SizedBox(
-                        width: 80,
-                        height: 15,
+                      ? ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 70,
+                          maxHeight: 50,
+                        ),
                         child: TextField(
                           controller: _controller,
                           focusNode: _focusNode,
                           autofocus: true,
+                          maxLines: 2,
+                          maxLength: 20,
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
+                            counterText: '',
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 0),
                             border: InputBorder.none,
@@ -157,17 +166,26 @@ class _ParticipantItemState extends State<ParticipantItem> {
                             fontWeight: FontWeight.w500,
                           ),
                           onTapOutside: (event) {
+                            _saveAndCloseEditing();
                             isEditing = false;
                           },
                           onSubmitted: (value) => _saveAndCloseEditing(),
                         ),
                       )
-                      : Text(
-                        _controller.text.isEmpty ? "Nama" : _controller.text,
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
+                      : ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 60,
+                          maxHeight: 50,
+                        ),
+                        child: Text(
+                          widget.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                          ),
                         ),
                       ),
             ),

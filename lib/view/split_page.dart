@@ -21,7 +21,6 @@ class SplitPage extends StatefulWidget {
 
 class _SplitPageState extends State<SplitPage> {
   // Menyimpan item ke multi-selection
-
   var splitController = Get.put(SplitpageController());
   var connection = Get.find<ConnectionController>();
 
@@ -42,17 +41,7 @@ class _SplitPageState extends State<SplitPage> {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromRGBO(255, 232, 173, 1.0),
-              Color.fromRGBO(255, 255, 255, 0),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.3, 1.0],
-          ),
-        ),
+        decoration: BoxDecoration(color: Color(0xffFFF3E0)),
         child: Obx(() {
           if (splitController.isProcessing.value) {
             return Center(child: CircularProgressIndicator());
@@ -71,24 +60,10 @@ class _SplitPageState extends State<SplitPage> {
                 },
               );
             });
-            // Return widget kosong agar tidak terjadi error build
-            // return Container(
-            //   decoration: BoxDecoration(
-            //     gradient: LinearGradient(
-            //       colors: [
-            //         Color.fromRGBO(255, 232, 173, 1.0),
-            //         Color.fromRGBO(255, 255, 255, 0),
-            //       ],
-            //       begin: Alignment.topCenter,
-            //       end: Alignment.bottomCenter,
-            //       stops: [0.3, 1.0],
-            //     ),
-            //   ),
-            //   child: const SizedBox.shrink(),
-            // );
           }
 
-          if (connection.hasConnection == false) {
+          if (connection.hasConnection.value == false &&
+              splitController.processedText.value!.businessName!.isEmpty) {
             Future.microtask(() {
               QuickAlert.show(
                 context: context,
@@ -137,7 +112,7 @@ class _SplitPageState extends State<SplitPage> {
                         ),
                         SizedBox(height: 20),
                         SizedBox(
-                          height: 120,
+                          height: 140,
                           child: GetBuilder<SplitpageController>(
                             init: SplitpageController(),
                             builder: (controller) {
@@ -254,7 +229,29 @@ class _SplitPageState extends State<SplitPage> {
                             ],
                           ),
                         ),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Sertakan Pajak'),
+                              Transform.scale(
+                                scale: 0.7,
+                                child: Switch(
+                                  activeColor: Colors.green,
+                                  value: splitController.includePajak.value,
+                                  onChanged: (value) {
+                                    splitController.includePajak.value = value;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
                         ListView.separated(
+                          padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           separatorBuilder:
@@ -271,10 +268,14 @@ class _SplitPageState extends State<SplitPage> {
                                     .processedText
                                     .value
                                     ?.items?[index];
-                            return getListMenu(
-                              item!,
-                              splitController.selectedItem.contains(item),
-                              () {
+                            return GetListMenu(
+                              taxPercentage: splitController.getTaxRatio(),
+                              item: item!,
+                              isSelected: splitController.selectedItem.contains(
+                                item,
+                              ),
+                              isSelectable: true,
+                              onTap: () {
                                 setState(() {
                                   splitController.doMultiSelection(
                                     item,
@@ -287,11 +288,14 @@ class _SplitPageState extends State<SplitPage> {
                         ),
                         // const SizedBox(height: 20),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 30,
+                          ),
                           child: Column(
                             children: [
                               rowText(
-                                'Subtotal',
+                                'Subtotal (tanpa pajak)',
                                 Utils.formatCurrency(
                                   splitController
                                           .processedText
@@ -325,45 +329,82 @@ class _SplitPageState extends State<SplitPage> {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        print("Tombol Konfirmasi ditekan");
-
-                        bool isEmpty = splitController.participants.value.any(
-                          (element) => element['selectedItems'].isEmpty,
-                        );
-
-                        if (isEmpty) {
-                          Get.snackbar(
-                            'Error',
-                            'Pilih item terlebih dahulu',
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white,
-                          );
-                        } else {
-                          var result = await splitController.addDataToDatabase(
-                            widget.image.path,
-                          );
-                          Get.off(() => ResultPage(transaksiModel: result!));
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              print("Tombol edit ditekan");
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xffFFFBF2),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: Text(
+                              'Edit',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Konfirmasi',
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              print("Tombol Konfirmasi ditekan");
+
+                              bool isEmpty = splitController.participants.value
+                                  .any(
+                                    (element) =>
+                                        element['selectedItems'].isEmpty,
+                                  );
+
+                              if (isEmpty) {
+                                Get.snackbar(
+                                  'Error',
+                                  'Pilih item terlebih dahulu',
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                );
+                              } else {
+                                var result = await splitController
+                                    .addDataToDatabase(widget.image.path);
+                                Get.off(
+                                  () => ResultPage(transaksiModel: result!),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromRGBO(
+                                252,
+                                207,
+                                92,
+                                1.0,
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: Text(
+                              'Konfirmasi',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),

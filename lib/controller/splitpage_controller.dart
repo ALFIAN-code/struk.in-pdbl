@@ -27,6 +27,23 @@ class SplitpageController extends GetxController {
 
   var isProcessing = false.obs;
 
+  var includePajak = false.obs;
+
+  //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
+  int participantIncrement = 1;
+
+  //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
+  double getTaxRatio() {
+    final tax = processedText.value?.tax;
+    final total = processedText.value?.subtotal;
+
+    if (tax != null && total != null && total != 0) {
+      return ((tax / total) * 100);
+    } else {
+      return 0; // fallback default, bisa juga null kalau kamu ingin
+    }
+  }
+
   /*
   fungsi ini untuk memproses gambar struk yang diambil dari kamera
   dan mengirimkannya ke API untuk mendapatkan hasil OCR
@@ -113,6 +130,7 @@ class SplitpageController extends GetxController {
   /// Gambar profil dipilih secara unik dari daftar yang tersedia
   void addParticipant() {
     if (usedImages.value.length >= 58) return;
+    participantIncrement++;
 
     int newImage;
     do {
@@ -123,7 +141,7 @@ class SplitpageController extends GetxController {
 
     participants.value.add({
       "id": Utils.generateCustomUUID(),
-      "name": "USER ${participants.value.length + 1}",
+      "name": "USER $participantIncrement",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
       "selectedItems": <Item>[],
