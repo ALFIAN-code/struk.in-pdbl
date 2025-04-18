@@ -40,6 +40,7 @@ class GetListMenu extends StatefulWidget {
     required this.isSelectable,
     required this.isSelected,
     required this.onTap,
+    required this.taxPercentage,
   });
 
   final Item item;
@@ -47,6 +48,7 @@ class GetListMenu extends StatefulWidget {
   final VoidCallback? onTap;
   final bool isSelectable;
   bool isExpand = false;
+  final double taxPercentage;
 
   @override
   State<GetListMenu> createState() => _GetListMenuState();
@@ -60,6 +62,14 @@ class _GetListMenuState extends State<GetListMenu> {
     var participantWhoSelected = splitController.getParticipantsWhoSelectedItem(
       widget.item,
     );
+
+    int taxPerMenu =
+        (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
+
+    print(
+      'harga = ${widget.item.unitPrice} pajak percentage= ${widget.taxPercentage} pajak = $taxPerMenu',
+    );
+
     return GestureDetector(
       onTap: widget.isSelectable ? widget.onTap : null,
       child: Container(
@@ -92,31 +102,47 @@ class _GetListMenuState extends State<GetListMenu> {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        Utils.formatCurrency(widget.item.unitPrice ?? 0),
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          color: const Color.fromRGBO(40, 40, 40, 1.0),
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            Utils.formatCurrency(widget.item.unitPrice ?? 0),
+                            style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              color: const Color.fromRGBO(40, 40, 40, 1.0),
+                            ),
+                          ),
+                          (splitController.includePajak.value)
+                              ? Text(
+                                ' + ${Utils.formatCurrency(taxPerMenu, withSymbol: false)}',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              )
+                              : SizedBox(),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        '${widget.item.quantity}X',
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          color: const Color.fromRGBO(90, 90, 90, 1.0),
-                        ),
-                        textAlign: TextAlign.center,
+                    Text(
+                      '${widget.item.quantity}X',
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: const Color.fromRGBO(90, 90, 90, 1.0),
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     Expanded(
                       flex: 2,
                       child: Text(
-                        Utils.formatCurrency(widget.item.price!.toInt()),
+                        Utils.formatCurrency(
+                          (splitController.includePajak.value)
+                              ? (taxPerMenu + widget.item.unitPrice!) *
+                                  widget.item.quantity!
+                              : widget.item.price!.toInt(),
+                        ),
                         style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,

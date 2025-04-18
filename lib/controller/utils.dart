@@ -18,10 +18,10 @@ class Utils {
   ///
   /// Mengembalikan:
   /// - String berformat mata uang (contoh: "IDR 50,000")
-  static String formatCurrency(int amount) {
+  static String formatCurrency(int amount, {bool withSymbol = true}) {
     final formatter = NumberFormat.currency(
       locale: 'id_ID',
-      symbol: 'IDR ',
+      symbol: (withSymbol) ? 'IDR ' : '',
       decimalDigits: 0,
     );
     return formatter.format(amount);

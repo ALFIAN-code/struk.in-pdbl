@@ -27,8 +27,22 @@ class SplitpageController extends GetxController {
 
   var isProcessing = false.obs;
 
+  var includePajak = false.obs;
+
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
   int participantIncrement = 1;
+
+  //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
+  double getTaxRatio() {
+    final tax = processedText.value?.tax;
+    final total = processedText.value?.subtotal;
+
+    if (tax != null && total != null && total != 0) {
+      return ((tax / total) * 100);
+    } else {
+      return 0; // fallback default, bisa juga null kalau kamu ingin
+    }
+  }
 
   /*
   fungsi ini untuk memproses gambar struk yang diambil dari kamera
