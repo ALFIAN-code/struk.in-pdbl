@@ -31,7 +31,7 @@ class Utils {
   ///
   /// Mengembalikan:
   /// - String acak sepanjang 8 karakter
-  static String generateCustomUUID() {
+  static String generateCustomStringID() {
     const String chars =
         'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     Random random = Random();
@@ -40,6 +40,12 @@ class Utils {
       8,
       (index) => chars[random.nextInt(chars.length)],
     ).join();
+  }
+
+  static int generateCustomIntID() {
+    final random = Random();
+    final id = random.nextInt(90000000) + 10000000; // 10000000–99999999
+    return id;
   }
 
   /// Mengkonversi gambar ke format PNG

@@ -66,10 +66,6 @@ class _GetListMenuState extends State<GetListMenu> {
     int taxPerMenu =
         (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
 
-    print(
-      'harga = ${widget.item.unitPrice} pajak percentage= ${widget.taxPercentage} pajak = $taxPerMenu',
-    );
-
     return GestureDetector(
       onTap: widget.isSelectable ? widget.onTap : null,
       child: Container(
@@ -241,63 +237,100 @@ class _GetListMenuState extends State<GetListMenu> {
                   onTap: () {},
                   child: Container(
                     color: Colors.transparent,
-                    child: Column(
-                      children:
-                          participantWhoSelected.map((e) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 13,
-                                    backgroundColor: Colors.orange,
-                                    child: Image.asset(
-                                      splitController
-                                          .participants
-                                          .value[e]['image'],
-                                    ),
+                    child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: participantWhoSelected.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 13,
+                                backgroundColor: Colors.orange,
+                                child: Image.asset(
+                                  splitController
+                                      .participants
+                                      .value[participantWhoSelected[index]]['image'],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                splitController
+                                    .participants
+                                    .value[participantWhoSelected[index]]['name'],
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: Colors.black.withAlpha(170),
+                                ),
+                              ),
+                              Expanded(child: SizedBox()),
+                              GestureDetector(
+                                onTap: () {
+                                  splitController.controlQuantity(
+                                    isIncrement: false,
+                                    item: widget.item,
+                                    participantIndex:
+                                        participantWhoSelected[index],
+                                  );
+                                },
+                                child: Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(1000),
+                                    color: Color(0xffC7AF00),
                                   ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    splitController
-                                        .participants
-                                        .value[e]['name'],
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.roboto(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                      color: Colors.black.withAlpha(170),
-                                    ),
-                                  ),
-                                  Expanded(child: SizedBox()),
-                                  Container(
-                                    height: 25,
-                                    width: 25,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(1000),
-                                      color: Color(0xffC7AF00),
-                                    ),
-                                    child: Icon(Icons.remove_rounded),
-                                  ),
-                                  Padding(
+                                  child: Icon(Icons.remove_rounded),
+                                ),
+                              ),
+                              GetBuilder<SplitpageController>(
+                                builder: (controller) {
+                                  var quantity =
+                                      (splitController
+                                                  .participants
+                                                  .value[participantWhoSelected[index]]['selectedItems']
+                                              as List<Map<String, dynamic>>)
+                                          .firstWhere(
+                                            (e) =>
+                                                (e['item'] as Item).id ==
+                                                widget.item.id,
+                                          )['quantity'];
+                                  return Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 15,
                                     ),
-                                    child: Text('1'),
-                                  ),
-                                  Container(
-                                    height: 25,
-                                    width: 25,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(1000),
-                                      color: Color(0xffC7AF00),
-                                    ),
-                                    child: Icon(Icons.add_rounded),
-                                  ),
-                                ],
+                                    child: Text(quantity.toString()),
+                                  );
+                                },
                               ),
-                            );
-                          }).toList(),
+                              GestureDetector(
+                                onTap: () {
+                                  splitController.controlQuantity(
+                                    isIncrement: true,
+                                    item: widget.item,
+                                    participantIndex:
+                                        participantWhoSelected[index],
+                                  );
+                                },
+                                child: Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(1000),
+                                    color: Color(0xffC7AF00),
+                                  ),
+                                  child: Icon(Icons.add_rounded),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 )

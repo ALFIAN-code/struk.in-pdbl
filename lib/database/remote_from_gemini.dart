@@ -29,7 +29,7 @@ Future<StrukFromApi?> processReceipt(String api, XFile image) async {
   "date": String,
   "payment_method": String,
   "items": [
-    {"name": String, "quantity": Int, "unit_price": Int, "price_total": Int}
+    {id : int,"name": String, "quantity": Int, "unit_price": Int, "price_total": Int}
   ],
   "subtotal": Int,
   "tax": Int,
@@ -45,6 +45,7 @@ Aturan:
 - Data yang tidak ada harus di-derive dari nilai lain.
 - Jika string null, ganti dengan "-".
 - Harga (price_total) selalu sama atau lebih dari unit_price.
+- beri ID di setiap item dengan int 1 .. n
 """;
 
     // Diberi gambar struk, kembalikan **ONLY JSON**:
@@ -120,6 +121,7 @@ Aturan:
       throw Exception("Failed to create StrukFromApi: ${e.toString()}");
     }
   } catch (error) {
+    // return
     throw Exception("Error processing receipt: $error");
   }
 }

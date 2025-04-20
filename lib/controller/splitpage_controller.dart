@@ -24,9 +24,7 @@ class SplitpageController extends GetxController {
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
 
   Rx<String?> ocrText = ''.obs;
-
   var isProcessing = false.obs;
-
   var includePajak = false.obs;
 
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
@@ -73,40 +71,33 @@ class SplitpageController extends GetxController {
   /// [item] - Item yang akan dicek
   ///
   /// Mengembalikan:
-  /// - List<int> berisi index peserta yang memilih item
   List<int> getParticipantsWhoSelectedItem(Item item) {
     List<int> participantsWhoSelected = [];
     for (var i = 0; i < participants.value.length; i++) {
-      if (participants.value[i]['selectedItems'].contains(item)) {
+      List<Map<String, dynamic>> selectedItems =
+          participants.value[i]['selectedItems'];
+      bool itemFound = selectedItems.any(
+        (entry) => (entry['item'] as Item).id == item.id,
+      );
+      if (itemFound) {
         participantsWhoSelected.add(i);
       }
     }
     return participantsWhoSelected;
   }
 
-  /// Menambahkan peserta pertama secara otomatis
-  ///
-  /// Menambahkan peserta dengan gambar profil acak
-  void addFirstParticipant() {
-    if (participants.value.isEmpty) {
-      int firstImage = _random.nextInt(58) + 1;
-      usedImages.value.add(firstImage);
-
-      participants.value.add({
-        "id": Utils.generateCustomUUID(),
-        "name": "USER 1",
-        "image": "assets/images/profile/image$firstImage.png",
-        "selected": false,
-        "selectedItems": <Item>[],
-      });
-    }
-  }
-
   /// Membersihkan pilihan menu untuk peserta tertentu
   ///
   /// [participantIndex] - Index peserta
   void clearSelectedMenu(int participantIndex) {
-    selectedItem = participants.value[participantIndex]['selectedItems'];
+    // selectedItem =
+    //     participants.value[participantIndex]['selectedItems']['item'];
+    selectedItem.clear();
+    for (var e
+        in (participants.value[participantIndex]['selectedItems']
+            as List<Map<String, dynamic>>)) {
+      selectedItem.add(e['item']);
+    }
     update();
   }
 
@@ -116,45 +107,53 @@ class SplitpageController extends GetxController {
   /// [participantIndex] - Index peserta
   void doMultiSelection(Item item, int participantIndex) {
     if (selectedItem.contains(item)) {
-      participants.value[participantIndex]['selectedItems'].remove(item);
+      (participants.value[participantIndex]['selectedItems']
+              as List<Map<String, dynamic>>)
+          .removeWhere((element) => (element['item'] as Item).id == item.id);
       selectedItem.remove(item);
     } else {
-      participants.value[participantIndex]['selectedItems'].add(item);
+      participants.value[participantIndex]['selectedItems'].add({
+        'quantity': 1,
+        'item': item,
+      });
       selectedItem.add(item);
     }
     update();
   }
 
   /// Mengatur Kuantitas
-  /// 
+  ///
   /// [item] - Item yang akan diatur kuantitasnya
-  void controlQuantity(Item item, bool isIncrement, int participantIndex) {
-    List<Item> items = participants.value[participantIndex]['selectedItems'];
+  ///
+  void controlQuantity({
+    required Item item,
+    required bool isIncrement,
+    required int participantIndex,
+  }) {
+    List<Map<String, dynamic>> items =
+        participants.value[participantIndex]['selectedItems'];
 
     for (var i = 0; i < items.length; i++) {
-      if (items[i].name == item.name && items[i].unitPrice == item.unitPrice) {
-        int currentQuantity = items[i].quantity ?? 1;
-        int newQuantity = isIncrement ? currentQuantity + 1 : currentQuantity - 1;
+      if ((items[i]['item'] as Item).id == item.id) {
+        int quantity =
+            participants
+                .value[participantIndex]['selectedItems'][i]['quantity'];
 
-        //Prevention when quantity goes less than 1
-        if (newQuantity < 1) return;
-
-        items[i].quantity = newQuantity;
-      }
-    }
-
-    if (selectedIndex.value == participantIndex) {
-      for (var i = 0; i < selectedItem.length; i++) {
-        if (selectedItem[i].name == item.name && selectedItem[i].unitPrice == item.unitPrice) {
-          int currentQuantity = selectedItem[i].quantity ?? 1;
-          int newQuantity = isIncrement ? currentQuantity + 1 : currentQuantity - 1;
-          if (newQuantity >= 1) {
-            selectedItem[i].quantity = newQuantity;
-          }
+        if (quantity >= 1 && isIncrement) {
+          quantity += 1;
         }
+        if (quantity > 1 && !isIncrement) {
+          quantity -= 1;
+        }
+        participants.value[participantIndex]['selectedItems'][i]['quantity'] =
+            quantity;
+
+        print(
+          participants.value[participantIndex]['selectedItems'][i]['quantity'],
+        );
+        update();
       }
     }
-    update();
   }
 
   /// Menambahkan peserta baru dengan gambar profil acak
@@ -162,7 +161,6 @@ class SplitpageController extends GetxController {
   /// Gambar profil dipilih secara unik dari daftar yang tersedia
   void addParticipant() {
     if (usedImages.value.length >= 58) return;
-    participantIncrement++;
 
     int newImage;
     do {
@@ -171,12 +169,15 @@ class SplitpageController extends GetxController {
 
     usedImages.value.add(newImage);
 
+    // Tentukan nama user
+    participantIncrement = participants.value.length + 1;
+
     participants.value.add({
-      "id": Utils.generateCustomUUID(),
+      "id": Utils.generateCustomStringID(),
       "name": "USER $participantIncrement",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
-      "selectedItems": <Item>[],
+      "selectedItems": <Map<String, dynamic>>[],
     });
     update();
   }
@@ -201,6 +202,7 @@ class SplitpageController extends GetxController {
           .replaceAll("assets/images/profile/image", "")
           .replaceAll(".png", ""),
     );
+
     usedImages.value.remove(removedImage);
     participants.value.removeAt(index);
     update();
@@ -213,72 +215,109 @@ class SplitpageController extends GetxController {
   /// Mengembalikan:
   /// - TransaksiModel yang berhasil disimpan
   /// - Null jika terjadi error
-  Future<TransaksiModel?> addDataToDatabase(String imgpath) async {
-    // Pastikan data hasil OCR dan parsing (processedText) sudah tersedia
+  Future<TransaksiModel?> addDataToDatabase2(String imgpath) async {
     if (processedText.value == null) {
       print("Data struk belum tersedia.");
       return null;
     }
-
-    // var customID = Utils.generateCustomUUID();
-
-    // Ambil data transaksi utama dari hasil OCR (processedText)
     final strukData = processedText.value!;
 
-    // Kumpulkan semua item unik yang telah dipilih oleh peserta
+    var tax = getTaxRatio();
+
     Set<Item> uniqueItems = {};
-    for (var participant in participants.value) {
-      List<Item> selectedItems = participant['selectedItems'];
-      uniqueItems.addAll(selectedItems);
+    for (var i = 0; i < participants.value.length; i++) {
+      List<Map<String, dynamic>> selectedItems =
+          participants.value[i]['selectedItems'];
+      for (var element in selectedItems) {
+        uniqueItems.add(element['item']);
+      }
+      // uniqueItems.addAll(selectedItems);
     }
 
     List<DetailTransaksiModel> detailList = [];
-
-    // Untuk setiap item, cari peserta yang memilih item tersebut
     for (var item in uniqueItems) {
       List<int> participantIndices = getParticipantsWhoSelectedItem(item);
-      // Misalnya, porsi tiap peserta adalah 1 dibagi jumlah peserta yang memilih item tersebut
-      double portion =
-          participantIndices.isNotEmpty ? 1.0 / participantIndices.length : 1.0;
+      print('tax ratio = ${tax / 100}');
+      var unitTax = (item.unitPrice! * tax / 100).round();
+
+      var totalQuantity = 0;
+      for (var i = 0; i < participants.value.length; i++) {
+        List<Map<String, dynamic>> dump =
+            participants.value[i]['selectedItems'];
+
+        for (var i = 0; i < dump.length; i++) {
+          if ((dump[i]['item'] as Item).id == item.id) {
+            totalQuantity += dump[i]['quantity'] as int;
+          }
+        }
+      }
 
       List<DetailUserSplitModel> userSplits = [];
       for (var index in participantIndices) {
         var participant = participants.value[index];
-        // Buat model Usersplit dari data peserta
+        int participantQuantity = 0;
+
+        for (var element
+            in (participants.value[index]['selectedItems']
+                as List<Map<String, dynamic>>)) {
+          if ((element['item'] as Item).id == item.id) {
+            participantQuantity = element['quantity'];
+          }
+        }
+
+        var hargaPerParticipant =
+            (participantQuantity / totalQuantity) *
+            ((includePajak.value)
+                ? ((unitTax + item.unitPrice!) * item.quantity!)
+                : item.price!);
+        print(unitTax);
+        print(
+          '  ${participants.value[index]['name']}  $participantQuantity $totalQuantity',
+        );
+
+        print(
+          '${item.name}  ${participants.value[index]['name']}  $hargaPerParticipant',
+        );
+
         UserSplitModel user = UserSplitModel(
-          // 0 sebagai tanda user baru (akan di-auto increment saat insert)
           userID: participant['id'],
           username: participant['name'],
           avatar: participant['image'],
         );
-        userSplits.add(
-          DetailUserSplitModel(
-            // akan di-set oleh proses insert user
-            portion: portion,
-            // hargaPerParticipant akan dihitung di dalam fungsi insertFullTransaksi
-            user: user,
-          ),
-        );
-      }
 
-      // Buat detail transaksi untuk item ini
+        DetailUserSplitModel detailUserSplit = DetailUserSplitModel(
+          hargaPerParticipant: hargaPerParticipant,
+          portion: participantQuantity.toDouble(),
+          user: user,
+        );
+
+        userSplits.add(detailUserSplit);
+        print(detailUserSplit.hargaPerParticipant);
+      }
+      print(
+        userSplits.map(
+          (e) => print('harga per participant = ${e.hargaPerParticipant}'),
+        ),
+      );
+
       DetailTransaksiModel detail = DetailTransaksiModel(
-        hargaSatuan: item.unitPrice,
+        hargaSatuan:
+            (includePajak.value) ? unitTax + item.unitPrice! : item.unitPrice,
         namaBarang: item.name,
-        harga: item.price!.toDouble(),
+        harga:
+            (includePajak.value)
+                ? ((unitTax + item.unitPrice!) * item.quantity!).toDouble()
+                : item.price!.toDouble(),
         jumlah: item.quantity,
         userSplits: userSplits,
       );
-
       detailList.add(detail);
     }
-
-    // Buat objek TransaksiModel dengan data dari processedText dan list detail di atas
     TransaksiModel transaksi = TransaksiModel(
-      // transaksiID: customID,
-      imagePath: imgpath, // bisa diisi dengan path gambar jika diperlukan
+      imagePath: imgpath,
       storeName: strukData.businessName,
       strukDate: strukData.date,
+      transaksiID: Utils.generateCustomIntID(),
       subtotal: strukData.subtotal?.toDouble() ?? 0,
       pajak: strukData.tax?.toDouble() ?? 0,
       biayaLayanan: 0,

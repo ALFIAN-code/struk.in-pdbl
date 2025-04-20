@@ -1,1 +1,1 @@
-String geminiApi = 'AIzaSyAszq90S9Emzs-5peAlNYAi-nOBUFtXTSk';
+String geminiApi = 'AIzaSyAbVxDgaWpTpL3YyKdeHyGDXOcPSlE46bw';

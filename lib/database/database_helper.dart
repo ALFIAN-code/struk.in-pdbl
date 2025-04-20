@@ -72,7 +72,7 @@ class DatabaseHelper {
   ''');
   }
 
-  Future<TransaksiModel> getTransaksiById(String transaksiID) async {
+  Future<TransaksiModel> getTransaksiById(int transaksiID) async {
     final db = await database;
     // 1. Ambil data transaksi utama berdasarkan transaksiID
     final transaksiMaps = await db.query(
@@ -81,7 +81,7 @@ class DatabaseHelper {
       whereArgs: [transaksiID],
     );
 
-    TransaksiModel transaksi = TransaksiModel.fromMap(transaksiMaps.first);
+    TransaksiModel transaksi = TransaksiModel.fromMap(transaksiMaps.single);
 
     // 2. Ambil semua detail_transaksi untuk transaksi ini
     final detailMaps = await db.query(
@@ -160,6 +160,7 @@ class DatabaseHelper {
         //   'jumlah_participant': transaksiModel.jumlahparticipant,
         // }
         TransaksiModel(
+          transaksiID: transaksiModel.transaksiID,
           imagePath: transaksiModel.imagePath,
           storeName: transaksiModel.storeName,
           strukDate: transaksiModel.strukDate,
@@ -192,9 +193,6 @@ class DatabaseHelper {
         );
 
         // Hitung harga per participant untuk detail ini
-        double hargaPerParticipant =
-            (detail.harga! + transaksiModel.pajak!) /
-            (detail.userSplits.isNotEmpty ? detail.userSplits.length : 1);
 
         // 3. Untuk setiap user split pada detail
         for (final detailUser in detail.userSplits) {
@@ -234,7 +232,7 @@ class DatabaseHelper {
               fkDetailID: detailID,
               fkUserID: userID,
               portion: detailUser.portion,
-              hargaPerParticipant: hargaPerParticipant,
+              hargaPerParticipant: detailUser.hargaPerParticipant,
             ).toMap(),
           );
         }
@@ -242,7 +240,6 @@ class DatabaseHelper {
       return transaksiID;
     });
   }
-
 
   // ---------------------------------------------------------------------------
   // GET ALL TRANSAKSI DENGAN DETAIL + USER (Many-to-Many)
@@ -344,5 +341,4 @@ class DatabaseHelper {
       );
     });
   }
-  
 }

@@ -85,6 +85,7 @@ class StrukFromApi {
 }
 
 class Item {
+  int id;
   String? name;
   int? quantity;
   int? price;
@@ -92,6 +93,7 @@ class Item {
   int? unitPrice;
 
   Item({
+    required this.id,
     required this.name,
     required this.quantity,
     required this.price,
@@ -101,6 +103,7 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
+      id: json['id'],
       unitPrice: json['unit_price'].toInt(),
       name: json['name'],
       quantity: json['quantity'].toInt(),
@@ -127,13 +130,14 @@ class Item {
     int? price,
     String? category,
     int? unitPrice,
+    int? id,
   }) {
     return Item(
+      id: id ?? this.id,
       unitPrice: unitPrice ?? this.unitPrice,
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
-      // category: (category ?? this.category).toLowerCase(),
     );
   }
 

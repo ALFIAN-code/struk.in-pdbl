@@ -21,8 +21,6 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   final DetailpageController controller = DetailpageController();
 
-  // late Future<File?> convertedImage;
-
   @override
   void initState() {
     super.initState();
@@ -31,9 +29,9 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    // print(
-    //   widget.transaksi.detailTransaksis.first.userSplits.first.user?.userID,
-    // );
+    print(
+      widget.transaksi.detailTransaksis.first.userSplits.first.user?.userID,
+    );
     var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
     return Scaffold(
       body: Container(
@@ -278,7 +276,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _buildSplitOrder(String name, int qty, int price) {
+  Widget _buildSplitOrder(String name, double qty, int price) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(

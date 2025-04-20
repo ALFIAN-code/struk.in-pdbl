@@ -31,12 +31,12 @@ class DetailpageController {
             "items": <Map<String, dynamic>>[],
           };
         }
-
+        print(split.hargaPerParticipant);
         userMap[userId]!["total_harga"] += detail.harga! * split.portion!;
         userMap[userId]!["items"].add({
           "nama_barang": detail.namaBarang ?? "Unknown",
-          "jumlah": detail.jumlah ?? 0,
-          "harga_per_participant": detail.harga! * split.portion!,
+          "jumlah": split.portion ?? 0.0,
+          "harga_per_participant": split.hargaPerParticipant,
         });
       }
     }

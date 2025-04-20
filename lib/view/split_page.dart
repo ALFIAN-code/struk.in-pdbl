@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +34,7 @@ class _SplitPageState extends State<SplitPage> {
       widget.image,
       connection.hasConnection.value,
     );
-    splitController.addFirstParticipant();
+    splitController.addParticipant();
     super.initState();
   }
 
@@ -168,9 +170,25 @@ class _SplitPageState extends State<SplitPage> {
                                           });
                                         },
                                         onClose: () {
-                                          splitController.deleteParticipant(
-                                            index,
-                                          );
+                                          setState(() {
+                                            var random = Random();
+                                            var randomIndex = random.nextInt(
+                                              splitController
+                                                  .participants
+                                                  .value
+                                                  .length,
+                                            );
+
+                                            splitController.deleteParticipant(
+                                              index,
+                                            );
+                                            splitController.clearSelectedMenu(
+                                              randomIndex,
+                                            );
+                                            splitController
+                                                .selectedIndex
+                                                .value = randomIndex;
+                                          });
                                         },
                                       );
                                     },
@@ -375,10 +393,12 @@ class _SplitPageState extends State<SplitPage> {
                                   colorText: Colors.white,
                                 );
                               } else {
-                                var result = await splitController
-                                    .addDataToDatabase(widget.image.path);
-                                Get.off(
-                                  () => ResultPage(transaksiModel: result!),
+                                var transaksi = await splitController
+                                    .addDataToDatabase2(widget.image.path);
+                                Get.to(
+                                  () => ResultPage(
+                                    transaksiID: transaksi!.transaksiID!,
+                                  ),
                                 );
                               }
                             },

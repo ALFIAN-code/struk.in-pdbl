@@ -3,214 +3,182 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/controller/result_controller.dart';
 import 'package:strukin/controller/utils.dart';
-import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/Homepage.dart';
 
 class ResultPage extends StatefulWidget {
-  final TransaksiModel transaksiModel;
-
-  const ResultPage({Key? key, required this.transaksiModel}) : super(key: key);
+  const ResultPage({super.key, required this.transaksiID});
+  final int transaksiID;
 
   @override
   State<ResultPage> createState() => _ResultPageState();
 }
 
 class _ResultPageState extends State<ResultPage> {
-  late List<Map<String, dynamic>> groupedData;
   var resultController = Get.put(ResultController());
 
   @override
   void initState() {
     super.initState();
-    // resultController.GetTransaksi(widget.idTransaksi);
-    groupedData = resultController.groupItemsByUser(widget.transaksiModel);
+    // Fetch transaksi; grouping nanti di‐build()
+    resultController.getTransaksi(widget.transaksiID);
   }
 
   @override
   Widget build(BuildContext context) {
-    // print(groupedData);
-    // print(widget.transaksiModel.toMap());
-    // print(widget.transaksiModel.detailTransaksis.first.toMap);
-
     return Scaffold(
+      backgroundColor: const Color(0xffFFF3E0),
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () {
-            Get.off(HomePage());
-          },
+          onPressed: () => Get.back(),
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        title: Text(
-          widget.transaksiModel.storeName ?? "Store Name",
-          style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
+        title: Obx(
+          () => Text(
+            resultController.transaksi.value?.storeName?.toUpperCase() ??
+                "STORE NAME",
+            style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
+          ),
         ),
-        backgroundColor: const Color.fromRGBO(255, 232, 173, 1.0),
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromRGBO(255, 232, 173, 1.0),
-              Color.fromRGBO(255, 255, 255, 0),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.3, 1.0],
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.transaksiModel.storeName?.toUpperCase() ??
-                    "NAMA RESTORAN",
-                style: GoogleFonts.roboto(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Tagihan dibuat: ${widget.transaksiModel.strukDate ?? ''}",
-                style: GoogleFonts.roboto(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              const SizedBox(height: 10),
-              ...groupedData.map((entry) {
-                final username = entry["username"] as String;
-                final items =
-                    entry["items"] as List<Map<String, dynamic>>? ?? [];
-                final avatar = entry["avatar"] as String;
-                final totalharga = entry["total_harga"] as double;
+        child: Obx(() {
+          final tx = resultController.transaksi.value;
+          if (tx == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(avatar),
-                        ),
-                        title: Text(
-                          "Total tagihan $username",
-                          style: GoogleFonts.roboto(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
+          // ——— Hitung grouping **setelah** tx ada ———
+          final groupedData = resultController.groupItemsByUser(tx);
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  tx.storeName?.toUpperCase() ?? "NAMA RESTORAN",
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Tagihan dibuat: ${tx.strukDate}",
+                  style: GoogleFonts.roboto(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...groupedData.map((entry) {
+                  final username = entry["username"] as String;
+                  final avatar = entry["avatar"] as String;
+                  final totalharga = entry["total_harga"] as double;
+                  final items = entry["items"] as List<Map<String, dynamic>>;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            radius: 24,
+                            backgroundImage: AssetImage(avatar),
+                          ),
+                          title: Text(
+                            "Total tagihan $username",
+                            style: GoogleFonts.roboto(fontSize: 16),
+                          ),
+                          subtitle: Text(
+                            Utils.formatCurrency(totalharga.toInt()),
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        subtitle: Text(
-                          Utils.formatCurrency(totalharga.toInt()),
-                          style: GoogleFonts.roboto(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: items.length,
-                        itemBuilder: (context, itemIndex) {
-                          final item = items[itemIndex];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    constraints: BoxConstraints(maxWidth: 250),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: items.length,
+                          itemBuilder: (context, itemIndex) {
+                            final item = items[itemIndex];
+                            final nama = item["nama_barang"] as String;
+                            final qty = item["jumlah"] as double;
+                            final hargaPP =
+                                item["harga_per_participant"] as double;
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 2.0,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
                                     child: Text(
+                                      "$nama",
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
-                                      item["nama_barang"],
                                       style: GoogleFonts.roboto(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color.fromRGBO(
-                                          0,
-                                          0,
-                                          0,
-                                          1.0,
-                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Text(
-                                  Utils.formatCurrency(
-                                    item["harga_per_participant"].toInt(),
-                                  ),
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                    color: const Color.fromRGBO(
-                                      40,
-                                      40,
-                                      40,
-                                      1.0,
+                                  Text('x$qty'),
+                                  Expanded(
+                                    child: Text(
+                                      Utils.formatCurrency(hargaPP.toInt()),
+                                      style: GoogleFonts.roboto(fontSize: 14),
+                                      textAlign: TextAlign.right,
                                     ),
                                   ),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Pajak', style: GoogleFonts.roboto(fontSize: 16)),
+                    Text(
+                      Utils.formatCurrency(tx.pajak?.toInt() ?? 0),
+                      style: GoogleFonts.roboto(fontSize: 16),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Tagihan',
+                      style: GoogleFonts.roboto(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Pajak',
-                    style: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
                     ),
-                  ),
-                  Text(
-                    Utils.formatCurrency(widget.transaksiModel.pajak!.toInt()),
-                    style: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
+                    Text(
+                      Utils.formatCurrency(tx.total?.toInt() ?? 0),
+                      style: GoogleFonts.roboto(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total Tagihan',
-                    style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'IDR ${widget.transaksiModel.total!.toStringAsFixed(0)}',
-                    style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }),
       ),
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -218,12 +186,10 @@ class _ResultPageState extends State<ResultPage> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () async {
-              Get.off(HomePage());
-            },
+            onPressed: () => Get.off(HomePage()),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(252, 207, 92, 1.0),
-              padding: EdgeInsets.symmetric(vertical: 14),
+              backgroundColor: const Color.fromRGBO(252, 207, 92, 1.0),
+              padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
