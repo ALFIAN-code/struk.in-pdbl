@@ -23,7 +23,7 @@ class DetailUserSplitModel {
   final int? fkDetailID;
   final String? fkUserID;
   final double? portion;
-  final double? hargaPerParticipant; // Field baru
+  final double? hargaPerParticipant;
   final UserSplitModel? user;
 
   DetailUserSplitModel({

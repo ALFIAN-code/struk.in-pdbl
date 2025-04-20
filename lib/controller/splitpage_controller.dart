@@ -292,7 +292,6 @@ class SplitpageController extends GetxController {
         );
 
         userSplits.add(detailUserSplit);
-        print(detailUserSplit.hargaPerParticipant);
       }
       print(
         userSplits.map(
