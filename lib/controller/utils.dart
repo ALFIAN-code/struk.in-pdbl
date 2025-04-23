@@ -97,4 +97,15 @@ class Utils {
 
     return convertedImage;
   }
+
+  static int getRandomNumberExcept(int min, int max, int except) {
+    final random = Random();
+    int result;
+
+    do {
+      result = min + random.nextInt(max - min + 1);
+    } while (result == except);
+
+    return result;
+  }
 }

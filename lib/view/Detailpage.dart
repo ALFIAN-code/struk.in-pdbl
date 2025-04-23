@@ -7,7 +7,9 @@ import 'package:strukin/controller/detailpage_controller.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/component/menu_item.dart';
+import 'package:strukin/view/component/split_user.dart';
 import 'package:strukin/view/fullscreen.dart';
+import 'package:strukin/view/style.dart';
 
 class DetailPage extends StatefulWidget {
   DetailPage({super.key, required this.transaksi});
@@ -35,163 +37,168 @@ class _DetailPageState extends State<DetailPage> {
     var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFFE8AD), Color(0xFFFFFFFF)],
-          ),
-        ),
+        decoration: BoxDecoration(color: mainColor),
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  leading: IconButton(
-                    onPressed: () => Get.back(),
-                    icon: Icon(Icons.arrow_back_ios_new_rounded),
-                  ),
-                  centerTitle: true,
-                  title: Text(
-                    'Detail Struk',
-                    style: GoogleFonts.roboto(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          blurRadius: 5,
-                          spreadRadius: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: IconButton(
+                        onPressed: () => Get.back(),
+                        icon: Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                      centerTitle: true,
+                      title: Text(
+                        'Detail Struk',
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                      ],
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
+                    SizedBox(height: 10),
+
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            File(
-                              widget.transaksi.imagePath!,
-                            ), // Ubah sesuai path gambar struk
-                            height: 250,
-                            width: width * 0.9,
-                            fit: BoxFit.cover,
-                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              blurRadius: 5,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
-                        Positioned(
-                          right: 10,
-                          top: 10,
-                          child: IconButton(
-                            onPressed: () {
-                              Get.to(
-                                () => Fullscreen(
-                                  file: File(widget.transaksi.imagePath!),
-                                ),
-                              );
-                            },
-                            icon: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 2,
-                                vertical: 2,
-                              ),
-
-                              decoration: BoxDecoration(
-                                color: Colors.black38,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Icon(
-                                Icons.fullscreen,
-                                size: 30,
-                                color: Colors.white,
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                File(
+                                  widget.transaksi.imagePath!,
+                                ), // Ubah sesuai path gambar struk
+                                height: 250,
+                                width: width * 0.9,
+                                fit: BoxFit.cover,
                               ),
                             ),
-                          ),
+                            Positioned(
+                              right: 10,
+                              top: 10,
+                              child: IconButton(
+                                onPressed: () {
+                                  Get.to(
+                                    () => Fullscreen(
+                                      file: File(widget.transaksi.imagePath!),
+                                    ),
+                                  );
+                                },
+                                icon: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                    vertical: 2,
+                                  ),
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.black38,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Icon(
+                                    Icons.fullscreen,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
 
-                SizedBox(height: 20),
+                    SizedBox(height: 20),
 
-                // Informasi Restoran & Tanggal
-                Text(
-                  widget.transaksi.storeName ?? '-----null-----',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  widget.transaksi.strukDate ?? '-----null-----',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
+                    // Informasi Restoran & Tanggal
+                    Text(
+                      widget.transaksi.storeName ?? '-----null-----',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      widget.transaksi.strukDate ?? '-----null-----',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                    ),
 
-                SizedBox(height: 30),
+                    SizedBox(height: 30),
 
-                // Daftar Pesanan
-                // _buildSectionTitle("Pesanan"),
-                Column(
-                  children:
-                      widget.transaksi.detailTransaksis.map((item) {
-                        return getListMenu2(
-                          item,
-                          false,
-                          null,
-                          isSelectable: false,
-                        );
-                      }).toList(),
-                ),
-
-                SizedBox(height: 30),
-
-                // Total Pembayaran
-                _buildTotalSection(widget.transaksi),
-
-                SizedBox(height: 70),
-
-                // Split Bill
-                Text(
-                  'Split Bill',
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Column(
-                  children:
-                      groupItemsByUser.map((user) {
-                        return _buildSplitBillItem(
-                          user["username"] ?? "Unknown",
-                          user["total_harga"].toInt(),
-                          user["items"].map<Widget>((item) {
-                            // Pastikan hasilnya List<Widget>
-                            return _buildSplitOrder(
-                              item["nama_barang"],
-                              item["jumlah"],
-                              item["harga_per_participant"].toInt(),
+                    // Daftar Pesanan
+                    // _buildSectionTitle("Pesanan"),
+                    Column(
+                      children:
+                          widget.transaksi.detailTransaksis.map((item) {
+                            return getListMenu2(
+                              item,
+                              false,
+                              null,
+                              isSelectable: false,
                             );
                           }).toList(),
-                          user["avatar"],
-                          context,
-                        );
-                      }).toList(),
+                    ),
+
+                    SizedBox(height: 30),
+
+                    // Total Pembayaran
+                    _buildTotalSection(widget.transaksi),
+
+                    SizedBox(height: 70),
+
+                    // Split Bill
+                    Text(
+                      'Split Bill',
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
-                SizedBox(height: 20),
-              ],
-            ),
+              ),
+              Column(
+                children:
+                    groupItemsByUser.map((user) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        margin: EdgeInsets.fromLTRB(10, 0, 10, 20),
+                        child: SplitUser(
+                          username: user["username"] as String,
+                          avatar: user["avatar"] as String,
+                          items: user["items"] as List<Map<String, dynamic>>,
+                          totalharga: user["total_harga"] as double,
+                        ),
+                      );
+                    }).toList(),
+              ),
+              SizedBox(height: 20),
+            ],
           ),
         ),
       ),

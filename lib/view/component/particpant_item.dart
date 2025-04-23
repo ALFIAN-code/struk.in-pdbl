@@ -106,8 +106,8 @@ class _ParticipantItemState extends State<ParticipantItem> {
               ),
             ),
             Positioned(
-              right: 0,
-              top: 0,
+              right: 2,
+              top: 2,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -116,8 +116,8 @@ class _ParticipantItemState extends State<ParticipantItem> {
                   });
                 },
                 child: Container(
-                  height: 20,
-                  width: 20,
+                  height: 22,
+                  width: 22,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white.withAlpha(190),
@@ -133,6 +133,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
           ],
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
               onTap: () {
@@ -145,7 +146,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
                   isEditing
                       ? ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 70,
+                          maxWidth: 60,
                           maxHeight: 50,
                         ),
                         child: TextField(
@@ -174,7 +175,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
                       )
                       : ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 60,
+                          maxWidth: 50,
                           maxHeight: 50,
                         ),
                         child: Text(

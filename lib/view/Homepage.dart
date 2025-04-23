@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                   style: GoogleFonts.roboto(color: Colors.black),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
+                  backgroundColor: accentColor,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -105,15 +105,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFFFE8AD), Color(0xFFFFFFFF)],
-              ),
-            ),
-          ),
+          Container(decoration: BoxDecoration(color: mainColor)),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -165,8 +157,8 @@ class HomePage extends StatelessWidget {
                         height: 85,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: mainColor,
-                          borderRadius: BorderRadius.circular(12),
+                          color: accentColor,
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
@@ -209,7 +201,7 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 15),
                     Row(
                       children: [
                         Expanded(
@@ -231,7 +223,7 @@ class HomePage extends StatelessWidget {
                                 controller.searchStruk(value);
                               },
                               decoration: InputDecoration(
-                                hintText: 'Search disini bes......',
+                                hintText: 'Search disini ',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                   borderSide: BorderSide.none,
@@ -310,64 +302,35 @@ class HomePage extends StatelessWidget {
                             children: List.generate(sortedList.length, (index) {
                               final transaksi = sortedList[index];
 
-                              return Dismissible(
-                                key: Key(
-                                  transaksi.transaksiID.toString(),
-                                ), // Unique key
-                                direction:
-                                    DismissDirection
-                                        .endToStart, // Swipe ke kiri
-                                background: Container(
-                                  margin: EdgeInsets.fromLTRB(10, 15, 10, 30),
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.horizontal(
-                                      right: Radius.circular(10),
-                                    ),
-                                  ), // Warna background saat swipe
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                ),
-                                confirmDismiss: (direction) async {
-                                  return await QuickAlert.show(
-                                    context: context,
-                                    type: QuickAlertType.error,
-                                    title: 'Konfirmasi',
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Get.to(DetailPage(transaksi: transaksi));
+                                  },
+                                  child: StrukItem(
+                                    onDelete: () async {
+                                      await QuickAlert.show(
+                                        context: context,
+                                        type: QuickAlertType.error,
+                                        title: 'Konfirmasi',
 
-                                    text:
-                                        'Apakah Anda yakin ingin menghapus struk ini?',
-                                    confirmBtnText: 'Hapus',
-                                    cancelBtnText: 'batal',
-                                    showCancelBtn: true,
-                                    onConfirmBtnTap: () async {
-                                      await controller.deleteStruk(
-                                        transaksi.transaksiID!,
+                                        text:
+                                            'Apakah Anda yakin ingin menghapus struk ini?',
+                                        confirmBtnText: 'Hapus',
+                                        cancelBtnText: 'batal',
+                                        showCancelBtn: true,
+                                        onConfirmBtnTap: () async {
+                                          await controller.deleteStruk(
+                                            transaksi.transaksiID!,
+                                          );
+                                          Get.back();
+                                        },
+
+                                        confirmBtnColor: Colors.red,
                                       );
-                                      Get.back();
                                     },
-
-                                    confirmBtnColor: Colors.red,
-                                  );
-                                },
-                                onDismissed: (direction) async {
-                                  await controller.deleteStruk(
-                                    transaksi.transaksiID!,
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 20),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Get.to(DetailPage(transaksi: transaksi));
-                                    },
-                                    child: StrukItem(transaksiItem: transaksi),
+                                    transaksiItem: transaksi,
                                   ),
                                 ),
                               );
@@ -394,7 +357,12 @@ class HomePage extends StatelessWidget {
 /// - Nama toko
 /// - Total
 class StrukItem extends StatelessWidget {
-  const StrukItem({super.key, required this.transaksiItem});
+  const StrukItem({
+    super.key,
+    required this.transaksiItem,
+    required this.onDelete,
+  });
+  final void Function()? onDelete;
 
   /// Model transaksi yang akan ditampilkan
   final TransaksiModel transaksiItem;
@@ -411,7 +379,7 @@ class StrukItem extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -435,47 +403,64 @@ class StrukItem extends StatelessWidget {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(17),
                 child: Image.file(
                   File(transaksiItem.imagePath!),
-                  width: 100,
-                  height: 100,
+                  width: 85,
+                  height: 85,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  transaksiItem.storeName ?? 'unknown',
-                  style: GoogleFonts.roboto(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Total: ${Utils.formatCurrency(transaksiItem.total!.toInt())}  |  ${transaksiItem.jumlahparticipant} partisipan',
-                  style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Text(
-                        transaksiItem.strukDate ?? 'unknown',
-                        style: GoogleFonts.roboto(color: Colors.black54),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      transaksiItem.storeName ?? 'unknown',
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Total: ${Utils.formatCurrency(transaksiItem.total!.toInt())}  |  ${transaksiItem.jumlahparticipant} partisipan',
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Row(
+                        children: [
+                          Text(
+                            transaksiItem.strukDate ?? 'unknown',
+                            style: GoogleFonts.roboto(color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: onDelete,
+                  child: Container(
+                    height: 31,
+                    width: 31,
+                    decoration: BoxDecoration(
+                      color: Color(0xffFF4E4E),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.delete, color: Colors.white, size: 20),
                   ),
                 ),
               ],

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/controller/result_controller.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/view/Homepage.dart';
+import 'package:strukin/view/component/split_user.dart';
 
 class ResultPage extends StatefulWidget {
   const ResultPage({super.key, required this.transaksiID});
@@ -77,72 +78,16 @@ class _ResultPageState extends State<ResultPage> {
                   final totalharga = entry["total_harga"] as double;
                   final items = entry["items"] as List<Map<String, dynamic>>;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            radius: 24,
-                            backgroundImage: AssetImage(avatar),
-                          ),
-                          title: Text(
-                            "Total tagihan $username",
-                            style: GoogleFonts.roboto(fontSize: 16),
-                          ),
-                          subtitle: Text(
-                            Utils.formatCurrency(totalharga.toInt()),
-                            style: GoogleFonts.roboto(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: items.length,
-                          itemBuilder: (context, itemIndex) {
-                            final item = items[itemIndex];
-                            final nama = item["nama_barang"] as String;
-                            final qty = item["jumlah"] as double;
-                            final hargaPP =
-                                item["harga_per_participant"] as double;
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 2.0,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "$nama",
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.roboto(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('x$qty'),
-                                  Expanded(
-                                    child: Text(
-                                      Utils.formatCurrency(hargaPP.toInt()),
-                                      style: GoogleFonts.roboto(fontSize: 14),
-                                      textAlign: TextAlign.right,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                  return Column(
+                    children: [
+                      SplitUser(
+                        avatar: avatar,
+                        username: username,
+                        totalharga: totalharga,
+                        items: items,
+                      ),
+                      SizedBox(height: 20),
+                    ],
                   );
                 }).toList(),
                 const SizedBox(height: 20),

@@ -31,7 +31,7 @@ class DetailpageController {
             "items": <Map<String, dynamic>>[],
           };
         }
-        print(split.hargaPerParticipant);
+        print('harga per participant2 = ${split.hargaPerParticipant}');
         userMap[userId]!["total_harga"] += detail.harga! * split.portion!;
         userMap[userId]!["items"].add({
           "nama_barang": detail.namaBarang ?? "Unknown",

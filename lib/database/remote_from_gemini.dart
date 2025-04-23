@@ -46,6 +46,7 @@ Aturan:
 - Jika string null, ganti dengan "-".
 - Harga (price_total) selalu sama atau lebih dari unit_price.
 - beri ID di setiap item dengan int 1 .. n
+- di date gunakan format ISO-8601 seperti ini "yyyy-MM-dd HH:mm", 
 """;
 
     // Diberi gambar struk, kembalikan **ONLY JSON**:

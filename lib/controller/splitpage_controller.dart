@@ -22,13 +22,18 @@ class SplitpageController extends GetxController {
   final Random _random = Random();
   var selectedIndex = 0.obs;
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
-
+  StrukFromApi? processedTextBackup;
   Rx<String?> ocrText = ''.obs;
   var isProcessing = false.obs;
   var includePajak = false.obs;
 
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
   int participantIncrement = 1;
+
+  void updateData(StrukFromApi transaksi) {
+    processedText.value = transaksi;
+    update();
+  }
 
   //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
   double getTaxRatio() {
@@ -61,8 +66,18 @@ class SplitpageController extends GetxController {
     if (isConnected == true) {
       final order = await processReceipt(geminiApi, image);
       processedText.value = order;
+      processedTextBackup = StrukFromApi(
+        isStruk: processedText.value?.isStruk,
+        invoiceNumber: processedText.value?.invoiceNumber,
+        businessName: processedText.value?.businessName,
+        date: processedText.value?.date,
+        subtotal: processedText.value?.subtotal,
+        tax: processedText.value?.tax,
+        total: processedText.value?.total,
+        items:
+            processedText.value?.items?.map((item) => item.copyWith()).toList(),
+      );
     }
-
     isProcessing.value = false;
   }
 
@@ -90,9 +105,8 @@ class SplitpageController extends GetxController {
   ///
   /// [participantIndex] - Index peserta
   void clearSelectedMenu(int participantIndex) {
-    // selectedItem =
-    //     participants.value[participantIndex]['selectedItems']['item'];
     selectedItem.clear();
+    print("clear Selected = $participantIndex");
     for (var e
         in (participants.value[participantIndex]['selectedItems']
             as List<Map<String, dynamic>>)) {
@@ -179,6 +193,8 @@ class SplitpageController extends GetxController {
       "selected": false,
       "selectedItems": <Map<String, dynamic>>[],
     });
+    clearSelectedMenu(participants.value.length - 1);
+    selectedIndex.value = participants.value.length - 1;
     update();
   }
 

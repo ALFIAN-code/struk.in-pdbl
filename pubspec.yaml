@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   animated_size_and_fade: ^5.1.1
+  currency_text_input_formatter: ^2.3.0
   flutter:
     sdk: flutter
   flutter_gemini: ^3.0.0

@@ -11,7 +11,9 @@ import 'package:strukin/controller/utils.dart';
 import 'package:strukin/view/Homepage.dart';
 import 'package:strukin/view/component/menu_item.dart';
 import 'package:strukin/view/component/particpant_item.dart';
+import 'package:strukin/view/edit_page.dart';
 import 'package:strukin/view/result_page.dart';
+import 'package:strukin/view/style.dart';
 
 class SplitPage extends StatefulWidget {
   const SplitPage({super.key, required this.image});
@@ -83,6 +85,7 @@ class _SplitPageState extends State<SplitPage> {
           if (splitController.isProcessing.value == false) {
             return Column(
               children: [
+                SizedBox(height: 20),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -91,23 +94,55 @@ class _SplitPageState extends State<SplitPage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              SizedBox(height: 30),
-                              Text(
-                                'Pilih Item',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 30),
+                                    Text(
+                                      'Pilih Item',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Ketuk teman lalu pilih item',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                'Ketuk teman lalu pilih item',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                ),
+                              IconButton(
+                                onPressed: () {
+                                  QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.warning,
+                                    title: 'Keluar dari Edit Pembagian?',
+                                    text:
+                                        'Jika kamu keluar sekarang, semua perubahan pembagian tagihan yang baru saja kamu atur akan dibatalkan dan hilang.',
+                                    confirmBtnText: 'Keluar',
+                                    confirmBtnColor: accentColor,
+                                    confirmBtnTextStyle: TextStyle(
+                                      color: Colors.black87,
+                                    ),
+                                    barrierColor: Colors.black.withAlpha(150),
+                                    cancelBtnText: 'Batal',
+                                    showCancelBtn: true,
+                                    onConfirmBtnTap: () {
+                                      Get.off(
+                                        HomePage(),
+                                      ); // Kembali ke halaman sebelumnya
+                                    },
+                                  );
+                                },
+                                icon: Icon(Icons.close_rounded, size: 30),
                               ),
                             ],
                           ),
@@ -115,83 +150,91 @@ class _SplitPageState extends State<SplitPage> {
                         SizedBox(height: 20),
                         SizedBox(
                           height: 140,
-                          child: GetBuilder<SplitpageController>(
+                          child: GetBuilder(
                             init: SplitpageController(),
                             builder: (controller) {
-                              return ListView(
-                                // crossAxisAlignment: CrossAxisAlignment.center,
-                                scrollDirection: Axis.horizontal,
+                              var deviceWIdth =
+                                  MediaQuery.of(context).size.width;
+                              return Row(
                                 children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        splitController
-                                            .participants
-                                            .value
-                                            .length,
-                                    itemBuilder: (context, index) {
-                                      return ParticipantItem(
-                                        isLast:
-                                            splitController
-                                                .participants
-                                                .value
-                                                .length ==
-                                            1,
-                                        imgPath:
-                                            splitController
-                                                .participants
-                                                .value[index]['image'],
-                                        name:
-                                            splitController
-                                                .participants
-                                                .value[index]['name'],
-                                        isSelected:
-                                            splitController
-                                                .selectedIndex
-                                                .value ==
-                                            index,
-                                        onSelected: () {
-                                          setState(() {
-                                            splitController
-                                                .selectedIndex
-                                                .value = index;
-                                            splitController.clearSelectedMenu(
-                                              index,
-                                            );
-                                          });
-                                        },
-                                        onNameChanged: (newName) {
-                                          setState(() {
-                                            splitController
-                                                    .participants
-                                                    .value[index]['name'] =
-                                                newName;
-                                          });
-                                        },
-                                        onClose: () {
-                                          setState(() {
-                                            var random = Random();
-                                            var randomIndex = random.nextInt(
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: deviceWIdth * 0.8,
+                                    ),
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          splitController
+                                              .participants
+                                              .value
+                                              .length,
+                                      itemBuilder: (context, index) {
+                                        return ParticipantItem(
+                                          isLast:
                                               splitController
                                                   .participants
                                                   .value
-                                                  .length,
-                                            );
-
-                                            splitController.deleteParticipant(
+                                                  .length ==
+                                              1,
+                                          imgPath:
+                                              splitController
+                                                  .participants
+                                                  .value[index]['image'],
+                                          name:
+                                              splitController
+                                                  .participants
+                                                  .value[index]['name'],
+                                          isSelected:
+                                              splitController
+                                                  .selectedIndex
+                                                  .value ==
                                               index,
-                                            );
-                                            splitController.clearSelectedMenu(
-                                              randomIndex,
-                                            );
-                                            splitController
-                                                .selectedIndex
-                                                .value = randomIndex;
-                                          });
-                                        },
-                                      );
-                                    },
+                                          onSelected: () {
+                                            setState(() {
+                                              splitController
+                                                  .selectedIndex
+                                                  .value = index;
+                                              splitController.clearSelectedMenu(
+                                                index,
+                                              );
+                                            });
+                                          },
+                                          onNameChanged: (newName) {
+                                            setState(() {
+                                              splitController
+                                                      .participants
+                                                      .value[index]['name'] =
+                                                  newName;
+                                            });
+                                          },
+                                          onClose: () {
+                                            setState(() {
+                                              // var nextSelected =
+                                              //     (index == 1) ? 1 : -1;
+
+                                              splitController.deleteParticipant(
+                                                index,
+                                              );
+                                              splitController.clearSelectedMenu(
+                                                splitController
+                                                        .participants
+                                                        .value
+                                                        .length -
+                                                    1,
+                                              );
+                                              splitController
+                                                  .selectedIndex
+                                                  .value = splitController
+                                                      .participants
+                                                      .value
+                                                      .length -
+                                                  1;
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
                                   Container(
                                     margin: EdgeInsets.only(bottom: 30),
@@ -355,6 +398,7 @@ class _SplitPageState extends State<SplitPage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               print("Tombol edit ditekan");
+                              Get.to(EditPage());
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xffFFFBF2),
