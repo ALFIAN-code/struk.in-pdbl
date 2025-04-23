@@ -132,67 +132,66 @@ class _ParticipantItemState extends State<ParticipantItem> {
             ),
           ],
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isEditing = true;
-                });
-                _focusNode.requestFocus(); // Fokus ke TextField saat diklik
-              },
-              child:
-                  isEditing
-                      ? ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 60,
-                          maxHeight: 50,
-                        ),
-                        child: TextField(
-                          controller: _controller,
-                          focusNode: _focusNode,
-                          autofocus: true,
-                          maxLines: 2,
-                          maxLength: 20,
-                          textAlign: TextAlign.center,
-                          decoration: InputDecoration(
-                            counterText: '',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 0),
-                            border: InputBorder.none,
-                          ),
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          onTapOutside: (event) {
-                            _saveAndCloseEditing();
-                            isEditing = false;
-                          },
-                          onSubmitted: (value) => _saveAndCloseEditing(),
-                        ),
-                      )
-                      : ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 50,
-                          maxHeight: 50,
-                        ),
-                        child: Text(
-                          widget.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black54,
-                          ),
-                        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              isEditing = true;
+            });
+            _focusNode.requestFocus(); // Fokus ke TextField saat diklik
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              isEditing
+                  ? ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 60,
+                      maxHeight: 50,
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      autofocus: true,
+                      maxLines: 2,
+                      maxLength: 20,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        counterText: '',
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 0),
+                        border: InputBorder.none,
                       ),
-            ),
-            SizedBox(width: 5),
-            Icon(Icons.border_color, size: 15, color: Colors.black45),
-          ],
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      onTapOutside: (event) {
+                        _saveAndCloseEditing();
+                        isEditing = false;
+                      },
+                      onSubmitted: (value) => _saveAndCloseEditing(),
+                    ),
+                  )
+                  : ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 50,
+                      maxHeight: 50,
+                    ),
+                    child: Text(
+                      widget.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+              SizedBox(width: 5),
+              Icon(Icons.border_color, size: 15, color: Colors.black45),
+            ],
+          ),
         ),
       ],
     );
