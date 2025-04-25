@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:strukin/controller/internet_connection_controller.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
@@ -46,7 +47,19 @@ class _SplitPageState extends State<SplitPage> {
         decoration: BoxDecoration(color: Color(0xffFFF3E0)),
         child: Obx(() {
           if (splitController.isProcessing.value) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset('assets/loading.json', height: 200),
+                  Text(
+                    'Memproses gambar',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            );
           }
           if (splitController.processedText.value!.isStruk! == false) {
             Future.microtask(() {
@@ -66,7 +79,7 @@ class _SplitPageState extends State<SplitPage> {
 
           if (connection.hasConnection.value == false &&
               splitController.processedText.value!.businessName!.isEmpty) {
-            Future.microtask(() {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.error,
