@@ -450,7 +450,7 @@ class _SplitPageState extends State<SplitPage> {
                               } else {
                                 var transaksi = await splitController
                                     .addDataToDatabase2(widget.image.path);
-                                Get.to(
+                                Get.off(
                                   () => ResultPage(
                                     transaksiID: transaksi!.transaksiID!,
                                   ),

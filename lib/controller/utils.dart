@@ -108,4 +108,55 @@ class Utils {
 
     return result;
   }
+
+  static String formatDateFromString(String? dateString) {
+    if (dateString == null || dateString.isEmpty) {
+      return '------';
+    }
+
+    try {
+      DateTime date = DateTime.parse(dateString);
+      return DateFormat('d MMM yyyy HH:mm').format(date);
+    } catch (e) {
+      // Jika parsing gagal (format salah), tetap tampilkan '------'
+      return '------';
+    }
+  }
+
+  static String randomQuotes() {
+    List<String> funnyQuotes = [
+      'Ketika kamu malas, bukan berarti kamu rajin.',
+      'Andai dompet bisa diisi ulang secara gratis.',
+      'Istiqomah itu berat, yang ringan mah istirahat.',
+      'Selalu ikuti kata hatimu. Tapi ingat, bawalah otakmu juga.',
+      'Carilah uang, karena dia tak punya kaki untuk datang padamu.',
+      'Saat semua pekerjaan dirasa makin tidak menyenangkan, ingatlah akan cicilan.',
+      'Cinta tak mengenal warna kulit, tapi mengenal warna duit.',
+      'Jika kita memimpikan seseorang, itu tandanya kita sedang tidur.',
+      'Jadilah seperti bulu ketiak, meskipun hidup terhimpit, terjepit, dan tertekan, tetapi tetap tumbuh subur.',
+      'Kenapa kau melakukannya hari ini jika bisa melakukannya besok?',
+      'PR-ku seperti mantan, banyak yang belum selesai.',
+      'Status pendidikan: Masih dibiayai karma baik orang tua.',
+      'Nilai UTS seperti sinetron, banyak dramanya.',
+      'IPK-ku seperti sinyal HP, kadang naik kadang hilang.',
+      'Skripsi adalah jalan ninjaku.',
+      'Wisuda adalah konser yang tiketnya paling mahal.',
+      'Semester tua tapi masih muda di hati.',
+      'Belajar adalah ibadah, tapi kenapa rasanya seperti azab?',
+      'Tugas numpuk seperti cucian weekend.',
+
+      'Sakit hati dan sakit gigi itu sama-sama berawal dari yang manis.',
+      'Kunci sukses suatu hubungan adalah selalu membersihkan history chat.',
+      'Anda sopan kami curiga.',
+      'Manusia menciptakan ponsel. Ponsel makin pintar. Manusia tidak.',
+
+      'Kirain udah bedug magrib, nggak tahunya tetangga lagi jemur kasur.',
+
+      'Ingat, di balik kesulitan ada kesulitan yang lain.',
+      'Di mana ada kelebihan, di situ ada kembalian.',
+    ];
+
+    final random = Random();
+    return funnyQuotes[random.nextInt(funnyQuotes.length)];
+  }
 }

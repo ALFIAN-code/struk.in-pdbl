@@ -139,13 +139,25 @@ class HomePage extends StatelessWidget {
                           ],
                         ),
                         const Spacer(),
-                        CircleAvatar(
-                          radius: 35,
-                          backgroundColor: Colors.transparent,
-                          child: Image.asset(
-                            'assets/images/Deliveryboy.png',
-                            height: 60,
-                            fit: BoxFit.cover,
+                        GestureDetector(
+                          onTap: () {
+                            if (!Get.isSnackbarOpen) {
+                              Get.snackbar(
+                                "Ester egg",
+                                Utils.randomQuotes(),
+                                backgroundColor: Colors.white,
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            }
+                          },
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundColor: Colors.transparent,
+                            child: Image.asset(
+                              'assets/images/Deliveryboy.png',
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ],
@@ -442,7 +454,7 @@ class StrukItem extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            transaksiItem.strukDate ?? 'unknown',
+                            Utils.formatDateFromString(transaksiItem.strukDate),
                             style: GoogleFonts.roboto(color: Colors.black54),
                           ),
                         ],

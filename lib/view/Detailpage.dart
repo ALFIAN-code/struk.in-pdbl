@@ -136,7 +136,7 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                     Text(
-                      widget.transaksi.strukDate ?? '-----null-----',
+                      Utils.formatDateFromString(widget.transaksi.strukDate),
                       style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                     ),
 
