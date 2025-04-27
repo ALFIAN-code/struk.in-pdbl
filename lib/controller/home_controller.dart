@@ -61,8 +61,9 @@ class HomepageController extends GetxController {
   /// - List<TransaksiModel> yang berisi semua struk
   /// - Melempar exception jika terjadi error
   Future<void> getAllStruk() async {
-    fullStrukList.value = await database.getAllTransaksi();
-    strukList.value = fullStrukList.reversed.toList();
+    final transaksiList = await database.getAllTransaksi() ?? [];
+    fullStrukList.value = transaksiList;
+    strukList.value = transaksiList.reversed.toList();
   }
 
   /// Normalisasi gambar struk dengan kompresi dan konversi format
