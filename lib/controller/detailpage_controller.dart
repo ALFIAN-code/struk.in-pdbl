@@ -17,30 +17,55 @@ class DetailpageController {
   ///   - total_harga: Total yang harus dibayar peserta
   ///   - items: Daftar item yang dipilih peserta
   List<Map<String, dynamic>> groupItemsByUser(TransaksiModel transaksi) {
-    Map<String, Map<String, dynamic>> userMap = {};
+    // accumulator: userID → summary map
+    final Map<String, Map<String, dynamic>> summary = {};
 
-    for (var detail in transaksi.detailTransaksis) {
-      for (var split in detail.userSplits) {
-        String userId = split.fkUserID!;
+    for (final detail in transaksi.detailTransaksis) {
+      // total porsi untuk item ini (misal: bakso 3 porsi)
+      final totalPortion = detail.userSplits
+          .map((s) => s.portion ?? 0)
+          .fold<double>(0, (a, b) => a + b);
 
-        if (!userMap.containsKey(userId)) {
-          userMap[userId] = {
-            "username": split.user?.username,
-            "avatar": split.user?.avatar,
-            "total_harga": 0.0,
-            "items": <Map<String, dynamic>>[],
-          };
-        }
-        print('harga per participant2 = ${split.hargaPerParticipant}');
-        userMap[userId]!["total_harga"] += detail.harga! * split.portion!;
-        userMap[userId]!["items"].add({
-          "nama_barang": detail.namaBarang ?? "Unknown",
-          "jumlah": split.portion ?? 0.0,
-          "harga_per_participant": split.hargaPerParticipant,
+      // total harga item (harga sudah total; jika null, fallback ke hargaSatuan*jumlah)
+      final detailTotalPrice =
+          (detail.harga != null)
+              ? detail.harga!
+              : (detail.hargaSatuan! * (detail.jumlah ?? 1)).toDouble();
+
+      for (final split in detail.userSplits) {
+        final user = split.user;
+        if (user == null) continue;
+
+        // init entry kalau belum ada
+        summary.putIfAbsent(
+          user.userID!,
+          () => {
+            'username': user.username ?? 'Unknown',
+            'avatar': user.avatar ?? '',
+            'total_harga': 0.0,
+            'items': <Map<String, dynamic>>[],
+          },
+        );
+        final entry = summary[user.userID!]!;
+
+        // hitung share berdasarkan porsi: (porsi_user / total_porsi) * detailTotalPrice
+        final share =
+            (totalPortion > 0)
+                ? detailTotalPrice * (split.portion! / totalPortion)
+                : 0.0;
+
+        // tambahkan item ke list
+        (entry['items'] as List).add({
+          'nama_barang': detail.namaBarang ?? 'Unknown',
+          'portion': split.portion ?? 0,
+          'share_price': share,
         });
+
+        // akumulasi total_harga
+        entry['total_harga'] = (entry['total_harga'] as double) + share;
       }
     }
 
-    return userMap.values.toList();
+    return summary.values.toList();
   }
 }

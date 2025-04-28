@@ -50,8 +50,8 @@ class SplitUser extends StatelessWidget {
             itemBuilder: (context, itemIndex) {
               final item = items[itemIndex];
               final nama = item["nama_barang"] as String;
-              final qty = item["jumlah"] as double;
-              final hargaPP = item["harga_per_participant"] as double;
+              final qty = item["portion"] as double;
+              final hargaPP = item["share_price"] as double;
 
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2.0),
