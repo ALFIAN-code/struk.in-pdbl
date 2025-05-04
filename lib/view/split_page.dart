@@ -50,6 +50,13 @@ class _SplitPageState extends State<SplitPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    splitController.resetState();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -81,7 +88,8 @@ class _SplitPageState extends State<SplitPage> {
                     'Gambar yang Anda unggah tidak tampak sebagai foto struk yang valid. Mohon unggah ulang gambar struk yang jelas.',
                 confirmBtnText: 'OK',
                 onConfirmBtnTap: () {
-                  Get.off(HomePage()); // Kembali ke halaman sebelumnya
+                  splitController.resetState();
+                  Get.offAll(() => HomePage()); // Kembali ke halaman sebelumnya
                 },
               );
             });
@@ -97,7 +105,8 @@ class _SplitPageState extends State<SplitPage> {
                 text: 'Silakan periksa koneksi internet Anda dan coba lagi.',
                 confirmBtnText: 'OK',
                 onConfirmBtnTap: () {
-                  Get.off(HomePage()); // Kembali ke halaman sebelumnya
+                  splitController.resetState();
+                  Get.offAll(() => HomePage()); // Kembali ke halaman sebelumnya
                 },
               );
             });
@@ -157,8 +166,9 @@ class _SplitPageState extends State<SplitPage> {
                                     cancelBtnText: 'Batal',
                                     showCancelBtn: true,
                                     onConfirmBtnTap: () {
-                                      Get.off(
-                                        HomePage(),
+                                      // splitController.resetState();
+                                      Get.offAll(
+                                        () => HomePage(),
                                       ); // Kembali ke halaman sebelumnya
                                     },
                                   );
@@ -419,7 +429,7 @@ class _SplitPageState extends State<SplitPage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               print("Tombol edit ditekan");
-                              Get.to(EditPage());
+                              Get.to(() => EditPage());
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xffFFFBF2),

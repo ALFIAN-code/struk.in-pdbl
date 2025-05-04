@@ -30,6 +30,28 @@ class SplitpageController extends GetxController {
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
   int participantIncrement = 1;
 
+  /// Reset semua state ke kondisi awal
+  void resetState() {
+    selectedItem.clear();
+    usedImages.value = [];
+    participants.value = [];
+    selectedIndex.value = 0;
+    processedText.value = null;
+    processedTextBackup = null;
+    ocrText.value = '';
+    isProcessing.value = false;
+    includePajak.value = false;
+    participantIncrement = 1;
+
+    print('state split page bersih');
+  }
+
+  @override
+  void onClose() {
+    resetState();
+    super.onClose();
+  }
+
   void updateData(StrukFromApi transaksi) {
     processedText.value = transaksi;
     update();

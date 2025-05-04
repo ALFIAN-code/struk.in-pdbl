@@ -131,7 +131,7 @@ class _ResultPageState extends State<ResultPage> {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () => Get.offAll(HomePage()),
+            onPressed: () => Get.offAll(() => HomePage()),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(252, 207, 92, 1.0),
               padding: const EdgeInsets.symmetric(vertical: 14),
