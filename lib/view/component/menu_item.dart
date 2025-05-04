@@ -64,7 +64,7 @@ class _GetListMenuState extends State<GetListMenu> {
     );
 
     int taxPerMenu =
-        (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
+        (widget.item.unitPrice ?? 0 * (widget.taxPercentage / 100)).round();
 
     return GestureDetector(
       onTap: widget.isSelectable ? widget.onTap : null,

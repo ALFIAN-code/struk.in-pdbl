@@ -8,6 +8,7 @@ import 'package:strukin/controller/edit_page_controller.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_from_api.dart';
+import 'package:strukin/view/component/formatter.dart';
 import 'package:strukin/view/style.dart';
 
 class EditPage extends StatefulWidget {
@@ -167,119 +168,181 @@ class _EditPageState extends State<EditPage> {
                 Divider(color: borderColor, thickness: 1),
                 Obx(
                   () => Column(
-                    children: List.generate(editController.transaksi.value!.items!.length, (
-                      index,
-                    ) {
-                      print('rebuild');
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: BuildTextField(
-                                  editPageController: editController,
-                                  data:
-                                      editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .name
-                                          .toString(),
-                                  isString: true,
-                                  onChanged: (value) {
-                                    editController
-                                        .transaksi
-                                        .value!
-                                        .items![index]
-                                        .name = value;
-                                    print(
-                                      editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .name,
-                                    );
-                                  },
-                                  hintText: 'Nama Item',
-                                  textstyle: GoogleFonts.roboto(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.black,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    editController.transaksi.value!.items!
-                                        .removeAt(index);
-                                    editController.updateTotal();
-                                    splitController.processedText.refresh();
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: BuildTextField(
-                                  editPageController: editController,
-                                  data:
-                                      editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .unitPrice
-                                          .toString(),
-                                  isString: false,
-                                  onChanged: (value) {
-                                    editController
-                                        .transaksi
-                                        .value!
-                                        .items![index]
-                                        .unitPrice = int.tryParse(value);
-
-                                    editController.total(index);
-                                    editController.transaksi.refresh();
-                                    editController.updateTotal();
-                                    print(
-                                      editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .unitPrice,
-                                    );
-                                  },
-                                  hintText: 'Harga/Item',
-                                  keyboardType: TextInputType.number,
-
-                                  label: 'Harga Item',
-                                  textstyle: GoogleFonts.roboto(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff5A5A5A),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (editController
+                    children: List.generate(
+                      editController.transaksi.value!.items!.length,
+                      (index) {
+                        print('rebuild');
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: BuildTextField(
+                                    editPageController: editController,
+                                    data:
+                                        editController
                                             .transaksi
                                             .value!
                                             .items![index]
-                                            .quantity! >
-                                        1) {
+                                            .name
+                                            .toString(),
+                                    isString: true,
+                                    onChanged: (value) {
+                                      editController
+                                          .transaksi
+                                          .value!
+                                          .items![index]
+                                          .name = value;
+                                      print(
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .name,
+                                      );
+                                    },
+                                    hintText: 'Nama Item',
+                                    textstyle: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.black,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      editController.transaksi.value!.items!
+                                          .removeAt(index);
+                                      editController.updateTotal();
+                                      splitController.processedText.refresh();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: BuildTextField(
+                                    editPageController: editController,
+                                    data:
+                                        (editController
+                                                    .transaksi
+                                                    .value!
+                                                    .items![index]
+                                                    .unitPrice ??
+                                                0)
+                                            .toString(),
+                                    isString: false,
+                                    onChanged: (value) {
+                                      editController
+                                          .transaksi
+                                          .value!
+                                          .items![index]
+                                          .unitPrice = int.tryParse(value);
+
+                                      editController.total(index);
+                                      editController.transaksi.refresh();
+                                      editController.updateTotal();
+                                      print(
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .unitPrice,
+                                      );
+                                    },
+                                    hintText: 'Harga/Item',
+                                    keyboardType: TextInputType.number,
+
+                                    label: 'Harga Item',
+                                    textstyle: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff5A5A5A),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      if (editController
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .quantity! >
+                                          1) {
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .quantity = editController
+                                                .transaksi
+                                                .value!
+                                                .items![index]
+                                                .quantity! -
+                                            1;
+                                        editController.total(index);
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .price = editController
+                                                .transaksi
+                                                .value!
+                                                .items![index]
+                                                .unitPrice ??
+                                            0 *
+                                                editController
+                                                    .transaksi
+                                                    .value!
+                                                    .items![index]
+                                                    .quantity!;
+                                        editController.updateTotal();
+                                        editController.transaksi.refresh();
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(1000),
+                                      color: Color(0xffC7AF00),
+                                    ),
+                                    child: Icon(Icons.remove_rounded),
+                                  ),
+                                ),
+                                GetBuilder<SplitpageController>(
+                                  builder: (controller) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 15,
+                                      ),
+                                      child: Text(
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .quantity
+                                            .toString(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
                                       editController
                                           .transaksi
                                           .value!
@@ -288,7 +351,7 @@ class _EditPageState extends State<EditPage> {
                                               .transaksi
                                               .value!
                                               .items![index]
-                                              .quantity! -
+                                              .quantity! +
                                           1;
                                       editController.total(index);
                                       editController
@@ -299,13 +362,12 @@ class _EditPageState extends State<EditPage> {
                                               .transaksi
                                               .value!
                                               .items![index]
-                                              .unitPrice ??
-                                          0 *
-                                              editController
-                                                  .transaksi
-                                                  .value!
-                                                  .items![index]
-                                                  .quantity!;
+                                              .unitPrice! *
+                                          editController
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .quantity!;
                                       editController.updateTotal();
                                       editController.transaksi.refresh();
                                       print(
@@ -317,117 +379,49 @@ class _EditPageState extends State<EditPage> {
                                       print(
                                         '${editController.transaksi.value!.items![index].price}',
                                       );
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(1000),
-                                    color: Color(0xffC7AF00),
-                                  ),
-                                  child: Icon(Icons.remove_rounded),
-                                ),
-                              ),
-                              GetBuilder<SplitpageController>(
-                                builder: (controller) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 15,
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(1000),
+                                      color: Color(0xffC7AF00),
                                     ),
-                                    child: Text(
+                                    child: Icon(Icons.add_rounded),
+                                  ),
+                                ),
+                                const SizedBox(width: 30),
+
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(maxWidth: 100),
+                                  child: Text(
+                                    Utils.formatCurrency(
                                       editController
                                           .transaksi
                                           .value!
                                           .items![index]
-                                          .quantity
-                                          .toString(),
+                                          .price!,
                                     ),
-                                  );
-                                },
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    editController
-                                        .transaksi
-                                        .value!
-                                        .items![index]
-                                        .quantity = editController
-                                            .transaksi
-                                            .value!
-                                            .items![index]
-                                            .quantity! +
-                                        1;
-                                    editController.total(index);
-                                    editController
-                                        .transaksi
-                                        .value!
-                                        .items![index]
-                                        .price = editController
-                                            .transaksi
-                                            .value!
-                                            .items![index]
-                                            .unitPrice! *
-                                        editController
-                                            .transaksi
-                                            .value!
-                                            .items![index]
-                                            .quantity!;
-                                    editController.updateTotal();
-                                    editController.transaksi.refresh();
-                                    print(
-                                      '${editController.transaksi.value!.items![index].quantity}',
-                                    );
-                                    print(
-                                      '${editController.transaksi.value!.items![index].unitPrice}',
-                                    );
-                                    print(
-                                      '${editController.transaksi.value!.items![index].price}',
-                                    );
-                                  });
-                                },
-                                child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(1000),
-                                    color: Color(0xffC7AF00),
-                                  ),
-                                  child: Icon(Icons.add_rounded),
-                                ),
-                              ),
-                              const SizedBox(width: 30),
-
-                              ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 100),
-                                child: Text(
-                                  Utils.formatCurrency(
-                                    editController
-                                        .transaksi
-                                        .value!
-                                        .items![index]
-                                        .price!,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 10),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Divider(color: borderColor, thickness: 1),
-                          const SizedBox(height: 10),
-                        ],
-                      );
-                    }),
+                                SizedBox(width: 10),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Divider(color: borderColor, thickness: 1),
+                            const SizedBox(height: 10),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -691,6 +685,9 @@ class _BuildTextFieldState extends State<BuildTextField> {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       _controller.text = widget.data;
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   _controller.text = widget.data;
+      // });
     }
   }
 
@@ -702,7 +699,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: _controller,
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
@@ -714,13 +711,13 @@ class _BuildTextFieldState extends State<BuildTextField> {
                 CurrencyTextInputFormatter.currency(),
                 LengthLimitingTextInputFormatter(15),
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                NoEmptyInputFormatter(),
               ],
       maxLines: widget.maxLines,
       textAlign: widget.textAlign,
       style: widget.textstyle,
       onTap: widget.onTap,
       decoration: InputDecoration(
-        // prefix: (widget.isString) ? null : Text('IDR '),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: borderColor),

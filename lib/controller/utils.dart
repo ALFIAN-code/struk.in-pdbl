@@ -57,6 +57,15 @@ class Utils {
     }
   }
 
+  static String formatDigit(int amount) {
+    final compactFormatter = NumberFormat.compactCurrency(
+      locale: 'id_ID',
+      symbol: '',
+      decimalDigits: 0,
+    );
+    return compactFormatter.format(amount);
+  }
+
   /// Membuat ID unik acak
   ///
   /// Mengembalikan:
