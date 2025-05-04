@@ -147,9 +147,18 @@ class HomePage extends StatelessWidget {
                           onTap: () {
                             if (!Get.isSnackbarOpen) {
                               Get.snackbar(
-                                "Ester egg",
+                                "easter egg",
                                 Utils.randomQuotes(),
                                 backgroundColor: Colors.white,
+
+                                borderRadius: 30,
+                                borderWidth: 1,
+                                borderColor: const Color.fromARGB(
+                                  255,
+                                  214,
+                                  214,
+                                  214,
+                                ),
                                 snackPosition: SnackPosition.BOTTOM,
                               );
                             }

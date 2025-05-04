@@ -63,6 +63,12 @@ class _GetListMenuState extends State<GetListMenu> {
       widget.item,
     );
 
+    const int maxAvatars = 5;
+
+    final total = participantWhoSelected.length;
+    final displayCount = (total > maxAvatars) ? maxAvatars : total;
+    final remaining = total - displayCount;
+
     // int taxPerMenu =
     //     (widget.item.unitPrice! *
     //             (widget.taxPercentage / 100) /
@@ -86,7 +92,6 @@ class _GetListMenuState extends State<GetListMenu> {
                   : Colors.transparent,
         ),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,30 +187,39 @@ class _GetListMenuState extends State<GetListMenu> {
                         ? (widget.isExpand)
                             ? SizedBox()
                             : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  height: 30,
-                                  child: Row(
-                                    children:
-                                        participantWhoSelected.map((e) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 5,
-                                            ),
-                                            child: CircleAvatar(
-                                              radius: 10,
-                                              backgroundColor: Colors.orange,
-                                              child: Image.asset(
-                                                splitController
-                                                    .participants
-                                                    .value[e]['image'],
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                // tampilkan avatar untuk index 0 .. displayCount-1
+                                for (var i = 0; i < displayCount; i++)
+                                  Align(
+                                    // padding: const EdgeInsets.only(right: 5),
+                                    widthFactor: 1.2,
+                                    child: CircleAvatar(
+                                      radius: 10,
+                                      backgroundColor: Colors.orange,
+                                      child: Image.asset(
+                                        splitController
+                                            .participants
+                                            .value[participantWhoSelected[i]]['image'],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                // kalau ada sisa, tampilkan +N
+                                (remaining > 0)
+                                    ? Padding(
+                                      padding: const EdgeInsets.only(right: 5),
+                                      child: CircleAvatar(
+                                        radius: 10,
+                                        backgroundColor: Colors.grey.shade300,
+                                        child: Text(
+                                          '+$remaining',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    : SizedBox(),
                               ],
                             )
                         : SizedBox(),

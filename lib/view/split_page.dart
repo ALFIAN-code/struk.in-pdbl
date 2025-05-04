@@ -286,9 +286,18 @@ class _SplitPageState extends State<SplitPage> {
                                                 backgroundColor:
                                                     const Color.fromARGB(
                                                       255,
-                                                      253,
-                                                      253,
-                                                      171,
+                                                      255,
+                                                      255,
+                                                      194,
+                                                    ),
+                                                borderRadius: 30,
+                                                borderWidth: 1,
+                                                borderColor:
+                                                    const Color.fromARGB(
+                                                      255,
+                                                      214,
+                                                      214,
+                                                      214,
                                                     ),
                                               );
                                             }
