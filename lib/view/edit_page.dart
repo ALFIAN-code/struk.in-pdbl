@@ -246,21 +246,36 @@ class _EditPageState extends State<EditPage> {
                                             .toString(),
                                     isString: false,
                                     onChanged: (value) {
-                                      editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .unitPrice = int.tryParse(value);
-
-                                      editController.transaksi.refresh();
-                                      editController.updateTotal();
-                                      print(
+                                      setState(() {
                                         editController
                                             .transaksi
                                             .value!
                                             .items![index]
-                                            .unitPrice,
-                                      );
+                                            .unitPrice = int.tryParse(value);
+                                        editController
+                                            .transaksi
+                                            .value!
+                                            .items![index]
+                                            .price = editController
+                                                .transaksi
+                                                .value!
+                                                .items![index]
+                                                .unitPrice! *
+                                            editController
+                                                .transaksi
+                                                .value!
+                                                .items![index]
+                                                .quantity!;
+                                        editController.updateTotal();
+                                        editController.transaksi.refresh();
+                                        print(
+                                          editController
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .unitPrice,
+                                        );
+                                      });
                                     },
                                     hintText: 'Harga/Item',
                                     keyboardType: TextInputType.number,
@@ -496,7 +511,9 @@ class _EditPageState extends State<EditPage> {
                       width: 120,
                       child: BuildTextField(
                         editPageController: editController,
-                        data: editController.transaksi.value!.tax.toString(),
+                        data:
+                            (editController.transaksi.value!.tax ?? 0)
+                                .toString(),
                         onChanged: (value) {
                           editController.updateTax(int.parse(value));
                           editController.transaksi.refresh();
@@ -688,7 +705,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
               ? null
               : [
                 // CurrencyTextInputFormatter.currency(),
-                LengthLimitingTextInputFormatter(15),
+                LengthLimitingTextInputFormatter(10),
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 NoEmptyInputFormatter(),
               ],

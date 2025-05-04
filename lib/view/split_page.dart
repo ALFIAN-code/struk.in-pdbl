@@ -29,6 +29,8 @@ class _SplitPageState extends State<SplitPage> {
 
   late bool internetConnection;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     // splitController.processReceiptImage(
@@ -193,6 +195,7 @@ class _SplitPageState extends State<SplitPage> {
                                       maxWidth: deviceWIdth * 0.8,
                                     ),
                                     child: ListView.builder(
+                                      controller: _scrollController,
                                       shrinkWrap: true,
                                       scrollDirection: Axis.horizontal,
                                       itemCount:
@@ -241,9 +244,6 @@ class _SplitPageState extends State<SplitPage> {
                                           },
                                           onClose: () {
                                             setState(() {
-                                              // var nextSelected =
-                                              //     (index == 1) ? 1 : -1;
-
                                               splitController.deleteParticipant(
                                                 index,
                                               );
@@ -275,6 +275,18 @@ class _SplitPageState extends State<SplitPage> {
                                         setState(() {
                                           splitController.addParticipant();
                                         });
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              _scrollController.animateTo(
+                                                _scrollController
+                                                    .position
+                                                    .maxScrollExtent,
+                                                duration: Duration(
+                                                  milliseconds: 300,
+                                                ),
+                                                curve: Curves.easeOut,
+                                              );
+                                            });
                                       },
                                       child: CircleAvatar(
                                         radius: 20,

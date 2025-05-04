@@ -8,13 +8,14 @@ class NoEmptyInputFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    // Jika hasil baru kosong, ubah jadi "0"
-    if (newValue.text.isEmpty) {
-      return TextEditingValue(
-        text: '0',
-        selection: TextSelection.collapsed(offset: 1),
-      );
-    }
-    return newValue;
+    String cleaned = newValue.text.replaceFirst(RegExp(r'^0+(?=\d)'), '');
+
+    // Kalau hasilnya kosong, set jadi 0
+    if (cleaned.isEmpty) cleaned = '0';
+
+    return TextEditingValue(
+      text: cleaned,
+      selection: TextSelection.collapsed(offset: cleaned.length),
+    );
   }
 }
