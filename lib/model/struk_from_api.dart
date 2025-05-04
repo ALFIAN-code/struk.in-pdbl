@@ -75,6 +75,20 @@ class StrukFromApi {
     );
   }
 
+  /// Deep copy helper to clone all nested objects
+  StrukFromApi deepCopy() {
+    return StrukFromApi(
+      isStruk: isStruk,
+      invoiceNumber: invoiceNumber,
+      businessName: businessName,
+      date: date,
+      subtotal: subtotal,
+      tax: tax,
+      total: total,
+      items: items?.map((item) => item.deepCopy()).toList(),
+    );
+  }
+
   @override
   String toString() {
     return 'Order(items: $items, subtotal: $subtotal, tax: $tax, total: $total, invoiceNumber: $invoiceNumber, date: $date,)';
@@ -135,6 +149,17 @@ class Item {
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
+    );
+  }
+
+  /// Deep copy helper to clone this item
+  Item deepCopy() {
+    return Item(
+      id: id,
+      name: name,
+      quantity: quantity,
+      price: price,
+      unitPrice: unitPrice,
     );
   }
 

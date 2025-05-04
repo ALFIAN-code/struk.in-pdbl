@@ -7,7 +7,7 @@ class EditPageController extends GetxController {
   var splitController = Get.put(SplitpageController());
   @override
   void onInit() {
-    transaksi.value = splitController.processedText.value!;
+    transaksi.value = splitController.processedText.value!.deepCopy();
     super.onInit();
   }
 
@@ -38,5 +38,13 @@ class EditPageController extends GetxController {
 
     var subTotal = transaksi.value!.subtotal;
     transaksi.value!.total = subTotal! + tax;
+  }
+
+  void updateTotal() {
+    int total = 0;
+    for (var i = 0; i < transaksi.value!.items!.length; i++) {
+      total += transaksi.value!.items![i].price!;
+    }
+    transaksi.value!.total = total;
   }
 }

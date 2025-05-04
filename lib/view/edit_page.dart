@@ -55,7 +55,6 @@ class _EditPageState extends State<EditPage> {
                 BuildTextField(
                   editPageController: editController,
                   data: editController.transaksi.value!.businessName.toString(),
-                  // controller: controllers['restoran']!,
                   isString: true,
                   onChanged: (value) {
                     editController.transaksi.value!.businessName = value;
@@ -220,6 +219,8 @@ class _EditPageState extends State<EditPage> {
                                   setState(() {
                                     editController.transaksi.value!.items!
                                         .removeAt(index);
+                                    editController.updateTotal();
+                                    splitController.processedText.refresh();
                                   });
                                 },
                               ),
@@ -249,6 +250,7 @@ class _EditPageState extends State<EditPage> {
 
                                     editController.total(index);
                                     editController.transaksi.refresh();
+                                    editController.updateTotal();
                                     print(
                                       editController
                                           .transaksi
@@ -304,6 +306,7 @@ class _EditPageState extends State<EditPage> {
                                                   .value!
                                                   .items![index]
                                                   .quantity!;
+                                      editController.updateTotal();
                                       editController.transaksi.refresh();
                                       print(
                                         '${editController.transaksi.value!.items![index].quantity}',
@@ -372,6 +375,7 @@ class _EditPageState extends State<EditPage> {
                                             .value!
                                             .items![index]
                                             .quantity!;
+                                    editController.updateTotal();
                                     editController.transaksi.refresh();
                                     print(
                                       '${editController.transaksi.value!.items![index].quantity}',
@@ -444,6 +448,7 @@ class _EditPageState extends State<EditPage> {
                             unitPrice: 0,
                           ),
                         );
+                        editController.updateTotal();
                         editController.transaksi.refresh();
                       },
                       child: Row(
