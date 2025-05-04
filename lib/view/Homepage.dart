@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                   CircularProgressIndicator();
 
                   if (result != null) {
-                    Get.to(SplitPage(image: result));
+                    Get.to(() => SplitPage(image: result));
                   } else {
                     Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
                   }
@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
                   CircularProgressIndicator();
 
                   if (result != null) {
-                    Get.to(SplitPage(image: result));
+                    Get.to(() => SplitPage(image: result));
                   } else {
                     Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
                     Get.back();
@@ -318,7 +318,9 @@ class HomePage extends StatelessWidget {
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: GestureDetector(
                                   onTap: () {
-                                    Get.to(DetailPage(transaksi: transaksi));
+                                    Get.to(
+                                      () => DetailPage(transaksi: transaksi),
+                                    );
                                   },
                                   child: StrukItem(
                                     onDelete: () async {

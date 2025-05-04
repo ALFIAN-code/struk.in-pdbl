@@ -58,7 +58,8 @@ class _EditPageState extends State<EditPage> {
                   data: editController.transaksi.value!.businessName.toString(),
                   isString: true,
                   onChanged: (value) {
-                    editController.transaksi.value!.businessName = value;
+                    editController.transaksi.value!.businessName =
+                        value.isEmpty ? 'Tanpa nama' : value;
                   },
                   hintText: 'Nama Struk',
 
@@ -190,10 +191,11 @@ class _EditPageState extends State<EditPage> {
                                     isString: true,
                                     onChanged: (value) {
                                       editController
-                                          .transaksi
-                                          .value!
-                                          .items![index]
-                                          .name = value;
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .name =
+                                          value.isEmpty ? 'Tanpa nama' : value;
                                       print(
                                         editController
                                             .transaksi
@@ -250,7 +252,6 @@ class _EditPageState extends State<EditPage> {
                                           .items![index]
                                           .unitPrice = int.tryParse(value);
 
-                                      editController.total(index);
                                       editController.transaksi.refresh();
                                       editController.updateTotal();
                                       print(
@@ -276,41 +277,32 @@ class _EditPageState extends State<EditPage> {
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      if (editController
+                                      editController
+                                          .transaksi
+                                          .value!
+                                          .items![index]
+                                          .quantity = editController
                                               .transaksi
                                               .value!
                                               .items![index]
-                                              .quantity! >
-                                          1) {
-                                        editController
-                                            .transaksi
-                                            .value!
-                                            .items![index]
-                                            .quantity = editController
-                                                .transaksi
-                                                .value!
-                                                .items![index]
-                                                .quantity! -
-                                            1;
-                                        editController.total(index);
-                                        editController
-                                            .transaksi
-                                            .value!
-                                            .items![index]
-                                            .price = editController
-                                                .transaksi
-                                                .value!
-                                                .items![index]
-                                                .unitPrice ??
-                                            0 *
-                                                editController
-                                                    .transaksi
-                                                    .value!
-                                                    .items![index]
-                                                    .quantity!;
-                                        editController.updateTotal();
-                                        editController.transaksi.refresh();
-                                      }
+                                              .quantity! -
+                                          1;
+
+                                      editController
+                                          .transaksi
+                                          .value!
+                                          .items![index]
+                                          .price = editController
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .unitPrice! *
+                                          editController
+                                              .transaksi
+                                              .value!
+                                              .items![index]
+                                              .quantity!;
+                                      editController.updateTotal();
                                     });
                                   },
                                   child: Container(
@@ -353,7 +345,7 @@ class _EditPageState extends State<EditPage> {
                                               .items![index]
                                               .quantity! +
                                           1;
-                                      editController.total(index);
+                                      // editController.total(index);
                                       editController
                                           .transaksi
                                           .value!
@@ -369,16 +361,6 @@ class _EditPageState extends State<EditPage> {
                                               .items![index]
                                               .quantity!;
                                       editController.updateTotal();
-                                      editController.transaksi.refresh();
-                                      print(
-                                        '${editController.transaksi.value!.items![index].quantity}',
-                                      );
-                                      print(
-                                        '${editController.transaksi.value!.items![index].unitPrice}',
-                                      );
-                                      print(
-                                        '${editController.transaksi.value!.items![index].price}',
-                                      );
                                     });
                                   },
                                   child: Container(
@@ -685,9 +667,6 @@ class _BuildTextFieldState extends State<BuildTextField> {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       _controller.text = widget.data;
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-      //   _controller.text = widget.data;
-      // });
     }
   }
 
@@ -708,7 +687,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
           widget.isString
               ? null
               : [
-                CurrencyTextInputFormatter.currency(),
+                // CurrencyTextInputFormatter.currency(),
                 LengthLimitingTextInputFormatter(15),
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 NoEmptyInputFormatter(),

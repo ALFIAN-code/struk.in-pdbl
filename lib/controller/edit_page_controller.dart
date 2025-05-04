@@ -19,25 +19,26 @@ class EditPageController extends GetxController {
     transaksi.value = splitController.processedTextBackup;
   }
 
-  void total(int index) {
-    transaksi.value!.items![index].price =
-        transaksi.value!.items![index].unitPrice ??
-        0 * transaksi.value!.items![index].quantity!;
-    int total = 0;
+  // void total(int index) {
+  //   transaksi.value!.items![index].price =
+  //       transaksi.value!.items![index].unitPrice ??
+  //       0 * transaksi.value!.items![index].quantity!;
+  //   int total = 0;
 
-    for (var item in transaksi.value!.items!) {
-      total += item.price!;
-    }
-    transaksi.value!.total = total + transaksi.value!.tax!;
-
-    transaksi.value!.subtotal = total;
-  }
+  //   for (var item in transaksi.value!.items!) {
+  //     total += item.price!;
+  //   }
+  //   transaksi.value!.total = total + transaksi.value!.tax!;
+  //   transaksi.value!.subtotal = total;
+  // }
 
   void updateTax(int tax) {
     transaksi.value!.tax = tax;
 
     var subTotal = transaksi.value!.subtotal;
     transaksi.value!.total = subTotal! + tax;
+
+    print('${transaksi.value!.tax}');
   }
 
   void updateTotal() {
@@ -45,6 +46,8 @@ class EditPageController extends GetxController {
     for (var i = 0; i < transaksi.value!.items!.length; i++) {
       total += transaksi.value!.items![i].price!;
     }
-    transaksi.value!.total = total;
+
+    transaksi.value!.subtotal = total;
+    transaksi.value!.total = total + transaksi.value!.tax!;
   }
 }
