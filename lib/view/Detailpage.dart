@@ -35,6 +35,7 @@ class _DetailPageState extends State<DetailPage> {
       widget.transaksi.detailTransaksis.first.userSplits.first.user?.userID,
     );
     var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
+    var deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(color: mainColor),
@@ -130,6 +131,8 @@ class _DetailPageState extends State<DetailPage> {
                     // Informasi Restoran & Tanggal
                     Text(
                       widget.transaksi.storeName ?? '-----null-----',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

@@ -21,8 +21,8 @@ class EditPageController extends GetxController {
 
   void total(int index) {
     transaksi.value!.items![index].price =
-        transaksi.value!.items![index].unitPrice! *
-        transaksi.value!.items![index].quantity!;
+        transaksi.value!.items![index].unitPrice ??
+        0 * transaksi.value!.items![index].quantity!;
     int total = 0;
 
     for (var item in transaksi.value!.items!) {

@@ -31,11 +31,21 @@ class _SplitPageState extends State<SplitPage> {
 
   @override
   void initState() {
-    splitController.processReceiptImage(
-      widget.image,
-      connection.hasConnection.value,
-    );
-    splitController.addParticipant();
+    // splitController.processReceiptImage(
+    //   widget.image,
+    //   connection.hasConnection.value,
+    // );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      splitController.processReceiptImage(
+        widget.image,
+        connection.hasConnection.value,
+      );
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      splitController.addParticipant();
+    });
+
     super.initState();
   }
 

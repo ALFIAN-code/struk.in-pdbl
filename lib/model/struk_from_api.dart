@@ -14,13 +14,11 @@ class StrukFromApi {
     required this.isStruk,
     required this.date,
     required this.invoiceNumber,
-    // required this.paymentMethod,
     required this.businessName,
     required this.items,
     required this.subtotal,
     required this.tax,
     required this.total,
-    // required this.category,
   });
 
   factory StrukFromApi.fromJson(Map<String, dynamic> json) {
@@ -28,7 +26,6 @@ class StrukFromApi {
       isStruk: json['is_struk'],
       date: json['date'],
       invoiceNumber: json['invoice_number'],
-      // paymentMethod: json['payment_method'].toString().toUpperCase(),
       items:
           (json['items'] as List<dynamic>)
               .map((itemJson) => Item.fromJson(itemJson))

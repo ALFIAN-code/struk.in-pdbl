@@ -378,6 +378,8 @@ InkWell getListMenu2(
             children: <Widget>[
               Text(
                 item.namaBarang ?? 'null',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.roboto(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

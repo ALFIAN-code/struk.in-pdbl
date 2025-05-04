@@ -31,6 +31,8 @@ class SplitUser extends StatelessWidget {
             ),
             title: Text(
               "Total tagihan $username",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.roboto(fontSize: 16),
             ),
             subtitle: Text(

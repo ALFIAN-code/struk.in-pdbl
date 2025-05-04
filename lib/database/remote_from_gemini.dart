@@ -39,6 +39,10 @@ Future<StrukFromApi?> processReceipt(String api, XFile image) async {
 
 Aturan:
 - Jika gambar bukan struk, hasilkan: {"is_struk": false} dan sisakan lainnya kosong.
+- jika gambar merupakan struk set "is_struk" : true
+- Jika gambar memuat lebih dari satu struk:
+  - Pilih hanya satu struk yang paling dominan, paling lengkap, atau paling mudah dibaca.
+  - Abaikan struk lainnya.
 - Jika unit_price hilang, set unit_price = price_total / quantity.
 - Jika price_total hilang, set price_total = unit_price * quantity.
 - Jika tax hilang, set tax = total − subtotal.

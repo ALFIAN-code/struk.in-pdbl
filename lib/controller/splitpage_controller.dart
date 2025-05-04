@@ -24,7 +24,7 @@ class SplitpageController extends GetxController {
   Rx<StrukFromApi?> processedText = Rx<StrukFromApi?>(null);
   StrukFromApi? processedTextBackup;
   Rx<String?> ocrText = ''.obs;
-  var isProcessing = false.obs;
+  var isProcessing = true.obs;
   var includePajak = false.obs;
 
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
@@ -60,7 +60,7 @@ class SplitpageController extends GetxController {
   /// - StrukFromApi hasil pemrosesan
   /// - Null jika terjadi error
   Future<void> processReceiptImage(XFile image, bool isConnected) async {
-    isProcessing.value = true;
+    Future.microtask(() => isProcessing.value = true);
     // try {
 
     if (isConnected == true) {

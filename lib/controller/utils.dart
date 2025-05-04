@@ -18,13 +18,43 @@ class Utils {
   ///
   /// Mengembalikan:
   /// - String berformat mata uang (contoh: "IDR 50,000")
+  static String formatCurrencyCompact(int amount, {bool withSymbol = true}) {
+    if (amount >= 100000) {
+      // Gunakan compact format (misalnya 120K, 5JT)
+      final compactFormatter = NumberFormat.compactCurrency(
+        locale: 'id_ID',
+        symbol: withSymbol ? 'IDR ' : '',
+        decimalDigits: 0,
+      );
+      return compactFormatter.format(amount);
+    } else {
+      // Gunakan format biasa (misalnya IDR 50.000)
+      final regularFormatter = NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: withSymbol ? 'IDR ' : '',
+        decimalDigits: 0,
+      );
+      return regularFormatter.format(amount);
+    }
+  }
+
   static String formatCurrency(int amount, {bool withSymbol = true}) {
-    final formatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: (withSymbol) ? 'IDR ' : '',
-      decimalDigits: 0,
-    );
-    return formatter.format(amount);
+    if (amount <= 999_999_999) {
+      // Gunakan format biasa (misalnya IDR 50.000)
+      final regularFormatter = NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: withSymbol ? 'IDR ' : '',
+        decimalDigits: 0,
+      );
+      return regularFormatter.format(amount);
+    } else {
+      final compactFormatter = NumberFormat.compactCurrency(
+        locale: 'id_ID',
+        symbol: withSymbol ? 'IDR ' : '',
+        decimalDigits: 0,
+      );
+      return compactFormatter.format(amount);
+    }
   }
 
   /// Membuat ID unik acak

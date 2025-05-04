@@ -235,7 +235,7 @@ class HomePage extends StatelessWidget {
                                 controller.searchStruk(value);
                               },
                               decoration: InputDecoration(
-                                hintText: 'Search disini ',
+                                hintText: 'Search disini ...',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                   borderSide: BorderSide.none,
@@ -419,7 +419,7 @@ class StrukItem extends StatelessWidget {
                 child: Image.file(
                   File(transaksiItem.imagePath!),
                   width: 85,
-                  height: 85,
+                  height: 100,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -429,40 +429,55 @@ class StrukItem extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      transaksiItem.storeName ?? 'unknown',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        transaksiItem.storeName ?? 'unknown',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Total: ${Utils.formatCurrency(transaksiItem.total!.toInt())}  |  ${transaksiItem.jumlahparticipant} partisipan',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                      const SizedBox(height: 5),
+                      Text(
+                        'Total: ${Utils.formatCurrency(transaksiItem.total!.toInt())}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          Text(
-                            Utils.formatDateFromString(transaksiItem.strukDate),
-                            style: GoogleFonts.roboto(color: Colors.black54),
-                          ),
-                        ],
+                      Text(
+                        '${transaksiItem.jumlahparticipant} partisipan',
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            Text(
+                              Utils.formatDateFromString(
+                                transaksiItem.strukDate,
+                              ),
+                              style: GoogleFonts.roboto(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 10),
                 GestureDetector(
                   onTap: onDelete,
                   child: Container(
@@ -475,6 +490,7 @@ class StrukItem extends StatelessWidget {
                     child: Icon(Icons.delete, color: Colors.white, size: 20),
                   ),
                 ),
+                SizedBox(width: 5),
               ],
             ),
           ),
