@@ -128,7 +128,6 @@ class SplitpageController extends GetxController {
   /// [participantIndex] - Index peserta
   void clearSelectedMenu(int participantIndex) {
     selectedItem.clear();
-    print("clear Selected = $participantIndex");
     for (var e
         in (participants.value[participantIndex]['selectedItems']
             as List<Map<String, dynamic>>)) {
@@ -196,7 +195,9 @@ class SplitpageController extends GetxController {
   ///
   /// Gambar profil dipilih secara unik dari daftar yang tersedia
   void addParticipant() {
-    if (usedImages.value.length >= 58) return;
+    if (usedImages.value.length >= 58) {
+      return;
+    }
 
     int newImage;
     do {
@@ -204,6 +205,7 @@ class SplitpageController extends GetxController {
     } while (usedImages.value.contains(newImage));
 
     usedImages.value.add(newImage);
+    print('used image = ${usedImages.value.length}');
 
     // Tentukan nama user
     participantIncrement = participants.value.length + 1;

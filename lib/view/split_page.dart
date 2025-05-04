@@ -274,6 +274,25 @@ class _SplitPageState extends State<SplitPage> {
                                       onTap: () {
                                         setState(() {
                                           splitController.addParticipant();
+                                          if (splitController
+                                                  .usedImages
+                                                  .value
+                                                  .length ==
+                                              58) {
+                                            if (!Get.isSnackbarOpen) {
+                                              Get.snackbar(
+                                                'Batas participant tercapai',
+                                                'Kamu sudah menambahkan jumlah maksimal peserta. Hapus peserta lain terlebih dahulu jika ingin menambah yang baru.',
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                      255,
+                                                      253,
+                                                      253,
+                                                      171,
+                                                    ),
+                                              );
+                                            }
+                                          }
                                         });
                                         WidgetsBinding.instance
                                             .addPostFrameCallback((_) {

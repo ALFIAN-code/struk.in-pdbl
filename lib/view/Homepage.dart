@@ -48,7 +48,11 @@ class HomePage extends StatelessWidget {
                   if (result != null) {
                     Get.to(() => SplitPage(image: result));
                   } else {
-                    Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
+                    Get.snackbar(
+                      'Error',
+                      'Tidak ada gambar yang terpilih',
+                      backgroundColor: Colors.white,
+                    );
                   }
                   // });
                 },
