@@ -712,7 +712,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
               ? null
               : [
                 CurrencyTextInputFormatter.currency(),
-                // LengthLimitingTextInputFormatter(9),
+                LengthLimitingTextInputFormatter(15),
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
               ],
       maxLines: widget.maxLines,
