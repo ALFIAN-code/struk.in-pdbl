@@ -80,23 +80,24 @@ class SplitpageController extends GetxController {
   /// Mengembalikan:
   /// - StrukFromApi hasil pemrosesan
   /// - Null jika terjadi error
-  Future<void> processReceiptImage(XFile image, bool isConnected) async {
+  Future<void> processReceiptImage(XFile image) async {
     Future.microtask(() => isProcessing.value = true);
-    if (isConnected == true) {
-      final order = await processReceipt(geminiApi, image);
-      processedText.value = order;
-      processedTextBackup = StrukFromApi(
-        isStruk: processedText.value?.isStruk,
-        invoiceNumber: processedText.value?.invoiceNumber,
-        businessName: processedText.value?.businessName,
-        date: processedText.value?.date,
-        subtotal: processedText.value?.subtotal,
-        tax: processedText.value?.tax,
-        total: processedText.value?.total,
-        items:
-            processedText.value?.items?.map((item) => item.copyWith()).toList(),
-      );
-    }
+    // if (isConnected == true) {
+
+    // }
+    final order = await processReceipt(geminiApi, image);
+    processedText.value = order;
+    processedTextBackup = StrukFromApi(
+      isStruk: processedText.value?.isStruk,
+      invoiceNumber: processedText.value?.invoiceNumber,
+      businessName: processedText.value?.businessName,
+      date: processedText.value?.date,
+      subtotal: processedText.value?.subtotal,
+      tax: processedText.value?.tax,
+      total: processedText.value?.total,
+      items:
+          processedText.value?.items?.map((item) => item.copyWith()).toList(),
+    );
     isProcessing.value = false;
   }
 

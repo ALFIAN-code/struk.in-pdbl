@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:strukin/controller/internet_connection_controller.dart';
 // import 'package:rive/rive.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_model.dart';
@@ -24,6 +25,8 @@ class HomePage extends StatelessWidget {
 
   final controller = Get.put(HomepageController());
 
+  var connection = Get.find<ConnectionController>();
+
   /// Menampilkan bottom sheet untuk memilih sumber gambar (kamera atau galeri)
   ///
   /// [context] - BuildContext untuk menampilkan modal bottom sheet
@@ -42,18 +45,30 @@ class HomePage extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () async {
                   var result = await controller.getImageFromCamera();
-                  // .then((value) {
-                  CircularProgressIndicator();
-
-                  if (result != null) {
-                    Get.to(() => SplitPage(image: result));
-                  } else {
-                    Get.snackbar(
-                      'Error',
-                      'Tidak ada gambar yang terpilih',
-                      backgroundColor: Colors.white,
+                  if (!connection.hasConnection.value) {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      title: 'Tidak ada koneksi internet',
+                      text:
+                          'Silakan periksa koneksi internet Anda dan coba lagi.',
+                      confirmBtnText: 'OK',
+                      onConfirmBtnTap: () {
+                        Get.back(); // Kembali ke halaman sebelumnya
+                      },
                     );
+                  } else {
+                    if (result != null) {
+                      Get.to(() => SplitPage(image: result));
+                    } else {
+                      Get.snackbar(
+                        'Error',
+                        'Tidak ada gambar yang terpilih',
+                        backgroundColor: Colors.white,
+                      );
+                    }
                   }
+
                   // });
                 },
                 icon: const Icon(Icons.camera_alt, color: Colors.black),
@@ -73,13 +88,25 @@ class HomePage extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () async {
                   var result = await controller.getImageFromGallery();
-                  CircularProgressIndicator();
-
-                  if (result != null) {
-                    Get.to(() => SplitPage(image: result));
+                  if (!connection.hasConnection.value) {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      title: 'Tidak ada koneksi internet',
+                      text:
+                          'Silakan periksa koneksi internet Anda dan coba lagi.',
+                      confirmBtnText: 'OK',
+                      onConfirmBtnTap: () {
+                        Get.back(); // Kembali ke halaman sebelumnya
+                      },
+                    );
                   } else {
-                    Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
-                    Get.back();
+                    if (result != null) {
+                      Get.to(() => SplitPage(image: result));
+                    } else {
+                      Get.snackbar('Error', 'Tidak ada gambar yang terpilih');
+                      Get.back();
+                    }
                   }
                   // });
                 },
@@ -147,7 +174,7 @@ class HomePage extends StatelessWidget {
                           onTap: () {
                             if (!Get.isSnackbarOpen) {
                               Get.snackbar(
-                                "easter egg",
+                                "Easter egg",
                                 Utils.randomQuotes(),
                                 backgroundColor: Colors.white,
 
@@ -206,7 +233,7 @@ class HomePage extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    'tekan disini untuk scan struk baru',
+                                    'Tekan disini untuk scan struk baru',
                                     style: GoogleFonts.roboto(
                                       fontSize: 14,
                                       color: Colors.black54,
@@ -313,7 +340,7 @@ class HomePage extends StatelessWidget {
                                 ),
                                 // const SizedBox(height: 20),
                                 Text(
-                                  'struk tidak di temukan',
+                                  'Struk tidak di temukan',
                                   style: GoogleFonts.roboto(
                                     fontSize: 14,
                                     color: Colors.black54,
@@ -345,7 +372,7 @@ class HomePage extends StatelessWidget {
                                         text:
                                             'Apakah Anda yakin ingin menghapus struk ini?',
                                         confirmBtnText: 'Hapus',
-                                        cancelBtnText: 'batal',
+                                        cancelBtnText: 'Batal',
                                         showCancelBtn: true,
                                         onConfirmBtnTap: () async {
                                           await controller.deleteStruk(

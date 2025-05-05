@@ -36,7 +36,7 @@ class _SplitPageState extends State<SplitPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       splitController.processReceiptImage(
         widget.image,
-        connection.hasConnection.value,
+        // connection.hasConnection.value,
       );
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,23 +85,6 @@ class _SplitPageState extends State<SplitPage> {
                 title: 'Gagal memproses gambar',
                 text:
                     'Gambar yang Anda unggah tidak tampak sebagai foto struk yang valid. Mohon unggah ulang gambar struk yang jelas.',
-                confirmBtnText: 'OK',
-                onConfirmBtnTap: () {
-                  splitController.resetState();
-                  Get.offAll(() => HomePage()); // Kembali ke halaman sebelumnya
-                },
-              );
-            });
-          }
-
-          if (connection.hasConnection.value == false &&
-              splitController.processedText.value!.businessName!.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.error,
-                title: 'Tidak ada koneksi internet',
-                text: 'Silakan periksa koneksi internet Anda dan coba lagi.',
                 confirmBtnText: 'OK',
                 onConfirmBtnTap: () {
                   splitController.resetState();

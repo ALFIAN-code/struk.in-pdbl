@@ -9,6 +9,7 @@ import 'package:strukin/view/Homepage.dart';
 import 'package:strukin/view/onboarding_screen.dart';
 
 import 'package:shorebird_code_push/shorebird_code_push.dart';
+import 'package:strukin/view/style.dart';
 
 /// Entry point utama aplikasi Struk.in
 ///
@@ -218,58 +219,64 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.white, // Warna utama
       ),
       debugShowCheckedModeBanner: false,
-      home: LayoutBuilder(
-        builder: (context, constraints) {
-          return Container(
-            color: Colors.yellow[50],
-            alignment: Alignment.center,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 500,
-              ), // Maksimum 500px
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child:
-                    widget.hasCompletedOnboarding
-                        ? Column(
-                          children: [
-                            Expanded(child: HomePage()),
-                            Obx(
-                              () =>
-                                  internetConnectionController
-                                          .hasConnection
-                                          .value
-                                      ? const SizedBox()
-                                      : Container(
-                                        height: 50,
-                                        padding: EdgeInsets.fromLTRB(
-                                          0,
-                                          6,
-                                          0,
-                                          15,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.shade400,
-                                        ),
+      home: Scaffold(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              color: mainColor,
+              alignment: Alignment.center,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                ), // Maksimum 500px
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child:
+                      widget.hasCompletedOnboarding
+                          ? Column(
+                            children: [
+                              Expanded(child: HomePage()),
+                              Obx(
+                                () =>
+                                    internetConnectionController
+                                            .hasConnection
+                                            .value
+                                        ? const SizedBox()
+                                        : Container(
+                                          // height: 50,
+                                          padding: EdgeInsets.fromLTRB(
+                                            0,
+                                            10,
+                                            0,
+                                            0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade400,
+                                          ),
 
-                                        child: Center(
-                                          child: Text(
-                                            'Tidak ada koneksi internet',
-                                            style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 14,
+                                          child: SafeArea(
+                                            top: false,
+                                            bottom: true,
+                                            child: Center(
+                                              child: Text(
+                                                'Tidak ada koneksi internet',
+                                                style: GoogleFonts.roboto(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                            ),
-                          ],
-                        )
-                        : OnboardingScreen(),
+                              ),
+                            ],
+                          )
+                          : OnboardingScreen(),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
