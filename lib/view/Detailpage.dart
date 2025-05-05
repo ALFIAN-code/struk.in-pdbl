@@ -145,8 +145,6 @@ class _DetailPageState extends State<DetailPage> {
 
                     SizedBox(height: 30),
 
-                    // Daftar Pesanan
-                    // _buildSectionTitle("Pesanan"),
                     Column(
                       children:
                           widget.transaksi.detailTransaksis.map((item) {

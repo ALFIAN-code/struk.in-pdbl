@@ -24,7 +24,7 @@ class SplitPage extends StatefulWidget {
 
 class _SplitPageState extends State<SplitPage> {
   // Menyimpan item ke multi-selection
-  var splitController = Get.put(SplitpageController(), permanent: true);
+  var splitController = Get.put(SplitpageController());
   var connection = Get.find<ConnectionController>();
 
   late bool internetConnection;
