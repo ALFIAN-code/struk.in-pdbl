@@ -20,7 +20,7 @@ class EditPage extends StatefulWidget {
 
 class _EditPageState extends State<EditPage> {
   var editController = Get.put(EditPageController());
-  var splitController = Get.put(SplitpageController());
+  var splitController = Get.find<SplitpageController>();
 
   @override
   Widget build(BuildContext context) {

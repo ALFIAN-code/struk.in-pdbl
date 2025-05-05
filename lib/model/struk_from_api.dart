@@ -128,6 +128,7 @@ class Item {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'quantity': quantity,
       'price_total': price,

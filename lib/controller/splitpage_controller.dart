@@ -42,7 +42,6 @@ class SplitpageController extends GetxController {
     isProcessing.value = false;
     includePajak.value = false;
     participantIncrement = 1;
-
     print('state split page bersih');
   }
 
@@ -65,7 +64,7 @@ class SplitpageController extends GetxController {
     if (tax != null && total != null && total != 0) {
       return ((tax / total) * 100);
     } else {
-      return 0; // fallback default, bisa juga null kalau kamu ingin
+      return 0;
     }
   }
 
@@ -83,8 +82,6 @@ class SplitpageController extends GetxController {
   /// - Null jika terjadi error
   Future<void> processReceiptImage(XFile image, bool isConnected) async {
     Future.microtask(() => isProcessing.value = true);
-    // try {
-
     if (isConnected == true) {
       final order = await processReceipt(geminiApi, image);
       processedText.value = order;
@@ -140,20 +137,42 @@ class SplitpageController extends GetxController {
   ///
   /// [item] - Item yang dipilih
   /// [participantIndex] - Index peserta
-  void doMultiSelection(Item item, int participantIndex) {
-    if (selectedItem.contains(item)) {
+  void doMultiSelection2(Item item, int participantIndex) {
+    final isSelected = selectedItem.any((e) => e.id == item.id);
+    print('isSelected: $isSelected');
+
+    if (isSelected) {
+      print('item dihapus');
+
+      // Hapus dari participant
       (participants.value[participantIndex]['selectedItems']
               as List<Map<String, dynamic>>)
           .removeWhere((element) => (element['item'] as Item).id == item.id);
-      selectedItem.remove(item);
+
+      // Hapus dari selectedItem berdasarkan ID
+      selectedItem.removeWhere((e) => e.id == item.id);
     } else {
+      print('item ditambahkan');
+
       participants.value[participantIndex]['selectedItems'].add({
         'quantity': 1,
         'item': item,
       });
+
       selectedItem.add(item);
     }
+
     update();
+  }
+
+  bool isSelected(Item item) {
+    var selected = false;
+    for (var i = 0; i < selectedItem.length; i++) {
+      if (selectedItem[i].id == item.id) {
+        selected = true;
+      }
+    }
+    return selected;
   }
 
   /// Mengatur Kuantitas

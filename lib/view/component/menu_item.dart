@@ -11,40 +11,20 @@ import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/struk_from_api.dart';
 import 'package:strukin/model/struk_model.dart';
 
-/// Widget untuk menampilkan item menu dengan opsi seleksi
-///
-/// [item] - Data item yang akan ditampilkan
-/// [isSelected] - Status seleksi item
-/// [onTap] - Callback ketika item di-tap
-/// [isSelectable] - Flag apakah item bisa dipilih
-///
-/// Mengembalikan:
-/// - Widget InkWell yang berisi tampilan item menu
-// InkWell getListMenu(
-// Item item,
-// bool? isSelected,
-// VoidCallback? onTap, {
-// bool isSelectable = true,
-// }) {
-//   var splitController = Get.find<SplitpageController>();
-
-//   var participantWhoSelected = splitController.getParticipantsWhoSelectedItem(
-//     item,
-//   );
-// }
-
 class GetListMenu extends StatefulWidget {
   GetListMenu({
     super.key,
+    required this.participantIndex,
     required this.item,
     required this.isSelectable,
-    required this.isSelected,
+    // required this.isSelected,
     required this.onTap,
     required this.taxPercentage,
   });
 
+  int participantIndex = 0;
   final Item item;
-  bool isSelected;
+  // bool isSelected;
   final VoidCallback? onTap;
   final bool isSelectable;
   bool isExpand = false;
@@ -69,12 +49,9 @@ class _GetListMenuState extends State<GetListMenu> {
     final displayCount = (total > maxAvatars) ? maxAvatars : total;
     final remaining = total - displayCount;
 
-    // int taxPerMenu =
-    //     (widget.item.unitPrice! *
-    //             (widget.taxPercentage / 100) /
-    //             widget.item.unitPrice! *
-    //             (widget.taxPercentage / 100))
-    //         .round();
+    // print('selected = ${widget.isSelected}');
+    // print('selected index = ${widget.participantIndex}');
+    // print('list participant = ${participantWhoSelected.toList()}');
 
     var taxPerMenu =
         (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
@@ -86,7 +63,7 @@ class _GetListMenuState extends State<GetListMenu> {
           borderRadius: BorderRadius.circular(15.0),
           color:
               widget.isSelectable
-                  ? widget.isSelected
+                  ? (participantWhoSelected.contains(widget.participantIndex))
                       ? Color(0xffFDE2A1)
                       : Colors.transparent
                   : Colors.transparent,
@@ -161,18 +138,25 @@ class _GetListMenuState extends State<GetListMenu> {
                     const SizedBox(width: 10),
                     widget.isSelectable
                         ? Icon(
-                          widget.isSelected
+                          (participantWhoSelected.contains(
+                                widget.participantIndex,
+                              ))
                               ? Icons.close
                               : Icons.circle_outlined,
                           size: 20,
-                          color: widget.isSelected ? Colors.black : Colors.grey,
+                          color:
+                              (participantWhoSelected.contains(
+                                    widget.participantIndex,
+                                  ))
+                                  ? Colors.black
+                                  : Colors.grey,
                         )
                         : SizedBox(),
                   ],
                 ),
               ],
             ),
-            (widget.isSelected)
+            (participantWhoSelected.contains(widget.participantIndex))
                 ? Divider(color: Colors.black.withAlpha(50))
                 : SizedBox(),
 
@@ -223,7 +207,7 @@ class _GetListMenuState extends State<GetListMenu> {
                               ],
                             )
                         : SizedBox(),
-                    (widget.isSelected)
+                    (participantWhoSelected.contains(widget.participantIndex))
                         ? GestureDetector(
                           onTap: () {
                             setState(() {

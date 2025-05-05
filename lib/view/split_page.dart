@@ -24,7 +24,7 @@ class SplitPage extends StatefulWidget {
 
 class _SplitPageState extends State<SplitPage> {
   // Menyimpan item ke multi-selection
-  var splitController = Get.put(SplitpageController());
+  var splitController = Get.put(SplitpageController(), permanent: true);
   var connection = Get.find<ConnectionController>();
 
   late bool internetConnection;
@@ -33,11 +33,6 @@ class _SplitPageState extends State<SplitPage> {
 
   @override
   void initState() {
-    // splitController.processReceiptImage(
-    //   widget.image,
-    //   connection.hasConnection.value,
-    // );
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       splitController.processReceiptImage(
         widget.image,
@@ -60,6 +55,8 @@ class _SplitPageState extends State<SplitPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('selected index = ${splitController.selectedIndex}');
+    print(splitController.selectedItem);
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -302,6 +299,8 @@ class _SplitPageState extends State<SplitPage> {
                                               );
                                             }
                                           }
+                                          splitController.processedText
+                                              .refresh();
                                         });
                                         WidgetsBinding.instance
                                             .addPostFrameCallback((_) {
@@ -401,18 +400,18 @@ class _SplitPageState extends State<SplitPage> {
                                     .value
                                     ?.items?[index];
                             return GetListMenu(
+                              participantIndex:
+                                  splitController.selectedIndex.value,
                               taxPercentage: splitController.getTaxRatio(),
                               item: item!,
-                              isSelected: splitController.selectedItem.contains(
-                                item,
-                              ),
                               isSelectable: true,
                               onTap: () {
                                 setState(() {
-                                  splitController.doMultiSelection(
+                                  splitController.doMultiSelection2(
                                     item,
                                     splitController.selectedIndex.value,
                                   );
+                                  print('menu tapped');
                                 });
                               },
                             );
