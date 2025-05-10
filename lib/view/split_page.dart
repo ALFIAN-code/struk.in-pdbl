@@ -475,20 +475,27 @@ class _SplitPageState extends State<SplitPage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               print("Tombol Konfirmasi ditekan");
-
+                              int notSelectParticipant = 0;
+                              String notSelectParticipantName = "";
                               bool isEmpty = splitController.participants.value
-                                  .any(
-                                    (element) =>
-                                        element['selectedItems'].isEmpty,
-                                  );
+                                  .any((element) {
+                                    notSelectParticipant += 1;
+                                    bool isNotSelected =
+                                        element['selectedItems'].isEmpty;
+                                    notSelectParticipantName = element['name'];
+                                    return isNotSelected;
+                                  });
 
                               if (isEmpty) {
-                                Get.snackbar(
-                                  'Error',
-                                  'Pilih item terlebih dahulu',
-                                  backgroundColor: Colors.red,
-                                  colorText: Colors.white,
-                                );
+                                if (!Get.isSnackbarOpen) {
+                                  Get.snackbar(
+                                    'Peringatan',
+                                    '$notSelectParticipantName belum memilih item, \npilih item dulu lalu konfirmasi',
+                                    backgroundColor: Colors.orangeAccent,
+                                    colorText: Colors.white,
+                                    duration: Duration(seconds: 3),
+                                  );
+                                }
                               } else {
                                 var transaksi = await splitController
                                     .addDataToDatabase2(widget.image.path);
