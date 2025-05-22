@@ -26,9 +26,15 @@ class SplitpageController extends GetxController {
   Rx<String?> ocrText = ''.obs;
   var isProcessing = true.obs;
   var includePajak = false.obs;
+  var includeDiskon = false.obs;
+  var includeBiayaLayanan = false.obs;
+  var includeBiayaLainnya = false.obs;
+
+  //biaya tambahan, termasuk pajak, biaya layanan, diskon dan biaya lainnya
+  var biayaTambahan = 0.0.obs;
 
   //variable ini akan ditambah setiap menambah participant, untuk menghindari duplikasi
-  int participantIncrement = 1;
+  int participantIncrement = 0;
 
   /// Reset semua state ke kondisi awal
   void resetState() {
@@ -42,6 +48,9 @@ class SplitpageController extends GetxController {
     isProcessing.value = false;
     includePajak.value = false;
     participantIncrement = 1;
+    includeBiayaLainnya.value = false;
+    includeBiayaLayanan.value = false;
+    includeDiskon.value = false;
     print('state split page bersih');
   }
 
@@ -56,17 +65,59 @@ class SplitpageController extends GetxController {
     update();
   }
 
-  //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
-  double getTaxRatio() {
-    final tax = processedText.value?.tax;
-    final total = processedText.value?.subtotal;
+  int getUnitPrice(
+    Item item, {
+    bool includePajak = false,
+    bool includeDiskon = false,
+    bool includeBiayaLayanan = false,
+    bool includeBiayaLainnya = false,
+  }) {
+    final strukData = processedText.value!;
 
-    if (tax != null && total != null && total != 0) {
-      return ((tax / total) * 100);
-    } else {
-      return 0;
-    }
+    var tax = Utils.getPercentage(
+      bagian: strukData.tax ?? 0,
+      total: strukData.subtotal ?? 0,
+    );
+    print("tax = $tax");
+    var diskon = Utils.getPercentage(
+      bagian: strukData.diskon ?? 0,
+      total: strukData.subtotal ?? 0,
+    );
+    print("diskon = $diskon");
+    var biayaLayanan = Utils.getPercentage(
+      bagian: strukData.biayaLayanan ?? 0,
+      total: strukData.subtotal ?? 0,
+    );
+    print("biaya layanan = $biayaLayanan");
+    var biayaLainnya = Utils.getPercentage(
+      bagian: strukData.biayaLainnya ?? 0,
+      total: strukData.subtotal ?? 0,
+    );
+    print("biaya lainnya $biayaLainnya");
+
+    var unitTax = (item.unitPrice! * tax / 100).round();
+    print("unit tax = $unitTax");
+    var unitDiskon = (item.unitPrice! * diskon / 100).round();
+    print("unit diskon = $unitDiskon");
+    var unitBiayaLayanan =
+        (item.unitPrice! * biayaLayanan / 100).round();
+        print('unit biaya layanan = $unitBiayaLayanan');
+    var unitBiayaLainnya =
+        (item.unitPrice! * biayaLainnya / 100).round();
+        print('unit biaya lainnya = $unitBiayaLainnya');
+
+    int unitPrice =
+        item.unitPrice! -
+        ((includeDiskon) ? unitDiskon : 0) +
+        ((includeBiayaLayanan) ? unitBiayaLayanan : 0) +
+        ((includeBiayaLainnya) ? unitBiayaLainnya : 0) +
+        ((includePajak) ? unitTax : 0);
+
+    return unitPrice;
   }
+
+  //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
+
 
   /*
   fungsi ini untuk memproses gambar struk yang diambil dari kamera
@@ -82,12 +133,14 @@ class SplitpageController extends GetxController {
   /// - Null jika terjadi error
   Future<void> processReceiptImage(XFile image) async {
     Future.microtask(() => isProcessing.value = true);
-    // if (isConnected == true) {
 
-    // }
     final order = await processReceipt(geminiApi, image);
     processedText.value = order;
     processedTextBackup = StrukFromApi(
+      biayaLainnya: processedText.value?.biayaLainnya,
+      biayaLayanan: processedText.value?.biayaLayanan,
+      diskon: processedText.value?.diskon,
+      category: processedText.value?.category ?? 'unknown',
       isStruk: processedText.value?.isStruk,
       invoiceNumber: processedText.value?.invoiceNumber,
       businessName: processedText.value?.businessName,
@@ -225,14 +278,14 @@ class SplitpageController extends GetxController {
     } while (usedImages.value.contains(newImage));
 
     usedImages.value.add(newImage);
-    print('used image = ${usedImages.value.length}');
 
     // Tentukan nama user
-    participantIncrement = participants.value.length + 1;
+    participantIncrement = participantIncrement + 1;
+    print(participantIncrement);
 
     participants.value.add({
       "id": Utils.generateCustomStringID(),
-      "name": "USER $participantIncrement",
+      "name": "USER ${participantIncrement}",
       "image": "assets/images/profile/image$newImage.png",
       "selected": false,
       "selectedItems": <Map<String, dynamic>>[],
@@ -276,13 +329,11 @@ class SplitpageController extends GetxController {
   /// - TransaksiModel yang berhasil disimpan
   /// - Null jika terjadi error
   Future<TransaksiModel?> addDataToDatabase2(String imgpath) async {
+        final strukData = processedText.value!;
     if (processedText.value == null) {
       print("Data struk belum tersedia.");
       return null;
     }
-    final strukData = processedText.value!;
-
-    var tax = getTaxRatio();
 
     Set<Item> uniqueItems = {};
     for (var i = 0; i < participants.value.length; i++) {
@@ -297,8 +348,7 @@ class SplitpageController extends GetxController {
     List<DetailTransaksiModel> detailList = [];
     for (var item in uniqueItems) {
       List<int> participantIndices = getParticipantsWhoSelectedItem(item);
-      print('tax ratio = ${tax / 100}');
-      var unitTax = (item.unitPrice! * tax / 100).round();
+      // print('tax ratio = ${tax / 100}');
 
       var totalQuantity = 0;
       for (var i = 0; i < participants.value.length; i++) {
@@ -327,10 +377,14 @@ class SplitpageController extends GetxController {
 
         var hargaPerParticipant =
             (participantQuantity / totalQuantity) *
-            ((includePajak.value)
-                ? ((unitTax + item.unitPrice!) * item.quantity!)
-                : item.price!);
-        print(unitTax);
+            getUnitPrice(
+              item,
+              includePajak: includePajak.value,
+              includeDiskon: includeDiskon.value,
+              includeBiayaLayanan: includeBiayaLayanan.value,
+              includeBiayaLainnya: includeBiayaLainnya.value,
+            );
+        // print(unitTax);
         print(
           '  ${participants.value[index]['name']}  $participantQuantity $totalQuantity',
         );
@@ -361,12 +415,22 @@ class SplitpageController extends GetxController {
 
       DetailTransaksiModel detail = DetailTransaksiModel(
         hargaSatuan:
-            (includePajak.value) ? unitTax + item.unitPrice! : item.unitPrice,
+            getUnitPrice(
+              item,
+              includePajak: includePajak.value,
+              includeDiskon: includeDiskon.value,
+              includeBiayaLayanan: includeBiayaLayanan.value,
+              includeBiayaLainnya: includeBiayaLainnya.value,
+            ),
         namaBarang: item.name,
         harga:
-            (includePajak.value)
-                ? ((unitTax + item.unitPrice!) * item.quantity!).toDouble()
-                : item.price!.toDouble(),
+            getUnitPrice(
+              item,
+              includePajak: includePajak.value,
+              includeDiskon: includeDiskon.value,
+              includeBiayaLayanan: includeBiayaLayanan.value,
+              includeBiayaLainnya: includeBiayaLainnya.value,
+            ).toDouble(),
         jumlah: item.quantity,
         userSplits: userSplits,
       );

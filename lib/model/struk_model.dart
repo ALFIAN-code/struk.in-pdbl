@@ -138,6 +138,10 @@ class TransaksiModel {
   final double? biayaLayanan;
   final double? total;
   final int? jumlahparticipant;
+  final int? diskon;
+  final String? createAt;
+  final String? category;
+  final String? biayaLainnya;
 
   // Relasi ke model DetailTransaksi
   final List<DetailTransaksiModel> detailTransaksis;
@@ -152,6 +156,10 @@ class TransaksiModel {
     this.biayaLayanan,
     this.total,
     this.jumlahparticipant,
+    this.diskon,
+    this.createAt,
+    this.category,
+    this.biayaLainnya,
     this.detailTransaksis = const [],
   });
 
@@ -166,6 +174,10 @@ class TransaksiModel {
       pajak: map['pajak']?.toDouble(),
       biayaLayanan: map['biaya_layanan']?.toDouble(),
       total: map['total']?.toDouble(),
+      diskon: map['diskon'],
+      createAt: map['create_at'],
+      category: map['category'],
+      biayaLainnya: map['biaya_lainnya'],
     );
   }
 
@@ -180,6 +192,10 @@ class TransaksiModel {
       'biaya_layanan': biayaLayanan,
       'total': total,
       'jumlah_participant': jumlahparticipant,
+      'diskon': diskon,
+      'create_at': createAt,
+      'category': category,
+      'biaya_lainnya': biayaLainnya,
     };
   }
 
@@ -195,6 +211,10 @@ class TransaksiModel {
       biayaLayanan: biayaLayanan,
       total: total,
       detailTransaksis: detailTransaksis ?? this.detailTransaksis,
+      diskon: diskon,
+      createAt: createAt,
+      category: category,
+      biayaLainnya: biayaLainnya,
     );
   }
 }

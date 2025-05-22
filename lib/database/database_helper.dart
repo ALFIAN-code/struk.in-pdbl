@@ -34,6 +34,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE IF NOT EXISTS transaksi (
       transaksiID INTEGER PRIMARY KEY AUTOINCREMENT,
+      create_at TEXT,
       image_path TEXT,
       store_name TEXT,
       struk_date TEXT,
@@ -41,7 +42,10 @@ class DatabaseHelper {
       jumlah_participant INTEGER,
       pajak REAL,
       biaya_layanan REAL,
-      total REAL
+      diskon REAL,
+      biaya_lainnya REAL,
+      total REAL,
+      category TEXT
     )
   ''');
 
@@ -145,6 +149,8 @@ class DatabaseHelper {
   Future<int> insertFullTransaksi(TransaksiModel transaksiModel) async {
     final db = await database;
 
+    DateTime now = DateTime.now();
+
     return await db.transaction((txn) async {
       // 1. Insert data transaksi utama
       final transaksiID = await txn.insert(
@@ -169,6 +175,12 @@ class DatabaseHelper {
           biayaLayanan: transaksiModel.biayaLayanan,
           total: transaksiModel.total,
           jumlahparticipant: transaksiModel.jumlahparticipant,
+          createAt:
+              '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}',
+          // yyyy-MM-dd HH:mm
+          diskon: transaksiModel.diskon,
+          biayaLainnya: transaksiModel.biayaLainnya,
+          category: transaksiModel.category,
         ).toMap(),
       );
 
@@ -201,11 +213,6 @@ class DatabaseHelper {
           if (detailUser.user != null && detailUser.user!.userID != null) {
             await txn.insert(
               'Usersplit',
-              // {
-              //   'UserID': detailUser.user!.userID,
-              //   'username': detailUser.user!.username,
-              //   'avatar': detailUser.user!.avatar,
-              // }
               UserSplitModel(
                 userID: detailUser.user!.userID,
                 username: detailUser.user!.username,

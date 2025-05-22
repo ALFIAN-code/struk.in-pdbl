@@ -8,7 +8,10 @@ class StrukFromApi {
   int? tax;
   int? total;
   String? businessName;
-  // String category;
+  String category;
+  int? diskon;
+  int? biayaLayanan;
+  int? biayaLainnya;
 
   StrukFromApi({
     required this.isStruk,
@@ -19,6 +22,10 @@ class StrukFromApi {
     required this.subtotal,
     required this.tax,
     required this.total,
+    required this.category,
+    required this.diskon,
+    required this.biayaLainnya,
+    required this.biayaLayanan,
   });
 
   factory StrukFromApi.fromJson(Map<String, dynamic> json) {
@@ -34,7 +41,10 @@ class StrukFromApi {
       tax: json['tax'] ?? 0,
       total: json['total'],
       businessName: json['business_name'].toUpperCase(),
-      // category: json['category'],
+      category: json['category'] ?? 'unknown',
+      diskon: json['diskon'] ?? 0,
+      biayaLayanan: json['biaya_layanan'] ?? 0,
+      biayaLainnya: json['biaya_lainnya'] ?? 0,
     );
   }
 
@@ -47,7 +57,10 @@ class StrukFromApi {
       'invoice_number': invoiceNumber,
       'date': date,
       'business_name': businessName,
-      // 'payment_method': paymentMethod?.toUpperCase(),
+      'category': category,
+      'diskon': diskon,
+      'biaya_layanan': biayaLayanan,
+      'biaya_lainnya': biayaLainnya,
     };
   }
 
@@ -71,7 +84,10 @@ class StrukFromApi {
       tax: tax ?? this.tax,
       total: total ?? this.total,
       businessName: businessName,
-      // category: category,
+      category: category,
+      diskon: diskon,
+      biayaLainnya: biayaLainnya,
+      biayaLayanan: biayaLayanan,
     );
   }
 
@@ -86,6 +102,10 @@ class StrukFromApi {
       tax: tax,
       total: total,
       items: items?.map((item) => item.deepCopy()).toList(),
+      category: category,
+      diskon: diskon,
+      biayaLainnya: biayaLainnya,
+      biayaLayanan: biayaLayanan,
     );
   }
 

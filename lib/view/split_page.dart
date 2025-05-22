@@ -23,32 +23,26 @@ class SplitPage extends StatefulWidget {
 }
 
 class _SplitPageState extends State<SplitPage> {
-  // Menyimpan item ke multi-selection
   var splitController = Get.put(SplitpageController());
   var connection = Get.find<ConnectionController>();
-
   late bool internetConnection;
-
   final ScrollController _scrollController = ScrollController();
 
+  var isExpanded = false;
+  var title = 'Sertakan Pajak';
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      splitController.processReceiptImage(
-        widget.image,
-        // connection.hasConnection.value,
-      );
+      splitController.processReceiptImage(widget.image);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       splitController.addParticipant();
     });
-
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     splitController.resetState();
     super.dispose();
   }
@@ -148,7 +142,6 @@ class _SplitPageState extends State<SplitPage> {
                                     cancelBtnText: 'Batal',
                                     showCancelBtn: true,
                                     onConfirmBtnTap: () {
-                                      // splitController.resetState();
                                       Get.offAll(
                                         () => HomePage(),
                                       ); // Kembali ke halaman sebelumnya
@@ -343,26 +336,153 @@ class _SplitPageState extends State<SplitPage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Sertakan Pajak'),
-                              Transform.scale(
-                                scale: 0.7,
-                                child: Switch(
-                                  activeColor: Colors.green,
-                                  value: splitController.includePajak.value,
-                                  onChanged: (value) {
-                                    splitController.includePajak.value = value;
-                                  },
+                        SizedBox(height: 30),
+                        isExpanded
+                            ? GestureDetector(
+                              onTap:
+                                  () => setState(() {
+                                    isExpanded = !isExpanded;
+                                  }),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: accentColor.withAlpha(140),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Atur biaya tambahan",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: 10),
+                                    Icon(Icons.keyboard_arrow_down_rounded),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
+                            )
+                            : Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: accentColor.withAlpha(140),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isExpanded = !isExpanded;
+                                      });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            "Atur biaya tambahan",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Icon(Icons.keyboard_arrow_up_rounded),
+                                      ],
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black12),
+                                  Column(
+                                    children: [
+                                      // SizedBox(height: 10),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: CustomToggle(
+                                          title: 'Sertakan pajak',
+                                          value:
+                                              splitController
+                                                  .includePajak
+                                                  .value,
+                                          onChanged: (value) {
+                                            splitController.includePajak.value =
+                                                value;
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: CustomToggle(
+                                          title: 'Sertakan diskon',
+                                          value:
+                                              splitController
+                                                  .includeDiskon
+                                                  .value,
+                                          onChanged: (value) {
+                                            splitController
+                                                .includeDiskon
+                                                .value = value;
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: CustomToggle(
+                                          title: 'Sertakan biaya layanan',
+                                          value:
+                                              splitController
+                                                  .includeBiayaLayanan
+                                                  .value,
+                                          onChanged: (value) {
+                                            splitController
+                                                .includeBiayaLayanan
+                                                .value = value;
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: CustomToggle(
+                                          title: 'Sertakan biaya lainnya',
+                                          value:
+                                              splitController
+                                                  .includeBiayaLainnya
+                                                  .value,
+                                          onChanged: (value) {
+                                            splitController
+                                                .includeBiayaLainnya
+                                                .value = value;
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                        SizedBox(height: 0),
+
                         SizedBox(height: 10),
                         ListView.separated(
                           padding: EdgeInsets.zero,
@@ -385,7 +505,7 @@ class _SplitPageState extends State<SplitPage> {
                             return GetListMenu(
                               participantIndex:
                                   splitController.selectedIndex.value,
-                              taxPercentage: splitController.getTaxRatio(),
+                              // taxPercentage: Utils.getPercentage(bagian: splitController.processedText.value?.tax ?? 0, total: splitController.processedText.value?.total ?? 0),
                               item: item!,
                               isSelectable: true,
                               onTap: () {
@@ -424,7 +544,36 @@ class _SplitPageState extends State<SplitPage> {
                                   splitController.processedText.value?.tax ?? 0,
                                 ),
                               ),
+
+                              rowText(
+                                'Biaya Layanan',
+                                Utils.formatCurrency(
+                                  splitController
+                                          .processedText
+                                          .value
+                                          ?.biayaLayanan ??
+                                      0,
+                                ),
+                              ),
+                              rowText(
+                                'Biaya Lainnya',
+                                Utils.formatCurrency(
+                                  splitController
+                                          .processedText
+                                          .value
+                                          ?.biayaLainnya ??
+                                      0,
+                                ),
+                              ),
                               // rowText('Layanan', '${splitController.processedText.value?.}'),
+                              rowText(
+                                'Diskon',
+                                Utils.formatCurrency(
+                                  splitController.processedText.value?.diskon ??
+                                      0,
+                                ),
+                              ),
+                              SizedBox(height: 10),
                               rowText(
                                 'Total Tagihan',
                                 Utils.formatCurrency(
@@ -538,6 +687,41 @@ class _SplitPageState extends State<SplitPage> {
             return Center(child: Text('error'));
           }
         }),
+      ),
+    );
+  }
+}
+
+class CustomToggle extends StatelessWidget {
+  CustomToggle({
+    super.key,
+    required this.title,
+    required this.onChanged,
+    required this.value,
+  });
+
+  final String title;
+  // final SplitpageController splitController;
+  void Function(bool)? onChanged;
+  bool value;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 35,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title),
+          Transform.scale(
+            scale: 0.7,
+            child: Switch(
+              activeColor: Colors.green,
+              value: value,
+              onChanged: onChanged,
+            ),
+          ),
+        ],
       ),
     );
   }

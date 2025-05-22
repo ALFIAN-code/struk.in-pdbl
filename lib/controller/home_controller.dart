@@ -74,7 +74,7 @@ class HomepageController extends GetxController {
   /// Mengembalikan:
   /// - Path gambar yang sudah dinormalisasi
   /// - Null jika terjadi error
-  Future<String?> normalizeImage(String inputPath, {int quality = 80}) async {
+  Future<String?> normalizeImage(String inputPath, {int quality = 50}) async {
     try {
       // Baca ekstensi lama, ganti jadi .jpg
       final fileNameJpg = p.setExtension(p.basename(inputPath), '.jpg');

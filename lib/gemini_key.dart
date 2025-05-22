@@ -3,11 +3,7 @@
 import 'dart:math';
 
 String getRandomApiKey() {
-  List<String> apiKeys = [
-    'AIzaSyAbVxDgaWpTpL3YyKdeHyGDXOcPSlE46bw',
-    'AIzaSyAszq90S9Emzs-5peAlNYAi-nOBUFtXTSk',
-    'AIzaSyC8hHoYlS7G3fq_jheY5MNdzZ9PS7gX8yE',
-  ];
+  List<String> apiKeys = ['AIzaSyAbVxDgaWpTpL3YyKdeHyGDXOcPSlE46bw'];
 
   final random = Random();
   int index = random.nextInt(apiKeys.length);

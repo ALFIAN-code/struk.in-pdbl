@@ -198,4 +198,12 @@ class Utils {
     final random = Random();
     return funnyQuotes[random.nextInt(funnyQuotes.length)];
   }
+
+    static double getPercentage({required int bagian, required int total}) {
+    if (total != 0) {
+      return ((bagian / total) * 100);
+    } else {
+      return 0;
+    }
+  }
 }

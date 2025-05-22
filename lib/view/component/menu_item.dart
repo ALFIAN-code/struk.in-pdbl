@@ -19,7 +19,6 @@ class GetListMenu extends StatefulWidget {
     required this.isSelectable,
     // required this.isSelected,
     required this.onTap,
-    required this.taxPercentage,
   });
 
   int participantIndex = 0;
@@ -28,7 +27,6 @@ class GetListMenu extends StatefulWidget {
   final VoidCallback? onTap;
   final bool isSelectable;
   bool isExpand = false;
-  final double taxPercentage;
 
   @override
   State<GetListMenu> createState() => _GetListMenuState();
@@ -49,12 +47,19 @@ class _GetListMenuState extends State<GetListMenu> {
     final displayCount = (total > maxAvatars) ? maxAvatars : total;
     final remaining = total - displayCount;
 
+    final biayaTambahan = splitController.getUnitPrice(widget.item, 
+      includeBiayaLainnya: splitController.includeBiayaLainnya.value,
+      includeBiayaLayanan: splitController.includeBiayaLayanan.value,
+      includeDiskon: splitController.includeDiskon.value,
+      includePajak: splitController.includePajak.value
+    ) - widget.item.unitPrice!;
+
     // print('selected = ${widget.isSelected}');
     // print('selected index = ${widget.participantIndex}');
     // print('list participant = ${participantWhoSelected.toList()}');
-
-    var taxPerMenu =
-        (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
+    
+    // var taxPerMenu =
+    //     (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();
     return GestureDetector(
       onTap: widget.isSelectable ? widget.onTap : null,
       child: Container(
@@ -96,9 +101,17 @@ class _GetListMenuState extends State<GetListMenu> {
                               color: const Color.fromRGBO(40, 40, 40, 1.0),
                             ),
                           ),
-                          (splitController.includePajak.value)
+                          
+                          (splitController.includePajak.value || splitController.includeBiayaLainnya.value || splitController.includeBiayaLayanan.value || splitController.includeDiskon.value)?
+                          Text((biayaTambahan >= 0)?' + ':' - ',style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.green,
+                          ),):SizedBox(),
+                          
+                          (splitController.includePajak.value || splitController.includeBiayaLainnya.value || splitController.includeBiayaLayanan.value || splitController.includeDiskon.value)
                               ? Text(
-                                ' + ${Utils.formatCurrency(taxPerMenu, withSymbol: false)}',
+                                Utils.formatCurrency(biayaTambahan.abs(), withSymbol: false),
                                 style: GoogleFonts.roboto(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -122,10 +135,13 @@ class _GetListMenuState extends State<GetListMenu> {
                       flex: 2,
                       child: Text(
                         Utils.formatCurrency(
-                          (splitController.includePajak.value)
-                              ? (taxPerMenu + widget.item.unitPrice!) *
-                                  widget.item.quantity!
-                              : widget.item.price!.toInt(),
+                          splitController.getUnitPrice(
+                            widget.item,
+                            includeBiayaLainnya: splitController.includeBiayaLainnya.value,
+                            includeBiayaLayanan: splitController.includeBiayaLayanan.value,
+                            includeDiskon: splitController.includeDiskon.value,
+                            includePajak: splitController.includePajak.value
+                          ) * widget.item.quantity!,
                         ),
                         style: GoogleFonts.roboto(
                           fontSize: 14,
