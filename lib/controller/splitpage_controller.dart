@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:strukin/controller/utils.dart';
 import 'package:strukin/database/remote_from_gemini.dart';
 import 'package:strukin/gemini_key.dart';
@@ -99,12 +100,10 @@ class SplitpageController extends GetxController {
     print("unit tax = $unitTax");
     var unitDiskon = (item.unitPrice! * diskon / 100).round();
     print("unit diskon = $unitDiskon");
-    var unitBiayaLayanan =
-        (item.unitPrice! * biayaLayanan / 100).round();
-        print('unit biaya layanan = $unitBiayaLayanan');
-    var unitBiayaLainnya =
-        (item.unitPrice! * biayaLainnya / 100).round();
-        print('unit biaya lainnya = $unitBiayaLainnya');
+    var unitBiayaLayanan = (item.unitPrice! * biayaLayanan / 100).round();
+    print('unit biaya layanan = $unitBiayaLayanan');
+    var unitBiayaLainnya = (item.unitPrice! * biayaLainnya / 100).round();
+    print('unit biaya lainnya = $unitBiayaLainnya');
 
     int unitPrice =
         item.unitPrice! -
@@ -117,7 +116,6 @@ class SplitpageController extends GetxController {
   }
 
   //Fungsi untuk mendapatkan persentase pajak dari harga pajak dan total harga
-
 
   /*
   fungsi ini untuk memproses gambar struk yang diambil dari kamera
@@ -329,7 +327,7 @@ class SplitpageController extends GetxController {
   /// - TransaksiModel yang berhasil disimpan
   /// - Null jika terjadi error
   Future<TransaksiModel?> addDataToDatabase2(String imgpath) async {
-        final strukData = processedText.value!;
+    final strukData = processedText.value!;
     if (processedText.value == null) {
       print("Data struk belum tersedia.");
       return null;
@@ -414,14 +412,13 @@ class SplitpageController extends GetxController {
       );
 
       DetailTransaksiModel detail = DetailTransaksiModel(
-        hargaSatuan:
-            getUnitPrice(
-              item,
-              includePajak: includePajak.value,
-              includeDiskon: includeDiskon.value,
-              includeBiayaLayanan: includeBiayaLayanan.value,
-              includeBiayaLainnya: includeBiayaLainnya.value,
-            ),
+        hargaSatuan: getUnitPrice(
+          item,
+          includePajak: includePajak.value,
+          includeDiskon: includeDiskon.value,
+          includeBiayaLayanan: includeBiayaLayanan.value,
+          includeBiayaLainnya: includeBiayaLainnya.value,
+        ),
         namaBarang: item.name,
         harga:
             getUnitPrice(
@@ -443,9 +440,13 @@ class SplitpageController extends GetxController {
       transaksiID: Utils.generateCustomIntID(),
       subtotal: strukData.subtotal?.toDouble() ?? 0,
       pajak: strukData.tax?.toDouble() ?? 0,
-      biayaLayanan: 0,
+      biayaLayanan: strukData.biayaLayanan?.toDouble() ?? 0,
       total: strukData.total?.toDouble() ?? 0,
       detailTransaksis: detailList,
+      biayaLainnya: strukData.biayaLainnya?.toDouble() ?? 0,
+      diskon: strukData.diskon?.toDouble() ?? 0,
+      createAt: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+      category: strukData.category ?? 'unknown',
       jumlahparticipant: participants.value.length,
     );
     await DatabaseHelper().insertFullTransaksi(transaksi);

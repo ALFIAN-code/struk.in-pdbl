@@ -529,7 +529,7 @@ class _SplitPageState extends State<SplitPage> {
                           child: Column(
                             children: [
                               rowText(
-                                'Subtotal (tanpa pajak)',
+                                'Subtotal (tanpa biaya tambahan)',
                                 Utils.formatCurrency(
                                   splitController
                                           .processedText
@@ -538,6 +538,7 @@ class _SplitPageState extends State<SplitPage> {
                                       0,
                                 ),
                               ),
+                              SizedBox(height: 10),
                               rowText(
                                 'Pajak',
                                 Utils.formatCurrency(
@@ -565,6 +566,9 @@ class _SplitPageState extends State<SplitPage> {
                                       0,
                                 ),
                               ),
+                              SizedBox(
+                                height: 10,
+                              ),
                               // rowText('Layanan', '${splitController.processedText.value?.}'),
                               rowText(
                                 'Diskon',
@@ -573,7 +577,7 @@ class _SplitPageState extends State<SplitPage> {
                                       0,
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              SizedBox(height: 25),
                               rowText(
                                 'Total Tagihan',
                                 Utils.formatCurrency(

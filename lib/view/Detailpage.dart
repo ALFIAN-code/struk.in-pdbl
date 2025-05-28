@@ -212,6 +212,12 @@ class _DetailPageState extends State<DetailPage> {
       children: [
         _buildTotalRow("Subtotal", transaksi.subtotal?.toInt() ?? 0),
         _buildTotalRow("Pajak", transaksi.pajak?.toInt() ?? 0),
+        _buildTotalRow("Biaya Layanan", transaksi.biayaLayanan?.toInt() ?? 0),
+        _buildTotalRow("Biaya Lainnya", transaksi.biayaLainnya?.toInt() ?? 0),
+        SizedBox(
+        height: 10,
+        ),
+        _buildTotalRow("Diskon", transaksi.diskon?.toInt() ?? 0),
         Divider(),
         _buildTotalRow("Total", transaksi.total!.toInt(), isBold: true),
       ],

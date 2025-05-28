@@ -138,10 +138,10 @@ class TransaksiModel {
   final double? biayaLayanan;
   final double? total;
   final int? jumlahparticipant;
-  final int? diskon;
+  final double? diskon;
   final String? createAt;
   final String? category;
-  final String? biayaLainnya;
+  final double? biayaLainnya;
 
   // Relasi ke model DetailTransaksi
   final List<DetailTransaksiModel> detailTransaksis;

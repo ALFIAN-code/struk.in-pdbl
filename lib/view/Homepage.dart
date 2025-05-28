@@ -7,6 +7,7 @@ import 'package:quickalert/quickalert.dart';
 import 'package:strukin/controller/internet_connection_controller.dart';
 // import 'package:rive/rive.dart';
 import 'package:strukin/controller/utils.dart';
+import 'package:strukin/model/category_enum.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/Detailpage.dart';
 import 'package:strukin/view/split_page.dart';
@@ -429,6 +430,8 @@ class StrukItem extends StatelessWidget {
   /// Returns:
   /// - Container yang berisi informasi struk (gambar, nama toko, total, dll)
   Widget build(BuildContext context) {
+    Category category = Category.fromLabel(transaksiItem.category);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -504,18 +507,36 @@ class StrukItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            Text(
-                              Utils.formatDateFromString(
-                                transaksiItem.strukDate,
-                              ),
-                              style: GoogleFonts.roboto(color: Colors.black54),
+                      Row(
+                        children: [
+                          Text(
+                            Utils.formatDateFromString(
+                              transaksiItem.strukDate,
                             ),
-                          ],
-                        ),
+                            style: GoogleFonts.roboto(color: Colors.black54),
+                          ),
+
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: category.color.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(category.label,
+                                style: GoogleFonts.roboto(
+                                  color: category.color,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                )),
+                          ),
+                          
+                        ],
                       ),
                     ],
                   ),

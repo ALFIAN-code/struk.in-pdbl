@@ -155,16 +155,6 @@ class DatabaseHelper {
       // 1. Insert data transaksi utama
       final transaksiID = await txn.insert(
         'transaksi',
-        // {
-        //   'image_path': transaksiModel.imagePath,
-        //   'store_name': transaksiModel.storeName,
-        //   'struk_date': transaksiModel.strukDate,
-        //   'subtotal': transaksiModel.subtotal,
-        //   'pajak': transaksiModel.pajak,
-        //   'biaya_layanan': transaksiModel.biayaLayanan,
-        //   'total': transaksiModel.total,
-        //   'jumlah_participant': transaksiModel.jumlahparticipant,
-        // }
         TransaksiModel(
           transaksiID: transaksiModel.transaksiID,
           imagePath: transaksiModel.imagePath,
@@ -177,10 +167,11 @@ class DatabaseHelper {
           jumlahparticipant: transaksiModel.jumlahparticipant,
           createAt:
               '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}',
+
           // yyyy-MM-dd HH:mm
-          diskon: transaksiModel.diskon,
           biayaLainnya: transaksiModel.biayaLainnya,
           category: transaksiModel.category,
+          diskon: transaksiModel.diskon,
         ).toMap(),
       );
 

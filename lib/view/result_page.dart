@@ -55,8 +55,6 @@ class _ResultPageState extends State<ResultPage> {
             if (tx == null) {
               return const Center(child: CircularProgressIndicator());
             }
-
-            // ——— Hitung grouping **setelah** tx ada ———
             final groupedData = resultController.groupItemsByUser(tx);
 
             return SingleChildScrollView(
@@ -107,6 +105,39 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ],
                   ),
+                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Biaya Layanan', style: GoogleFonts.roboto(fontSize: 16)),
+                      Text(
+                        Utils.formatCurrency(tx.biayaLayanan?.toInt() ?? 0),
+                        style: GoogleFonts.roboto(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Biaya Lainnya', style: GoogleFonts.roboto(fontSize: 16)),
+                      Text(
+                        Utils.formatCurrency(tx.biayaLainnya?.toInt() ?? 0),
+                        style: GoogleFonts.roboto(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Diskon', style: GoogleFonts.roboto(fontSize: 16)),
+                      Text(
+                        Utils.formatCurrency(tx.diskon?.toInt() ?? 0),
+                        style: GoogleFonts.roboto(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
