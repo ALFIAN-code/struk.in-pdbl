@@ -10,6 +10,7 @@ import 'package:strukin/controller/utils.dart';
 import 'package:strukin/model/category_enum.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/Detailpage.dart';
+import 'package:strukin/view/component/bottom_sheet.dart';
 import 'package:strukin/view/split_page.dart';
 import 'package:strukin/view/style.dart';
 
@@ -25,7 +26,6 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(HomepageController());
-
   var connection = Get.find<ConnectionController>();
 
   /// Menampilkan bottom sheet untuk memilih sumber gambar (kamera atau galeri)
@@ -139,15 +139,15 @@ class HomePage extends StatelessWidget {
         children: [
           Container(decoration: BoxDecoration(color: mainColor)),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Row(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +178,7 @@ class HomePage extends StatelessWidget {
                                 "Easter egg",
                                 Utils.randomQuotes(),
                                 backgroundColor: Colors.white,
-
+                                
                                 borderRadius: 30,
                                 borderWidth: 1,
                                 borderColor: const Color.fromARGB(
@@ -203,8 +203,11 @@ class HomePage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
-                    GestureDetector(
+                  ),
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GestureDetector(
                       onTap: () => _showImagePicker(context),
                       child: Container(
                         height: 85,
@@ -254,8 +257,11 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    Row(
+                  ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
                       children: [
                         Expanded(
                           child: Container(
@@ -277,6 +283,10 @@ class HomePage extends StatelessWidget {
                               },
                               decoration: InputDecoration(
                                 hintText: 'Search disini ...',
+                                hintStyle: GoogleFonts.roboto(
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                   borderSide: BorderSide.none,
@@ -305,32 +315,97 @@ class HomePage extends StatelessWidget {
                           ),
                           child: IconButton(
                             onPressed: () {},
-                            icon: Image.asset(
-                              'assets/images/search.png',
-                              width: 25,
-                              height: 25,
+                            icon: Icon(Icons.search),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Struk tersimpan',
+                          style: GoogleFonts.roboto(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.white,
+                                
+                            // shadowColor: Colors.black,
+                            clipBehavior: Clip.hardEdge,
+                            child: InkWell(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => FilterButtomSheet(),
+                                );
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text('Filter', style: GoogleFonts.roboto()),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      Icons.filter_list,
+                                      color: Colors.black54,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
-                    Text(
-                      'Struk tersimpan',
-                      style: GoogleFonts.roboto(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Obx(
+                      () => Text(
+                        'Filter berdasarkan : ${controller.selectedCategory.value} - ${controller.selectedTime.value}',
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    GetX(
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GetX(
                       init: controller,
-                      initState: (state) => controller.getAllStruk(),
+                      initState: (state) {
+                        controller.getAllStruk();
+                      },
                       builder: (controller) {
                         // print(controller.strukList.value.toList());
-                        var sortedList =
-                            controller.strukList.value.reversed.toList();
-                        if (sortedList.isEmpty) {
+                        // var sortedList =
+                        //     controller.filteredStrukList.value;
+                        if (controller.filteredStrukList.value.isEmpty) {
                           return Center(
                             child: Column(
                               children: [
@@ -352,50 +427,54 @@ class HomePage extends StatelessWidget {
                           );
                         } else {
                           return Column(
-                            children: List.generate(sortedList.length, (index) {
-                              final transaksi = sortedList[index];
-
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Get.to(
-                                      () => DetailPage(transaksi: transaksi),
-                                    );
-                                  },
-                                  child: StrukItem(
-                                    onDelete: () async {
-                                      await QuickAlert.show(
-                                        context: context,
-                                        type: QuickAlertType.error,
-                                        title: 'Konfirmasi',
-
-                                        text:
-                                            'Apakah Anda yakin ingin menghapus struk ini?',
-                                        confirmBtnText: 'Hapus',
-                                        cancelBtnText: 'Batal',
-                                        showCancelBtn: true,
-                                        onConfirmBtnTap: () async {
-                                          await controller.deleteStruk(
-                                            transaksi.transaksiID!,
-                                          );
-                                          Get.back();
-                                        },
-
-                                        confirmBtnColor: Colors.red,
+                            children: List.generate(
+                              controller.filteredStrukList.value.length,
+                              (index) {
+                                final transaksi =
+                                    controller.filteredStrukList.value[index];
+                                
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(
+                                        () => DetailPage(transaksi: transaksi),
                                       );
                                     },
-                                    transaksiItem: transaksi,
+                                    child: StrukItem(
+                                      onDelete: () async {
+                                        await QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.error,
+                                          title: 'Konfirmasi',
+                                
+                                          text:
+                                              'Apakah Anda yakin ingin menghapus struk ini?',
+                                          confirmBtnText: 'Hapus',
+                                          cancelBtnText: 'Batal',
+                                          showCancelBtn: true,
+                                          onConfirmBtnTap: () async {
+                                            await controller.deleteStruk(
+                                              transaksi.transaksiID!,
+                                            );
+                                            Get.back();
+                                          },
+                                
+                                          confirmBtnColor: Colors.red,
+                                        );
+                                      },
+                                      transaksiItem: transaksi,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              },
+                            ),
                           );
                         }
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -430,7 +509,7 @@ class StrukItem extends StatelessWidget {
   /// Returns:
   /// - Container yang berisi informasi struk (gambar, nama toko, total, dll)
   Widget build(BuildContext context) {
-    Category category = Category.fromLabel(transaksiItem.category);
+    CategoryStruk category = CategoryStruk.fromLabel(transaksiItem.category);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -510,15 +589,11 @@ class StrukItem extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            Utils.formatDateFromString(
-                              transaksiItem.strukDate,
-                            ),
+                            Utils.formatDateFromString(transaksiItem.strukDate),
                             style: GoogleFonts.roboto(color: Colors.black54),
                           ),
 
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -528,14 +603,15 @@ class StrukItem extends StatelessWidget {
                               color: category.color.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(category.label,
-                                style: GoogleFonts.roboto(
-                                  color: category.color,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                )),
+                            child: Text(
+                              category.label,
+                              style: GoogleFonts.roboto(
+                                color: category.color,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
-                          
                         ],
                       ),
                     ],

@@ -36,6 +36,7 @@ class _DetailPageState extends State<DetailPage> {
     );
     var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
     var deviceWidth = MediaQuery.of(context).size.width;
+    print(widget.transaksi.createAt);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(color: mainColor),

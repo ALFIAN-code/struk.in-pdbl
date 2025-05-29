@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:strukin/controller/utils.dart';
 import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/struk_model.dart';
 
@@ -23,7 +24,10 @@ class HomepageController extends GetxController {
   Rx<XFile?> receiptImage = Rx<XFile?>(null);
 
   var database = DatabaseHelper();
-  Rx<List<TransaksiModel>> strukList = Rx<List<TransaksiModel>>([]);
+  var selectedCategory = 'Semua'.obs;
+  var selectedTime = 'Scan terbaru'.obs;
+
+  Rx<List<TransaksiModel>> filteredStrukList = Rx<List<TransaksiModel>>([]);
 
   /// Menghapus struk dari database berdasarkan ID
   ///
@@ -32,7 +36,8 @@ class HomepageController extends GetxController {
   /// Melempar exception jika terjadi error saat menghapus
   Future<void> deleteStruk(int id) async {
     await database.deleteFullTransaksi(id);
-    await getAllStruk(); // Refresh the list after deletion
+    await getAllStruk();
+    applyFilters();
   }
 
   // Fungsi search untuk filter list transaksi
@@ -43,9 +48,9 @@ class HomepageController extends GetxController {
   /// Memperbarui strukList dengan hasil pencarian
   void searchStruk(String query) {
     if (query.isEmpty) {
-      strukList.value = fullStrukList;
+      filteredStrukList.value = fullStrukList;
     } else {
-      strukList.value =
+      filteredStrukList.value =
           fullStrukList.where((transaksi) {
             return transaksi.storeName?.toLowerCase().contains(
                   query.toLowerCase(),
@@ -62,8 +67,8 @@ class HomepageController extends GetxController {
   /// - Melempar exception jika terjadi error
   Future<void> getAllStruk() async {
     final transaksiList = await database.getAllTransaksi() ?? [];
-    fullStrukList.value = transaksiList;
-    strukList.value = transaksiList.reversed.toList();
+    fullStrukList.value = [...transaksiList];
+    filteredStrukList.value = [...transaksiList];
   }
 
   /// Normalisasi gambar struk dengan kompresi dan konversi format
@@ -145,4 +150,61 @@ class HomepageController extends GetxController {
       return null;
     }
   }
+
+  // Fungsi applyFilters yang sudah clean
+  void applyFilters() {
+    List<TransaksiModel> list = [...fullStrukList];
+
+    // Filter kategori
+    if (selectedCategory.value != 'Semua') {
+      list =
+          list
+              .where(
+                (transaksi) => transaksi.category == selectedCategory.value,
+              )
+              .toList();
+    }
+
+    // Urutkan berdasarkan waktu
+    int compareDate(String? a, String? b, {bool descending = true}) {
+      final dateA = Utils.parseCustomDate(a);
+      final dateB = Utils.parseCustomDate(b);
+      return descending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
+    }
+
+    switch (selectedTime.value) {
+      case 'Scan terbaru':
+        list.sort(
+          (a, b) => compareDate(a.createAt, b.createAt, descending: true),
+        );
+        break;
+      case 'Scan terlama':
+        list.sort(
+          (a, b) => compareDate(a.createAt, b.createAt, descending: false),
+        );
+        break;
+      case 'Struk terbaru':
+        list.sort(
+          (a, b) => compareDate(a.strukDate, b.strukDate, descending: true),
+        );
+        break;
+      case 'Struk terlama':
+        list.sort(
+          (a, b) => compareDate(a.strukDate, b.strukDate, descending: false),
+        );
+        break;
+    }
+
+    filteredStrukList.value = list;
+
+    print('Filter berdasarkan kategori: ${selectedCategory.value}');
+    print('Urutkan berdasarkan waktu: ${selectedTime.value}');
+    for (var e in filteredStrukList.value) {
+      print(
+        'Struk: ${e.storeName}, Kategori: ${e.category}, Waktu Scan: ${e.createAt}, Tanggal Struk: ${e.strukDate}',
+      );
+    }
+  }
+
+  // filterStrukByScanTime() {}
 }

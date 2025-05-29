@@ -162,6 +162,53 @@ class Utils {
     }
   }
 
+  // Fungsi terpisah untuk normalize format tanggal
+  static DateTime parseCustomDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return DateTime(1900);
+
+    try {
+      // Coba parse format standar dulu
+      DateTime? parsed = DateTime.tryParse(dateStr);
+      if (parsed != null) return parsed;
+
+      // Jika gagal, coba normalize format custom seperti "2025-5-27 15:8"
+      String normalized = dateStr;
+
+      // Split tanggal dan waktu
+      List<String> parts = normalized.split(' ');
+      if (parts.length == 2) {
+        String datePart = parts[0];
+        String timePart = parts[1];
+
+        // Normalize date part (tambah 0 di depan jika perlu)
+        List<String> dateParts = datePart.split('-');
+        if (dateParts.length == 3) {
+          String year = dateParts[0];
+          String month = dateParts[1].padLeft(2, '0');
+          String day = dateParts[2].padLeft(2, '0');
+          datePart = '$year-$month-$day';
+        }
+
+        // Normalize time part (tambah 0 di depan untuk menit/detik jika perlu)
+        List<String> timeParts = timePart.split(':');
+        if (timeParts.length >= 2) {
+          String hour = timeParts[0].padLeft(2, '0');
+          String minute = timeParts[1].padLeft(2, '0');
+          String second =
+              timeParts.length > 2 ? timeParts[2].padLeft(2, '0') : '00';
+          timePart = '$hour:$minute:$second';
+        }
+
+        normalized = '$datePart $timePart';
+      }
+
+      return DateTime.tryParse(normalized) ?? DateTime(1900);
+    } catch (e) {
+      print('Error parsing date: $dateStr - $e');
+      return DateTime(1900);
+    }
+  }
+
   static String randomQuotes() {
     List<String> funnyQuotes = [
       'Ketika kamu malas, bukan berarti kamu rajin.',
@@ -199,7 +246,7 @@ class Utils {
     return funnyQuotes[random.nextInt(funnyQuotes.length)];
   }
 
-    static double getPercentage({required int bagian, required int total}) {
+  static double getPercentage({required int bagian, required int total}) {
     if (total != 0) {
       return ((bagian / total) * 100);
     } else {

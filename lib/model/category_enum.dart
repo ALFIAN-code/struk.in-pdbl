@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum Category {
+enum CategoryStruk {
   makanan("Makanan", Colors.red),
   belanja("Belanja", Colors.green),
   transportasi("Transportasi", Colors.blue),
@@ -10,16 +10,16 @@ enum Category {
   final String label;
   final Color color;
 
-  const Category(this.label, this.color);
+  const CategoryStruk(this.label, this.color);
 
-  static Category fromLabel(String? label) {
+  static CategoryStruk fromLabel(String? label) {
     if (label == null || label.trim().isEmpty) {
-      return Category.lainnya;
+      return CategoryStruk.lainnya;
     }
 
-    return Category.values.firstWhere(
+    return CategoryStruk.values.firstWhere(
       (e) => e.label.toLowerCase() == label.toLowerCase(),
-      orElse: () => Category.lainnya,
+      orElse: () => CategoryStruk.lainnya,
     );
   }
 }
