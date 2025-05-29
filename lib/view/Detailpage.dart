@@ -5,6 +5,7 @@ import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:strukin/controller/detailpage_controller.dart';
 import 'package:strukin/controller/utils.dart';
+import 'package:strukin/model/category_enum.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/component/menu_item.dart';
 import 'package:strukin/view/component/split_user.dart';
@@ -36,6 +37,7 @@ class _DetailPageState extends State<DetailPage> {
     );
     var groupItemsByUser = controller.groupItemsByUser(widget.transaksi);
     var deviceWidth = MediaQuery.of(context).size.width;
+    CategoryStruk category = CategoryStruk.fromLabel(widget.transaksi.category);
     print(widget.transaksi.createAt);
     return Scaffold(
       body: Container(
@@ -130,14 +132,45 @@ class _DetailPageState extends State<DetailPage> {
                     SizedBox(height: 20),
 
                     // Informasi Restoran & Tanggal
-                    Text(
-                      widget.transaksi.storeName ?? '-----null-----',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: deviceWidth * 0.71,
+                          ),
+                          child: Text(
+                            widget.transaksi.storeName ?? '-----null-----',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: category.color.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            category.label,
+                            style: GoogleFonts.roboto(
+                              color: category.color,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
                       Utils.formatDateFromString(widget.transaksi.strukDate),
@@ -215,9 +248,7 @@ class _DetailPageState extends State<DetailPage> {
         _buildTotalRow("Pajak", transaksi.pajak?.toInt() ?? 0),
         _buildTotalRow("Biaya Layanan", transaksi.biayaLayanan?.toInt() ?? 0),
         _buildTotalRow("Biaya Lainnya", transaksi.biayaLainnya?.toInt() ?? 0),
-        SizedBox(
-        height: 10,
-        ),
+        SizedBox(height: 10),
         _buildTotalRow("Diskon", transaksi.diskon?.toInt() ?? 0),
         Divider(),
         _buildTotalRow("Total", transaksi.total!.toInt(), isBold: true),
