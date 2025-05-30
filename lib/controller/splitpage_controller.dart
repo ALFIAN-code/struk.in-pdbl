@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -52,7 +53,7 @@ class SplitpageController extends GetxController {
     includeBiayaLainnya.value = false;
     includeBiayaLayanan.value = false;
     includeDiskon.value = false;
-    print('state split page bersih');
+    debugPrint('state split page bersih');
   }
 
   @override
@@ -79,31 +80,24 @@ class SplitpageController extends GetxController {
       bagian: strukData.tax ?? 0,
       total: strukData.subtotal ?? 0,
     );
-    print("tax = $tax");
     var diskon = Utils.getPercentage(
       bagian: strukData.diskon ?? 0,
       total: strukData.subtotal ?? 0,
     );
-    print("diskon = $diskon");
     var biayaLayanan = Utils.getPercentage(
       bagian: strukData.biayaLayanan ?? 0,
       total: strukData.subtotal ?? 0,
     );
-    print("biaya layanan = $biayaLayanan");
+
     var biayaLainnya = Utils.getPercentage(
       bagian: strukData.biayaLainnya ?? 0,
       total: strukData.subtotal ?? 0,
     );
-    print("biaya lainnya $biayaLainnya");
 
     var unitTax = (item.unitPrice! * tax / 100).round();
-    print("unit tax = $unitTax");
     var unitDiskon = (item.unitPrice! * diskon / 100).round();
-    print("unit diskon = $unitDiskon");
     var unitBiayaLayanan = (item.unitPrice! * biayaLayanan / 100).round();
-    print('unit biaya layanan = $unitBiayaLayanan');
     var unitBiayaLainnya = (item.unitPrice! * biayaLainnya / 100).round();
-    print('unit biaya lainnya = $unitBiayaLainnya');
 
     int unitPrice =
         item.unitPrice! -
@@ -191,10 +185,10 @@ class SplitpageController extends GetxController {
   /// [participantIndex] - Index peserta
   void doMultiSelection2(Item item, int participantIndex) {
     final isSelected = selectedItem.any((e) => e.id == item.id);
-    print('isSelected: $isSelected');
+    debugPrint('isSelected: $isSelected');
 
     if (isSelected) {
-      print('item dihapus');
+      debugPrint('item dihapus');
 
       // Hapus dari participant
       (participants.value[participantIndex]['selectedItems']
@@ -204,7 +198,7 @@ class SplitpageController extends GetxController {
       // Hapus dari selectedItem berdasarkan ID
       selectedItem.removeWhere((e) => e.id == item.id);
     } else {
-      print('item ditambahkan');
+      debugPrint('item ditambahkan');
 
       participants.value[participantIndex]['selectedItems'].add({
         'quantity': 1,
@@ -326,130 +320,302 @@ class SplitpageController extends GetxController {
   /// Mengembalikan:
   /// - TransaksiModel yang berhasil disimpan
   /// - Null jika terjadi error
+  // Future<TransaksiModel?> addDataToDatabase2(String imgpath) async {
+  //   try {
+  //     final strukData = processedText.value!;
+  //     if (processedText.value == null) {
+  //       print("Data struk belum tersedia.");
+  //       return null;
+  //     }
+
+  //     Set<Item> uniqueItems = {};
+  //     for (var i = 0; i < participants.value.length; i++) {
+  //       List<Map<String, dynamic>> selectedItems =
+  //           participants.value[i]['selectedItems'];
+  //       for (var element in selectedItems) {
+  //         uniqueItems.add(element['item']);
+  //       }
+  //       // uniqueItems.addAll(selectedItems);
+  //     }
+
+  //     List<DetailTransaksiModel> detailList = [];
+  //     for (var item in uniqueItems) {
+  //       List<int> participantIndices = getParticipantsWhoSelectedItem(item);
+  //       //debugPrint('tax ratio = ${tax / 100}');
+
+  //       var totalQuantity = 0;
+  //       for (var i = 0; i < participants.value.length; i++) {
+  //         List<Map<String, dynamic>> dump =
+  //             participants.value[i]['selectedItems'];
+
+  //         for (var i = 0; i < dump.length; i++) {
+  //           if ((dump[i]['item'] as Item).id == item.id) {
+  //             totalQuantity += dump[i]['quantity'] as int;
+  //           }
+  //         }
+  //       }
+
+  //       List<DetailUserSplitModel> userSplits = [];
+  //       for (var index in participantIndices) {
+  //         var participant = participants.value[index];
+  //         int participantQuantity = 0;
+
+  //         for (var element
+  //             in (participants.value[index]['selectedItems']
+  //                 as List<Map<String, dynamic>>)) {
+  //           if ((element['item'] as Item).id == item.id) {
+  //             participantQuantity = element['quantity'];
+  //           }
+  //         }
+
+  //         var hargaPerParticipant =
+  //             (participantQuantity / totalQuantity) *
+  //             getUnitPrice(
+  //               item,
+  //               includePajak: includePajak.value,
+  //               includeDiskon: includeDiskon.value,
+  //               includeBiayaLayanan: includeBiayaLayanan.value,
+  //               includeBiayaLainnya: includeBiayaLainnya.value,
+  //             );
+  //         // print(unitTax);
+  //         debugPrint(
+  //           '  ${participants.value[index]['name']}  $participantQuantity $totalQuantity',
+  //         );
+
+  //         debugPrint(
+  //           '${item.name}  ${participants.value[index]['name']}  $hargaPerParticipant',
+  //         );
+
+  //         UserSplitModel user = UserSplitModel(
+  //           userID: participant['id'],
+  //           username: participant['name'],
+  //           avatar: participant['image'],
+  //         );
+
+  //         DetailUserSplitModel detailUserSplit = DetailUserSplitModel(
+  //           hargaPerParticipant: hargaPerParticipant,
+  //           portion: participantQuantity.toDouble(),
+  //           user: user,
+  //         );
+
+  //         userSplits.add(detailUserSplit);
+  //       }
+  //       print(
+  //         userSplits.map(
+  //           (e) =>
+  //               debugPrint('harga per participant = ${e.hargaPerParticipant}'),
+  //         ),
+  //       );
+
+  //       DetailTransaksiModel detail = DetailTransaksiModel(
+  //         hargaSatuan: getUnitPrice(
+  //           item,
+  //           includePajak: includePajak.value,
+  //           includeDiskon: includeDiskon.value,
+  //           includeBiayaLayanan: includeBiayaLayanan.value,
+  //           includeBiayaLainnya: includeBiayaLainnya.value,
+  //         ),
+  //         namaBarang: item.name,
+  //         harga:
+  //             (getUnitPrice(
+  //               item,
+  //               includePajak: includePajak.value,
+  //               includeDiskon: includeDiskon.value,
+  //               includeBiayaLayanan: includeBiayaLayanan.value,
+  //               includeBiayaLainnya: includeBiayaLainnya.value,
+  //             ) * item.quantity!.toInt()).toDouble(),
+  //         jumlah: item.quantity,
+  //         userSplits: userSplits,
+  //       );
+  //       detailList.add(detail);
+  //     }
+  //     TransaksiModel transaksi = TransaksiModel(
+  //       imagePath: imgpath,
+  //       storeName: strukData.businessName,
+  //       strukDate: strukData.date,
+  //       transaksiID: Utils.generateCustomIntID(),
+  //       subtotal: strukData.subtotal?.toDouble() ?? 0,
+  //       pajak: strukData.tax?.toDouble() ?? 0,
+  //       biayaLayanan: strukData.biayaLayanan?.toDouble() ?? 0,
+  //       total: strukData.total?.toDouble() ?? 0,
+  //       detailTransaksis: detailList,
+  //       biayaLainnya: strukData.biayaLainnya?.toDouble() ?? 0,
+  //       diskon: strukData.diskon?.toDouble() ?? 0,
+  //       createAt: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+  //       category: strukData.category,
+  //       jumlahparticipant: participants.value.length,
+  //     );
+  //     await DatabaseHelper().insertFullTransaksi(transaksi);
+  //     return transaksi;
+  //   } catch (e) {
+  //     Get.snackbar(
+  //       'Error',
+  //       'Gagal menyimpan data pembagian struk: $e',
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   }
+  // }
+
   Future<TransaksiModel?> addDataToDatabase2(String imgpath) async {
-    final strukData = processedText.value!;
-    if (processedText.value == null) {
-      print("Data struk belum tersedia.");
-      return null;
-    }
-
-    Set<Item> uniqueItems = {};
-    for (var i = 0; i < participants.value.length; i++) {
-      List<Map<String, dynamic>> selectedItems =
-          participants.value[i]['selectedItems'];
-      for (var element in selectedItems) {
-        uniqueItems.add(element['item']);
+    try {
+      final strukData = processedText.value!;
+      if (processedText.value == null) {
+        print("Data struk belum tersedia.");
+        return null;
       }
-      // uniqueItems.addAll(selectedItems);
-    }
 
-    List<DetailTransaksiModel> detailList = [];
-    for (var item in uniqueItems) {
-      List<int> participantIndices = getParticipantsWhoSelectedItem(item);
-      // print('tax ratio = ${tax / 100}');
-
-      var totalQuantity = 0;
+      Set<Item> uniqueItems = {};
       for (var i = 0; i < participants.value.length; i++) {
-        List<Map<String, dynamic>> dump =
+        List<Map<String, dynamic>> selectedItems =
             participants.value[i]['selectedItems'];
-
-        for (var i = 0; i < dump.length; i++) {
-          if ((dump[i]['item'] as Item).id == item.id) {
-            totalQuantity += dump[i]['quantity'] as int;
-          }
+        for (var element in selectedItems) {
+          uniqueItems.add(element['item']);
         }
+        // uniqueItems.addAll(selectedItems);
       }
 
-      List<DetailUserSplitModel> userSplits = [];
-      for (var index in participantIndices) {
-        var participant = participants.value[index];
-        int participantQuantity = 0;
+      List<DetailTransaksiModel> detailList = [];
+      for (var item in uniqueItems) {
+        List<int> participantIndices = getParticipantsWhoSelectedItem(item);
+        //debugPrint('tax ratio = ${tax / 100}');
 
-        for (var element
-            in (participants.value[index]['selectedItems']
-                as List<Map<String, dynamic>>)) {
-          if ((element['item'] as Item).id == item.id) {
-            participantQuantity = element['quantity'];
+        var totalQuantity = 0;
+        for (var i = 0; i < participants.value.length; i++) {
+          List<Map<String, dynamic>> dump =
+              participants.value[i]['selectedItems'];
+
+          for (var i = 0; i < dump.length; i++) {
+            if ((dump[i]['item'] as Item).id == item.id) {
+              totalQuantity += dump[i]['quantity'] as int;
+            }
           }
         }
 
-        var hargaPerParticipant =
-            (participantQuantity / totalQuantity) *
-            getUnitPrice(
-              item,
-              includePajak: includePajak.value,
-              includeDiskon: includeDiskon.value,
-              includeBiayaLayanan: includeBiayaLayanan.value,
-              includeBiayaLainnya: includeBiayaLainnya.value,
-            );
-        // print(unitTax);
+        List<DetailUserSplitModel> userSplits = [];
+        for (var index in participantIndices) {
+          var participant = participants.value[index];
+          int participantQuantity = 0;
+
+          for (var element
+              in (participants.value[index]['selectedItems']
+                  as List<Map<String, dynamic>>)) {
+            if ((element['item'] as Item).id == item.id) {
+              participantQuantity = element['quantity'];
+            }
+          }
+
+          debugPrint(
+            '[quantity]participant quantity = $participantQuantity, total quantity = $totalQuantity, item quantity = ${item.quantity!.toInt()}',
+          );
+
+          var hargaPerParticipant =
+              (totalQuantity <= item.quantity!.toInt())
+                  ? (participantQuantity / item.quantity!.toInt()) *
+                      (getUnitPrice(
+                            item,
+                            includePajak: includePajak.value,
+                            includeDiskon: includeDiskon.value,
+                            includeBiayaLayanan: includeBiayaLayanan.value,
+                            includeBiayaLainnya: includeBiayaLainnya.value,
+                          ) *
+                          item.quantity!.toInt())
+                  : (participantQuantity / totalQuantity) *
+                      (getUnitPrice(
+                            item,
+                            includePajak: includePajak.value,
+                            includeDiskon: includeDiskon.value,
+                            includeBiayaLayanan: includeBiayaLayanan.value,
+                            includeBiayaLainnya: includeBiayaLainnya.value,
+                          ) *
+                          item.quantity!.toInt());
+
+          // var hargaPerParticipant =
+          //     (participantQuantity / totalQuantity) *
+          //     getUnitPrice(
+          //       item,
+          //       includePajak: includePajak.value,
+          //       includeDiskon: includeDiskon.value,
+          //       includeBiayaLayanan: includeBiayaLayanan.value,
+          //       includeBiayaLainnya: includeBiayaLainnya.value,
+          //     );
+          // print(unitTax);
+          debugPrint(
+            '  ${participants.value[index]['name']}  $participantQuantity $totalQuantity',
+          );
+
+          debugPrint(
+            '${item.name}  ${participants.value[index]['name']}  $hargaPerParticipant',
+          );
+
+          UserSplitModel user = UserSplitModel(
+            userID: participant['id'],
+            username: participant['name'],
+            avatar: participant['image'],
+          );
+
+          DetailUserSplitModel detailUserSplit = DetailUserSplitModel(
+            hargaPerParticipant: hargaPerParticipant,
+            portion: participantQuantity.toDouble(),
+            user: user,
+          );
+
+          userSplits.add(detailUserSplit);
+        }
         print(
-          '  ${participants.value[index]['name']}  $participantQuantity $totalQuantity',
+          userSplits.map(
+            (e) =>
+                debugPrint('harga per participant = ${e.hargaPerParticipant}'),
+          ),
         );
 
-        print(
-          '${item.name}  ${participants.value[index]['name']}  $hargaPerParticipant',
+        DetailTransaksiModel detail = DetailTransaksiModel(
+          hargaSatuan: getUnitPrice(
+            item,
+            includePajak: includePajak.value,
+            includeDiskon: includeDiskon.value,
+            includeBiayaLayanan: includeBiayaLayanan.value,
+            includeBiayaLainnya: includeBiayaLainnya.value,
+          ),
+          namaBarang: item.name,
+          harga:
+              (getUnitPrice(
+                        item,
+                        includePajak: includePajak.value,
+                        includeDiskon: includeDiskon.value,
+                        includeBiayaLayanan: includeBiayaLayanan.value,
+                        includeBiayaLainnya: includeBiayaLainnya.value,
+                      ) *
+                      item.quantity!.toInt())
+                  .toDouble(),
+          jumlah: item.quantity,
+          userSplits: userSplits,
         );
-
-        UserSplitModel user = UserSplitModel(
-          userID: participant['id'],
-          username: participant['name'],
-          avatar: participant['image'],
-        );
-
-        DetailUserSplitModel detailUserSplit = DetailUserSplitModel(
-          hargaPerParticipant: hargaPerParticipant,
-          portion: participantQuantity.toDouble(),
-          user: user,
-        );
-
-        userSplits.add(detailUserSplit);
+        detailList.add(detail);
       }
-      print(
-        userSplits.map(
-          (e) => print('harga per participant = ${e.hargaPerParticipant}'),
-        ),
+      TransaksiModel transaksi = TransaksiModel(
+        imagePath: imgpath,
+        storeName: strukData.businessName,
+        strukDate: strukData.date,
+        transaksiID: Utils.generateCustomIntID(),
+        subtotal: strukData.subtotal?.toDouble() ?? 0,
+        pajak: strukData.tax?.toDouble() ?? 0,
+        biayaLayanan: strukData.biayaLayanan?.toDouble() ?? 0,
+        total: strukData.total?.toDouble() ?? 0,
+        detailTransaksis: detailList,
+        biayaLainnya: strukData.biayaLainnya?.toDouble() ?? 0,
+        diskon: strukData.diskon?.toDouble() ?? 0,
+        createAt: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+        category: strukData.category,
+        jumlahparticipant: participants.value.length,
       );
-
-      DetailTransaksiModel detail = DetailTransaksiModel(
-        hargaSatuan: getUnitPrice(
-          item,
-          includePajak: includePajak.value,
-          includeDiskon: includeDiskon.value,
-          includeBiayaLayanan: includeBiayaLayanan.value,
-          includeBiayaLainnya: includeBiayaLainnya.value,
-        ),
-        namaBarang: item.name,
-        harga:
-            getUnitPrice(
-              item,
-              includePajak: includePajak.value,
-              includeDiskon: includeDiskon.value,
-              includeBiayaLayanan: includeBiayaLayanan.value,
-              includeBiayaLainnya: includeBiayaLainnya.value,
-            ).toDouble(),
-        jumlah: item.quantity,
-        userSplits: userSplits,
+      await DatabaseHelper().insertFullTransaksi(transaksi);
+      return transaksi;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menyimpan data pembagian struk: $e',
+        snackPosition: SnackPosition.BOTTOM,
       );
-      detailList.add(detail);
     }
-    TransaksiModel transaksi = TransaksiModel(
-      imagePath: imgpath,
-      storeName: strukData.businessName,
-      strukDate: strukData.date,
-      transaksiID: Utils.generateCustomIntID(),
-      subtotal: strukData.subtotal?.toDouble() ?? 0,
-      pajak: strukData.tax?.toDouble() ?? 0,
-      biayaLayanan: strukData.biayaLayanan?.toDouble() ?? 0,
-      total: strukData.total?.toDouble() ?? 0,
-      detailTransaksis: detailList,
-      biayaLainnya: strukData.biayaLainnya?.toDouble() ?? 0,
-      diskon: strukData.diskon?.toDouble() ?? 0,
-      createAt: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
-      category: strukData.category ?? 'unknown',
-      jumlahparticipant: participants.value.length,
-    );
-    await DatabaseHelper().insertFullTransaksi(transaksi);
-    return transaksi;
   }
 }

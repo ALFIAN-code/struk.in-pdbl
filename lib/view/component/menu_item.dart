@@ -54,9 +54,9 @@ class _GetListMenuState extends State<GetListMenu> {
       includePajak: splitController.includePajak.value
     ) - widget.item.unitPrice!;
 
-    // print('selected = ${widget.isSelected}');
-    // print('selected index = ${widget.participantIndex}');
-    // print('list participant = ${participantWhoSelected.toList()}');
+    // debugPrintselected = ${widget.isSelected}');
+    // debugPrintselected index = ${widget.participantIndex}');
+    // debugPrintlist participant = ${participantWhoSelected.toList()}');
     
     // var taxPerMenu =
     //     (widget.item.unitPrice! * (widget.taxPercentage / 100)).round();

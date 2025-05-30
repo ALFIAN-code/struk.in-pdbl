@@ -67,7 +67,7 @@ class _ParticipantItemState extends State<ParticipantItem> {
 
   @override
   Widget build(BuildContext context) {
-    print('participant item di rebuild');
+    debugPrint('participant item di rebuild');
     return Column(
       children: [
         Stack(

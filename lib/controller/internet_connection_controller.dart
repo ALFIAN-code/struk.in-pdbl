@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -22,7 +23,7 @@ class ConnectionController extends GetxController {
     // Pantau status koneksi secara realtime
     internetConnection.onStatusChange.listen((status) {
       hasConnection.value = status == InternetConnectionStatus.connected;
-      print('Koneksi internet: ${hasConnection.value}');
+      debugPrint('Koneksi internet: ${hasConnection.value}');
     });
   }
 }

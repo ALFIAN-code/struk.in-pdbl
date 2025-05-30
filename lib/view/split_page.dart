@@ -49,8 +49,8 @@ class _SplitPageState extends State<SplitPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('selected index = ${splitController.selectedIndex}');
-    print(splitController.selectedItem);
+    debugPrint('selected index = ${splitController.selectedIndex}');
+   debugPrint('${splitController.selectedItem}');
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -338,39 +338,7 @@ class _SplitPageState extends State<SplitPage> {
                         ),
                         SizedBox(height: 30),
                         isExpanded
-                            ? GestureDetector(
-                              onTap:
-                                  () => setState(() {
-                                    isExpanded = !isExpanded;
-                                  }),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: accentColor.withAlpha(140),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Atur biaya tambahan",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-
-                                    SizedBox(width: 10),
-                                    Icon(Icons.keyboard_arrow_down_rounded),
-                                  ],
-                                ),
-                              ),
-                            )
-                            : Container(
+                            ?Container(
                               height: 200,
                               decoration: BoxDecoration(
                                 color: accentColor.withAlpha(140),
@@ -479,7 +447,39 @@ class _SplitPageState extends State<SplitPage> {
                                   ),
                                 ],
                               ),
+                            ): GestureDetector(
+                              onTap:
+                                  () => setState(() {
+                                    isExpanded = !isExpanded;
+                                  }),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: accentColor.withAlpha(140),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Atur biaya tambahan",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+
+                                    SizedBox(width: 10),
+                                    Icon(Icons.keyboard_arrow_down_rounded),
+                                  ],
+                                ),
+                              ),
                             ),
+                            
 
                         SizedBox(height: 0),
 
@@ -514,7 +514,7 @@ class _SplitPageState extends State<SplitPage> {
                                     item,
                                     splitController.selectedIndex.value,
                                   );
-                                  print('menu tapped');
+                                  debugPrint('menu tapped');
                                 });
                               },
                             );
@@ -627,7 +627,7 @@ class _SplitPageState extends State<SplitPage> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () async {
-                              print("Tombol Konfirmasi ditekan");
+                              debugPrint("Tombol Konfirmasi ditekan");
                               int notSelectParticipant = 0;
                               String notSelectParticipantName = "";
                               bool isEmpty = splitController.participants.value
@@ -652,7 +652,7 @@ class _SplitPageState extends State<SplitPage> {
                               } else {
                                 var transaksi = await splitController
                                     .addDataToDatabase2(widget.image.path);
-                                Get.off(
+                                Get.to(
                                   () => ResultPage(
                                     transaksiID: transaksi!.transaksiID!,
                                   ),
@@ -706,8 +706,8 @@ class CustomToggle extends StatelessWidget {
 
   final String title;
   // final SplitpageController splitController;
-  void Function(bool)? onChanged;
-  bool value;
+  final void Function(bool)? onChanged;
+  final bool value;
 
   @override
   Widget build(BuildContext context) {

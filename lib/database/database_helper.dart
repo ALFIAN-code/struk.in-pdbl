@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:strukin/model/struk_model.dart';
@@ -6,6 +8,7 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   static Database? _database;
+  static const _targetVersion = 4;
 
   DatabaseHelper._internal();
 
@@ -16,13 +19,38 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
+    debugPrint('▶️ [_initDatabase] called'); // 1️⃣
     final path = join(await getDatabasesPath(), 'strukin.db');
-    return await openDatabase(
+    final db = await openDatabase(
       path,
-      version: 2, // naikkan versi ke 2
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade, // tangani migrasi schema
+      version: _targetVersion,
+      onCreate: (db, v) async {
+        debugPrint('🆕 [onCreate] version $v'); // 2️⃣
+        await _onCreate(db, v);
+      },
+      onUpgrade: (db, oldV, newV) async {
+        debugPrint('⬆️ [onUpgrade] $oldV → $newV'); // 3️⃣
+        await _onUpgrade(db, oldV, newV);
+      },
     );
+    debugPrint('✅ [_initDatabase] done, user_version=${await db.getVersion()}');
+    return db;
+  }
+
+  // ini method manual migrate
+  Future<void> manualMigrateIfNeeded() async {
+    final db = await database;
+    final current = await db.getVersion();
+    if (current < _targetVersion) {
+      debugPrint('▶️ Manual migrate DB $current → $_targetVersion');
+      // panggil migrasi kamu
+      await _onUpgrade(db, current, _targetVersion);
+      // set PRAGMA user_version ke target
+      await db.execute('PRAGMA user_version = $_targetVersion;');
+      debugPrint('✅ After manual migrate, version=${await db.getVersion()}');
+    } else {
+      debugPrint('⏭ DB already at version $current');
+    }
   }
 
   // Buat schema v2 untuk install baru
@@ -84,7 +112,7 @@ class DatabaseHelper {
 
   // Migrasi schema dari v1 → v2
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
+    if (oldVersion < newVersion) {
       await db.execute('ALTER TABLE transaksi ADD COLUMN create_at TEXT;');
       await db.execute('ALTER TABLE transaksi ADD COLUMN diskon REAL;');
       await db.execute('ALTER TABLE transaksi ADD COLUMN biaya_lainnya REAL;');
@@ -112,6 +140,8 @@ class DatabaseHelper {
     for (var dMap in detailMaps) {
       var harga = dMap['harga'];
       var jumlah = dMap['jumlah'];
+
+      debugPrint('Detail Map: $dMap'); // Debugging line
 
       DetailTransaksiModel detail = DetailTransaksiModel(
         hargaSatuan: dMap['harga_satuan'] as int,

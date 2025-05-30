@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:intl/intl.dart';
@@ -204,7 +205,7 @@ class Utils {
 
       return DateTime.tryParse(normalized) ?? DateTime(1900);
     } catch (e) {
-      print('Error parsing date: $dateStr - $e');
+      debugPrint('Error parsing date: $dateStr - $e');
       return DateTime(1900);
     }
   }

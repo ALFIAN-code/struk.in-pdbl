@@ -49,20 +49,21 @@ class DetailpageController {
         final entry = summary[user.userID!]!;
 
         // hitung share berdasarkan porsi: (porsi_user / total_porsi) * detailTotalPrice
-        final share =
-            (totalPortion > 0)
-                ? detailTotalPrice * (split.portion! / totalPortion)
-                : 0.0;
+        // final share =
+        //     (totalPortion > 0)
+        //         ? detailTotalPrice * (split.portion! / totalPortion)
+        //         : 0.0;
 
         // tambahkan item ke list
         (entry['items'] as List).add({
           'nama_barang': detail.namaBarang ?? 'Unknown',
           'portion': split.portion ?? 0,
-          'share_price': share,
+          'share_price': split.hargaPerParticipant,
         });
 
         // akumulasi total_harga
-        entry['total_harga'] = (entry['total_harga'] as double) + share;
+        entry['total_harga'] =
+            (entry['total_harga'] as double) + split.hargaPerParticipant!;
       }
     }
 

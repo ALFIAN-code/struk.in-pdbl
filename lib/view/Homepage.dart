@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:strukin/controller/internet_connection_controller.dart';
 // import 'package:rive/rive.dart';
 import 'package:strukin/controller/utils.dart';
+import 'package:strukin/database/database_helper.dart';
 import 'package:strukin/model/category_enum.dart';
 import 'package:strukin/model/struk_model.dart';
 import 'package:strukin/view/Detailpage.dart';
@@ -26,7 +28,12 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   final controller = Get.put(HomepageController());
-  var connection = Get.find<ConnectionController>();
+  final connection = Get.find<ConnectionController>();
+
+  // Future<int> _fetchDbVersion() async {
+  //   final db = await DatabaseHelper().database;
+  //   return db.getVersion();
+  // }
 
   /// Menampilkan bottom sheet untuk memilih sumber gambar (kamera atau galeri)
   ///
@@ -178,7 +185,7 @@ class HomePage extends StatelessWidget {
                                 "Easter egg",
                                 Utils.randomQuotes(),
                                 backgroundColor: Colors.white,
-                                
+
                                 borderRadius: 30,
                                 borderWidth: 1,
                                 borderColor: const Color.fromARGB(
@@ -348,7 +355,7 @@ class HomePage extends StatelessWidget {
                           ),
                           child: Material(
                             color: Colors.white,
-                                
+
                             // shadowColor: Colors.black,
                             clipBehavior: Clip.hardEdge,
                             child: InkWell(
@@ -432,7 +439,7 @@ class HomePage extends StatelessWidget {
                               (index) {
                                 final transaksi =
                                     controller.filteredStrukList.value[index];
-                                
+
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 20),
                                   child: GestureDetector(
@@ -447,7 +454,7 @@ class HomePage extends StatelessWidget {
                                           context: context,
                                           type: QuickAlertType.error,
                                           title: 'Konfirmasi',
-                                
+
                                           text:
                                               'Apakah Anda yakin ingin menghapus struk ini?',
                                           confirmBtnText: 'Hapus',
@@ -459,7 +466,7 @@ class HomePage extends StatelessWidget {
                                             );
                                             Get.back();
                                           },
-                                
+
                                           confirmBtnColor: Colors.red,
                                         );
                                       },

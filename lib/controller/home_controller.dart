@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -69,6 +70,7 @@ class HomepageController extends GetxController {
     final transaksiList = await database.getAllTransaksi() ?? [];
     fullStrukList.value = [...transaksiList];
     filteredStrukList.value = [...transaksiList];
+    applyFilters();
   }
 
   /// Normalisasi gambar struk dengan kompresi dan konversi format
@@ -98,7 +100,7 @@ class HomepageController extends GetxController {
       return result?.path;
     } catch (e) {
       // Tangani error (misal file corrupt)
-      print('Error normalizing image: $e');
+      debugPrint('Error normalizing image: $e');
       return null;
     }
   }
@@ -169,6 +171,8 @@ class HomepageController extends GetxController {
     int compareDate(String? a, String? b, {bool descending = true}) {
       final dateA = Utils.parseCustomDate(a);
       final dateB = Utils.parseCustomDate(b);
+
+      debugPrint('Comparing dates: $dateA vs $dateB');
       return descending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
     }
 
@@ -197,8 +201,8 @@ class HomepageController extends GetxController {
 
     filteredStrukList.value = list;
 
-    print('Filter berdasarkan kategori: ${selectedCategory.value}');
-    print('Urutkan berdasarkan waktu: ${selectedTime.value}');
+    debugPrint('Filter berdasarkan kategori: ${selectedCategory.value}');
+    debugPrint('Urutkan berdasarkan waktu: ${selectedTime.value}');
     for (var e in filteredStrukList.value) {
       print(
         'Struk: ${e.storeName}, Kategori: ${e.category}, Waktu Scan: ${e.createAt}, Tanggal Struk: ${e.strukDate}',

@@ -4,11 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:strukin/controller/internet_connection_controller.dart';
+import 'package:strukin/database/database_helper.dart';
+
 
 import 'package:strukin/view/Homepage.dart';
 import 'package:strukin/view/onboarding_screen.dart';
 
-import 'package:shorebird_code_push/shorebird_code_push.dart';
 import 'package:strukin/view/style.dart';
 
 /// Entry point utama aplikasi Struk.in
@@ -28,6 +29,9 @@ void main() async {
   final hasCompletedOnboarding =
       prefs.getBool('hasCompletedOnboarding') ?? false;
 
+  await DatabaseHelper().database;
+  var database =  DatabaseHelper();
+  await database.manualMigrateIfNeeded();
   runApp(MyApp(hasCompletedOnboarding: hasCompletedOnboarding));
 }
 

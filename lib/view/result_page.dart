@@ -30,6 +30,7 @@ class _ResultPageState extends State<ResultPage> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         Get.offAll(() => HomePage());
+        // Get.back();
         return;
       },
       child: Scaffold(
@@ -37,7 +38,9 @@ class _ResultPageState extends State<ResultPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: IconButton(
-            onPressed: () => Get.offAll(() => HomePage()),
+            onPressed: (){
+              Get.offAll(() => HomePage());
+            },
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
           ),
           title: Obx(

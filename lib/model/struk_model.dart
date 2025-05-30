@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+import 'package:strukin/controller/utils.dart';
+
 class UserSplitModel {
   final String? userID;
   final String? username;
@@ -172,12 +175,13 @@ class TransaksiModel {
       jumlahparticipant: map['jumlah_participant'],
       subtotal: map['subtotal']?.toDouble(),
       pajak: map['pajak']?.toDouble(),
-      biayaLayanan: map['biaya_layanan']?.toDouble(),
+      biayaLayanan: map['biaya_layanan']?.toDouble() ?? 0.0,
       total: map['total']?.toDouble(),
-      diskon: map['diskon'],
-      createAt: map['create_at'],
-      category: map['category'],
-      biayaLainnya: map['biaya_lainnya'],
+      diskon: map['diskon'] ?? 0.0,
+      createAt:
+          map['create_at'] ?? DateFormat('yyyy-MM-dd HH:mm').format(DateTime(1900, 1, 1, 1, 1)),
+      category: map['category'] ?? 'Lainnya',
+      biayaLainnya: map['biaya_lainnya'] ?? 0.0,
     );
   }
 

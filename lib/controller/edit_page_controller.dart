@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:strukin/controller/splitpage_controller.dart';
 import 'package:strukin/model/struk_from_api.dart';
@@ -25,7 +26,7 @@ class EditPageController extends GetxController {
     var subTotal = transaksi.value!.subtotal;
     transaksi.value!.total = subTotal! + tax;
 
-    print('${transaksi.value!.tax}');
+    debugPrint('${transaksi.value!.tax}');
   }
 
   void updateTotal() {
