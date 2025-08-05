@@ -32,6 +32,15 @@
   - **GetX** - State management dan navigasi
   - **Shorebird** - Code push untuk update aplikasi
 
+## Tampilan Aplikasi
+<img width="459" height="1008" alt="image" src="https://github.com/user-attachments/assets/0e50c4cc-df72-4883-a8cb-9741815fb0f2" />
+<img width="457" height="1011" alt="image" src="https://github.com/user-attachments/assets/af66341f-2541-4cf4-947c-164c178d71a3" />
+<img width="457" height="1008" alt="image" src="https://github.com/user-attachments/assets/a07106f7-a4cd-49c5-993a-9c921de55c4b" />
+<img width="453" height="1009" alt="image" src="https://github.com/user-attachments/assets/b804ecd5-d3e3-4638-aa5c-007580a1469c" />
+
+
+
+
 ## 📲 Download Aplikasi
 
 [![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.strukin.pdbl&pcampaignid=web_share)
