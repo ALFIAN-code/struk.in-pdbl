@@ -22,7 +22,6 @@
   - 🏷️ **Kategori Otomatis**: Klasifikasi otomatis untuk makanan, belanja, transportasi, hiburan, dan lainnya
   - 📊 **Detail Lengkap**: Tampilkan informasi lengkap termasuk pajak, diskon, dan biaya layanan
   - 🔄 **Edit Manual**: Fitur edit untuk koreksi data jika diperlukan
-  - 🌐 **Dukungan Multi-Mata Uang**: Mendukung berbagai mata uang dengan format ISO 4217
 
 ### 🛠️ Teknologi yang Digunakan
 
