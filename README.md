@@ -34,9 +34,11 @@
 
 ## Tampilan Aplikasi
 <img width="459" height="1008" alt="image" src="https://github.com/user-attachments/assets/0e50c4cc-df72-4883-a8cb-9741815fb0f2" />
-<img width="457" height="1011" alt="image" src="https://github.com/user-attachments/assets/af66341f-2541-4cf4-947c-164c178d71a3" />
+<img width="454" height="1006" alt="image" src="https://github.com/user-attachments/assets/07f9a4ff-ac9e-499b-9210-73810b7c3a94" />
+<img width="452" height="1003" alt="image" src="https://github.com/user-attachments/assets/8586f392-730b-4b38-85a8-f99a9145a318" />
 <img width="457" height="1008" alt="image" src="https://github.com/user-attachments/assets/a07106f7-a4cd-49c5-993a-9c921de55c4b" />
-<img width="453" height="1009" alt="image" src="https://github.com/user-attachments/assets/b804ecd5-d3e3-4638-aa5c-007580a1469c" />
+<img width="454" height="1005" alt="image" src="https://github.com/user-attachments/assets/8dde9ff9-bbab-49f7-9c2c-87072a5289d2" />
+
 
 
 
